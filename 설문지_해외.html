@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>글로벌 변압기 제조사 벤치마킹 설문지</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap');
+
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+            background-color: #e9ecef;
+            color: #333;
+            margin: 0;
+            padding: 30px;
+            line-height: 1.5;
+        }
+
+        .guide-box {
+            width: 210mm;
+            margin: 0 auto 10px auto;
+            padding: 0;
+            text-align: right;
+            box-sizing: border-box;
+        }
+
+        .guide-box button {
+            background-color: #003366;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 13px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+
+        .page {
+            width: 210mm;
+            min-height: 297mm;
+            padding: 20mm;
+            margin: 0 auto 20px auto;
+            background: white;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+            box-sizing: border-box;
+            position: relative;
+        }
+
+        @media print {
+            @page {
+                size: A4;
+                margin: 0;
+            }
+
+            body {
+                background: none;
+                padding: 0;
+                margin: 0;
+                -webkit-print-color-adjust: exact;
+            }
+
+            .guide-box {
+                display: none;
+            }
+
+            .page {
+                width: 100%;
+                min-height: auto;
+                margin: 0;
+                padding: 15mm 20mm;
+                box-shadow: none;
+                page-break-after: always;
+            }
+
+            .page:last-child {
+                page-break-after: auto;
+            }
+        }
+
+        .header {
+            border-bottom: 2px solid #003366;
+            padding-bottom: 10px;
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+        }
+
+        .header h1 {
+            font-size: 18px;
+            color: #003366;
+            margin: 0;
+            font-weight: 700;
+        }
+
+        .header-info {
+            text-align: right;
+            font-size: 11px;
+        }
+
+        .header-info input {
+            width: 120px;
+            border: none;
+            border-bottom: 1px solid #ccc;
+            text-align: center;
+            font-size: 11px;
+        }
+
+        .section {
+            margin-bottom: 15px;
+        }
+
+        .section-title {
+            font-size: 13px;
+            font-weight: 700;
+            color: #fff;
+            background-color: #003366;
+            padding: 6px 12px;
+            margin-bottom: 10px;
+            border-radius: 3px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+
+        .sub-guide {
+            font-size: 10px;
+            color: #666;
+            margin-bottom: 10px;
+            padding-left: 5px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 10px;
+            font-size: 11px;
+        }
+
+        th, td {
+            border: 1px solid #ccc;
+            padding: 8px;
+            vertical-align: middle;
+        }
+
+        th {
+            background-color: #f0f4f8;
+            font-weight: 600;
+            text-align: center;
+        }
+
+        td {
+            text-align: center;
+        }
+
+        td.left-align {
+            text-align: left;
+        }
+
+        .question-row th {
+            width: 30%;
+            text-align: left;
+            font-weight: 500;
+        }
+
+        .question-row td {
+            font-size: 10px;
+        }
+
+        .question-row td label {
+            display: inline-block;
+            margin-right: 5px;
+            cursor: pointer;
+        }
+
+        input[type="radio"] {
+            margin-right: 3px;
+            accent-color: #003366;
+        }
+
+        .remarks-box {
+            background-color: #fafafa;
+            border: 1px solid #eee;
+            padding: 8px;
+            font-size: 10px;
+            margin-top: 5px;
+        }
+
+        .remarks-box textarea {
+            width: 100%;
+            height: 40px;
+            border: 1px solid #ddd;
+            padding: 5px;
+            font-size: 10px;
+            resize: none;
+            margin-top: 3px;
+        }
+
+        .page-num {
+            position: absolute;
+            bottom: 10mm;
+            right: 20mm;
+            font-size: 10px;
+            color: #666;
+        }
+
+        .intro-box {
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 5px;
+            padding: 12px;
+            margin-bottom: 15px;
+            font-size: 11px;
+        }
+
+        .intro-box h3 {
+            margin: 0 0 8px 0;
+            font-size: 12px;
+            color: #003366;
+        }
+
+        .intro-box ul {
+            margin: 0;
+            padding-left: 20px;
+        }
+
+        .intro-box li {
+            margin-bottom: 3px;
+        }
+
+        .scale-header th {
+            font-size: 9px;
+            padding: 5px;
+            width: 14%;
+        }
+
+        .scale-header th:first-child {
+            width: 30%;
+        }
+    </style>
+    <script>
+        function printPage() { window.print(); }
+    </script>
+</head>
+
+<body>
+
+    <div class="guide-box">
+        <button onclick="printPage()">인쇄 / PDF 저장</button>
+    </div>
+
+    <!-- 1페이지 -->
+    <div class="page">
+        <div class="header">
+            <div>
+                <h1>글로벌 변압기 제조사 벤치마킹 설문</h1>
+                <div style="font-size: 11px; margin-top: 5px; color: #555;">엔지니어링 시스템 현황 조사 (외부 관찰 기반)</div>
+            </div>
+            <div class="header-info">
+                조사 대상: <input type="text" placeholder="예: 거래처명"><br>
+                작성자: <input type="text" placeholder="이름/소속"><br>
+                작성일: <input type="text" placeholder="YYYY-MM-DD">
+            </div>
+        </div>
+
+        <!-- 안내 -->
+        <div class="intro-box">
+            <h3>설문 작성 안내</h3>
+            <ul>
+                <li>해당 제조사와 거래하면서 <strong>경험하거나 관찰한 내용</strong>을 기준으로 답변해 주세요</li>
+                <li>설계 전문가가 아니어도 됩니다 - 보시고 느낀 대로 답변하시면 됩니다</li>
+                <li>잘 모르는 항목은 "모름/관찰 안됨"을 선택하거나 비워두셔도 됩니다</li>
+                <li>각 질문은 1점(낮음)부터 5점(높음)까지 5단계로 구성되어 있습니다</li>
+            </ul>
+        </div>
+
+        <!-- 섹션 1: 설계 자동화 (40%) -->
+        <div class="section">
+            <div class="section-title">1. 설계 자동화 수준</div>
+            <div class="sub-guide">* 받아본 도면이나 문서를 기준으로, 설계 시스템이 얼마나 자동화되어 있는지 판단해 주세요.</div>
+
+            <table>
+                <thead>
+                    <tr class="scale-header">
+                        <th>질문</th>
+                        <th>1점 (낮음)</th>
+                        <th>2점</th>
+                        <th>3점</th>
+                        <th>4점</th>
+                        <th>5점 (높음)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="question-row">
+                        <th>Q1. 견적 시 도면 상세도<br><span style="font-weight:normal;font-size:9px;color:#666;">견적 단계에서 받는 도면이 얼마나 상세한가요?</span></th>
+                        <td><label><input type="radio" name="q1" value="1"> 가격만</label></td>
+                        <td><label><input type="radio" name="q1" value="2"> 기본 사양</label></td>
+                        <td><label><input type="radio" name="q1" value="3"> 참조 도면</label></td>
+                        <td><label><input type="radio" name="q1" value="4"> 상세 GA</label></td>
+                        <td><label><input type="radio" name="q1" value="5"> 풀 패키지</label></td>
+                    </tr>
+                    <tr class="question-row">
+                        <th>Q2. 3D 모델 활용 수준<br><span style="font-weight:normal;font-size:9px;color:#666;">미팅이나 검토 시 보여주는 3D 모델 수준은?</span></th>
+                        <td><label><input type="radio" name="q2" value="1"> 2D만</label></td>
+                        <td><label><input type="radio" name="q2" value="2"> 단순 3D</label></td>
+                        <td><label><input type="radio" name="q2" value="3"> 외형 3D</label></td>
+                        <td><label><input type="radio" name="q2" value="4"> 상세 3D</label></td>
+                        <td><label><input type="radio" name="q2" value="5"> 내부까지 3D</label></td>
+                    </tr>
+                    <tr class="question-row">
+                        <th>Q3. 자동 생성 문서<br><span style="font-weight:normal;font-size:9px;color:#666;">받는 문서가 시스템에서 자동 생성된 것 같나요?</span></th>
+                        <td><label><input type="radio" name="q3" value="1"> 수기 작성</label></td>
+                        <td><label><input type="radio" name="q3" value="2"> 수동 Word</label></td>
+                        <td><label><input type="radio" name="q3" value="3"> 템플릿 기반</label></td>
+                        <td><label><input type="radio" name="q3" value="4"> 부분 자동</label></td>
+                        <td><label><input type="radio" name="q3" value="5"> 완전 자동</label></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- 섹션 2: 설계 표준화 (25%) -->
+        <div class="section">
+            <div class="section-title">2. 설계 표준화 및 품질</div>
+            <div class="sub-guide">* 설계 품질이 얼마나 일관되고 표준화되어 있는지 판단해 주세요.</div>
+
+            <table>
+                <thead>
+                    <tr class="scale-header">
+                        <th>질문</th>
+                        <th>1점 (낮음)</th>
+                        <th>2점</th>
+                        <th>3점</th>
+                        <th>4점</th>
+                        <th>5점 (높음)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="question-row">
+                        <th>Q4. 품질 일관성<br><span style="font-weight:normal;font-size:9px;color:#666;">프로젝트마다 품질이 일관적인가요?</span></th>
+                        <td><label><input type="radio" name="q4" value="1"> 매우 불일치</label></td>
+                        <td><label><input type="radio" name="q4" value="2"> 자주 변동</label></td>
+                        <td><label><input type="radio" name="q4" value="3"> 대체로 일관</label></td>
+                        <td><label><input type="radio" name="q4" value="4"> 보통 일관</label></td>
+                        <td><label><input type="radio" name="q4" value="5"> 항상 일관</label></td>
+                    </tr>
+                    <tr class="question-row">
+                        <th>Q5. 담당자별 편차<br><span style="font-weight:normal;font-size:9px;color:#666;">담당자가 바뀌면 품질이 달라지나요?</span></th>
+                        <td><label><input type="radio" name="q5" value="1"> 완전 의존</label></td>
+                        <td><label><input type="radio" name="q5" value="2"> 자주 의존</label></td>
+                        <td><label><input type="radio" name="q5" value="3"> 가끔 의존</label></td>
+                        <td><label><input type="radio" name="q5" value="4"> 거의 무관</label></td>
+                        <td><label><input type="radio" name="q5" value="5"> 전혀 무관</label></td>
+                    </tr>
+                    <tr class="question-row">
+                        <th>Q6. 문서 양식 체계<br><span style="font-weight:normal;font-size:9px;color:#666;">문서가 잘 정리되어 있나요?</span></th>
+                        <td><label><input type="radio" name="q6" value="1"> 표준 없음</label></td>
+                        <td><label><input type="radio" name="q6" value="2"> 기본 양식</label></td>
+                        <td><label><input type="radio" name="q6" value="3"> 표준 템플릿</label></td>
+                        <td><label><input type="radio" name="q6" value="4"> 잘 정리됨</label></td>
+                        <td><label><input type="radio" name="q6" value="5"> 체계적 양식</label></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- 섹션 3: IT 시스템 (20%) -->
+        <div class="section">
+            <div class="section-title">3. IT 시스템 및 데이터 관리</div>
+            <div class="sub-guide">* 문서/데이터 교환을 위한 IT 인프라가 얼마나 발달되어 있는지 판단해 주세요.</div>
+
+            <table>
+                <thead>
+                    <tr class="scale-header">
+                        <th>질문</th>
+                        <th>1점 (낮음)</th>
+                        <th>2점</th>
+                        <th>3점</th>
+                        <th>4점</th>
+                        <th>5점 (높음)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="question-row">
+                        <th>Q7. 문서 수신 방식<br><span style="font-weight:normal;font-size:9px;color:#666;">발주서나 도면을 어떻게 받으시나요?</span></th>
+                        <td><label><input type="radio" name="q7" value="1"> 개인 메일</label></td>
+                        <td><label><input type="radio" name="q7" value="2"> 회사 메일</label></td>
+                        <td><label><input type="radio" name="q7" value="3"> 시스템 메일</label></td>
+                        <td><label><input type="radio" name="q7" value="4"> 웹 포털</label></td>
+                        <td><label><input type="radio" name="q7" value="5"> 통합 포털</label></td>
+                    </tr>
+                    <tr class="question-row">
+                        <th>Q8. 변경 이력 추적<br><span style="font-weight:normal;font-size:9px;color:#666;">문서 변경 이력을 확인할 수 있나요?</span></th>
+                        <td><label><input type="radio" name="q8" value="1"> 추적 안됨</label></td>
+                        <td><label><input type="radio" name="q8" value="2"> 파일명만</label></td>
+                        <td><label><input type="radio" name="q8" value="3"> 수동 로그</label></td>
+                        <td><label><input type="radio" name="q8" value="4"> 이력 관리</label></td>
+                        <td><label><input type="radio" name="q8" value="5"> 완전 추적</label></td>
+                    </tr>
+                    <tr class="question-row">
+                        <th>Q9. 시스템 알림<br><span style="font-weight:normal;font-size:9px;color:#666;">자동 업데이트 알림을 받으시나요?</span></th>
+                        <td><label><input type="radio" name="q9" value="1"> 알림 없음</label></td>
+                        <td><label><input type="radio" name="q9" value="2"> 수동 연락</label></td>
+                        <td><label><input type="radio" name="q9" value="3"> 이메일 알림</label></td>
+                        <td><label><input type="radio" name="q9" value="4"> 자동 알림</label></td>
+                        <td><label><input type="radio" name="q9" value="5"> 실시간 대시보드</label></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="page-num">1 / 2</div>
+    </div>
+
+    <!-- 2페이지 -->
+    <div class="page">
+        <div class="header">
+            <div>
+                <h1>글로벌 변압기 제조사 벤치마킹 설문</h1>
+                <div style="font-size: 11px; margin-top: 5px; color: #555;">엔지니어링 시스템 현황 조사 (외부 관찰 기반)</div>
+            </div>
+        </div>
+
+        <!-- 섹션 4: 리드타임 (15%) -->
+        <div class="section">
+            <div class="section-title">4. 대응 속도 및 리드타임</div>
+            <div class="sub-guide">* 요청에 대한 응답 속도가 얼마나 빠른지 판단해 주세요.</div>
+
+            <table>
+                <thead>
+                    <tr class="scale-header">
+                        <th>질문</th>
+                        <th>1점 (느림)</th>
+                        <th>2점</th>
+                        <th>3점</th>
+                        <th>4점</th>
+                        <th>5점 (빠름)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="question-row">
+                        <th>Q10. 견적 제출 속도<br><span style="font-weight:normal;font-size:9px;color:#666;">견적 요청 후 얼마나 빨리 받으시나요?</span></th>
+                        <td><label><input type="radio" name="q10" value="1"> 4주 이상</label></td>
+                        <td><label><input type="radio" name="q10" value="2"> 3~4주</label></td>
+                        <td><label><input type="radio" name="q10" value="3"> 2~3주</label></td>
+                        <td><label><input type="radio" name="q10" value="4"> 1~2주</label></td>
+                        <td><label><input type="radio" name="q10" value="5"> 1주 이내</label></td>
+                    </tr>
+                    <tr class="question-row">
+                        <th>Q11. 도면 수정 속도<br><span style="font-weight:normal;font-size:9px;color:#666;">수정 요청하면 얼마나 빨리 반영되나요?</span></th>
+                        <td><label><input type="radio" name="q11" value="1"> 2주 이상</label></td>
+                        <td><label><input type="radio" name="q11" value="2"> 1~2주</label></td>
+                        <td><label><input type="radio" name="q11" value="3"> 4~7일</label></td>
+                        <td><label><input type="radio" name="q11" value="4"> 2~3일</label></td>
+                        <td><label><input type="radio" name="q11" value="5"> 1일 이내</label></td>
+                    </tr>
+                    <tr class="question-row">
+                        <th>Q12. 긴급 변경 대응<br><span style="font-weight:normal;font-size:9px;color:#666;">긴급 설계 변경 요청 시 대응이 빠른가요?</span></th>
+                        <td><label><input type="radio" name="q12" value="1"> 매우 느림</label></td>
+                        <td><label><input type="radio" name="q12" value="2"> 느린 편</label></td>
+                        <td><label><input type="radio" name="q12" value="3"> 보통</label></td>
+                        <td><label><input type="radio" name="q12" value="4"> 빠른 편</label></td>
+                        <td><label><input type="radio" name="q12" value="5"> 즉시 대응</label></td>
+                    </tr>
+                </tbody>
+            </table>
+            <div class="remarks-box">
+                <span>대응 속도 관련 특이사항:</span>
+                <textarea placeholder="응답 시간에 대한 특이 사항이 있으면 적어주세요..."></textarea>
+            </div>
+        </div>
+
+        <!-- 섹션 5: 추가 관찰 -->
+        <div class="section">
+            <div class="section-title">5. 추가 관찰 사항 (선택)</div>
+            <div class="sub-guide">* 엔지니어링 역량을 추가로 판단할 수 있는 관찰 사항</div>
+
+            <table>
+                <thead>
+                    <tr class="scale-header">
+                        <th>질문</th>
+                        <th>1점 (낮음)</th>
+                        <th>2점</th>
+                        <th>3점</th>
+                        <th>4점</th>
+                        <th>5점 (높음)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="question-row">
+                        <th>Q13. 현장 설치 정확도<br><span style="font-weight:normal;font-size:9px;color:#666;">현장에서 부품이 정확하게 맞나요?</span></th>
+                        <td><label><input type="radio" name="q13" value="1"> 문제 많음</label></td>
+                        <td><label><input type="radio" name="q13" value="2"> 종종 문제</label></td>
+                        <td><label><input type="radio" name="q13" value="3"> 사소한 문제</label></td>
+                        <td><label><input type="radio" name="q13" value="4"> 거의 없음</label></td>
+                        <td><label><input type="radio" name="q13" value="5"> 완벽히 맞음</label></td>
+                    </tr>
+                    <tr class="question-row">
+                        <th>Q14. 기술 소통<br><span style="font-weight:normal;font-size:9px;color:#666;">기술적인 논의가 원활하게 되나요?</span></th>
+                        <td><label><input type="radio" name="q14" value="1"> 매우 어려움</label></td>
+                        <td><label><input type="radio" name="q14" value="2"> 자주 지연</label></td>
+                        <td><label><input type="radio" name="q14" value="3"> 보통</label></td>
+                        <td><label><input type="radio" name="q14" value="4"> 대체로 원활</label></td>
+                        <td><label><input type="radio" name="q14" value="5"> 매우 원활</label></td>
+                    </tr>
+                    <tr class="question-row">
+                        <th>Q15. 종합 인상<br><span style="font-weight:normal;font-size:9px;color:#666;">엔지니어링 역량에 대한 전반적인 인상은?</span></th>
+                        <td><label><input type="radio" name="q15" value="1"> 미흡</label></td>
+                        <td><label><input type="radio" name="q15" value="2"> 평균 이하</label></td>
+                        <td><label><input type="radio" name="q15" value="3"> 평균</label></td>
+                        <td><label><input type="radio" name="q15" value="4"> 우수</label></td>
+                        <td><label><input type="radio" name="q15" value="5"> 최우수</label></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- 섹션 6: 종합 의견 -->
+        <div class="section">
+            <div class="section-title">6. 종합 의견</div>
+            <div style="border: 1px solid #ccc; padding: 10px;">
+                <textarea style="width: 100%; height: 80px; border: none; resize: none; font-size: 11px;"
+                    placeholder="해당 제조사의 엔지니어링 역량에 대해 느끼신 점, 강점, 약점, 특이 사항 등을 자유롭게 적어주세요..."></textarea>
+            </div>
+        </div>
+
+
+        <div class="page-num">2 / 2</div>
+    </div>
+
+</body>
+
+</html>
