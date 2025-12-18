@@ -669,7 +669,7 @@ Chrome 인쇄 대화상자에서:
             // IT 시스템 (가중치 20%)
             it_system: {
                 weight: 0.20,
-                items: ['if_method', 'eco', 'pdm', 'bom_mgmt']
+                items: ['if_method', 'pdm', 'bom_mgmt', 'pms', 'eco']
             }
         };
 
@@ -1904,87 +1904,91 @@ Chrome 인쇄 대화상자에서:
                 • <strong>KMS</strong>: 지식관리시스템 - 노하우/기술문서 공유 시스템
             </div>
 
-            <!-- 시스템 보유 현황 테이블 -->
-            <table style="margin-bottom: 8px;">
+            <!-- IT 시스템 통합 테이블 -->
+            <table>
                 <colgroup>
-                    <col style="width: 22%;">
-                    <col style="width: 78%;">
+                    <col style="width: 12%;">
+                    <col style="width: 18%;">
+                    <col style="width: 70%;">
                 </colgroup>
                 <thead>
                     <tr>
-                        <th>시스템 종류</th>
-                        <th>운영 형태 (Check)</th>
+                        <th>구분</th>
+                        <th>항목</th>
+                        <th>운영 수준</th>
                     </tr>
                 </thead>
                 <tbody>
+                    <!-- ERP -->
                     <tr>
-                        <td><strong>ERP</strong><br><span style="font-size:9px;">(전사 자원 관리)</span></td>
+                        <td rowspan="2"><strong>ERP</strong></td>
+                        <td>시스템 종류</td>
                         <td class="left-align">
                             <div class="checkbox-group">
                                 <label><input type="checkbox"> Oracle</label>
                                 <label><input type="checkbox"> SAP</label>
                                 <label><input type="checkbox"> 더존/UniERP</label>
-                                <label><input type="checkbox"> 기타 <input type="text" placeholder="시스템명" style="width: 200px;"></label>
+                                <label><input type="checkbox"> 기타 <input type="text" placeholder="시스템명" style="width: 120px;"></label>
                             </div>
                         </td>
                     </tr>
                     <tr>
-                        <td><strong>PDM / PLM</strong><br><span style="font-size:9px;">(도면/BOM 관리)</span></td>
-                        <td class="left-align">
-                            <div class="checkbox-group">
-                                <label><input type="checkbox"> ERP 내장 기능</label>
-                                <label><input type="checkbox"> 자체 구축</label>
-                                <label><input type="checkbox"> 상용 솔루션</label>
-                                <label><input type="checkbox"> 미사용</label>
-                            </div>
+                        <td>데이터 입력</td>
+                        <td class="left-align" style="font-size:10px;">
+                            <label><input type="radio" name="if_method" value="1"> 100% 수기입력</label>
+                            <label><input type="radio" name="if_method" value="2"> 수기+복사</label>
+                            <label><input type="radio" name="if_method" value="3"> 엑셀 업로드</label>
+                            <label><input type="radio" name="if_method" value="4"> 반자동 전송</label>
+                            <label><input type="radio" name="if_method" value="5"> 완전 자동 연동</label>
+                        </td>
+                    </tr>
+                    <!-- PDM/PLM -->
+                    <tr>
+                        <td rowspan="2"><strong>PDM/PLM</strong></td>
+                        <td>운영 수준</td>
+                        <td class="left-align" style="font-size:10px;">
+                            <label><input type="radio" name="pdm" value="1"> 미사용</label>
+                            <label><input type="radio" name="pdm" value="2"> 공용서버(폴더공유)</label>
+                            <label><input type="radio" name="pdm" value="3"> 자체구축(간이시스템)</label>
+                            <label><input type="radio" name="pdm" value="4"> 상용솔루션(부분도입)</label>
+                            <label><input type="radio" name="pdm" value="5"> 전사통합(PLM연동)</label>
                         </td>
                     </tr>
                     <tr>
-                        <td><strong>PMS</strong><br><span style="font-size:9px;">(프로젝트 관리)</span></td>
-                        <td class="left-align">
-                            <div class="checkbox-group">
-                                <label><input type="checkbox"> ERP 내장 기능</label>
-                                <label><input type="checkbox"> 자체 구축</label>
-                                <label><input type="checkbox"> 상용 솔루션</label>
-                                <label><input type="checkbox"> 미사용</label>
-                            </div>
+                        <td>도면/BOM 관리</td>
+                        <td class="left-align" style="font-size:10px;">
+                            <label><input type="radio" name="bom_mgmt" value="1"> 개인 PC 저장</label>
+                            <label><input type="radio" name="bom_mgmt" value="2"> 공용 폴더</label>
+                            <label><input type="radio" name="bom_mgmt" value="3"> 폴더 체계화</label>
+                            <label><input type="radio" name="bom_mgmt" value="4"> 문서관리시스템</label>
+                            <label><input type="radio" name="bom_mgmt" value="5"> PDM 통합 관리</label>
+                        </td>
+                    </tr>
+                    <!-- PMS -->
+                    <tr>
+                        <td><strong>PMS</strong></td>
+                        <td>운영 수준</td>
+                        <td class="left-align" style="font-size:10px;">
+                            <label><input type="radio" name="pms" value="1"> 미사용</label>
+                            <label><input type="radio" name="pms" value="2"> 엑셀/수기관리</label>
+                            <label><input type="radio" name="pms" value="3"> 자체구축(간이시스템)</label>
+                            <label><input type="radio" name="pms" value="4"> 상용솔루션(부분도입)</label>
+                            <label><input type="radio" name="pms" value="5"> 전사통합(ERP연동)</label>
+                        </td>
+                    </tr>
+                    <!-- 변경관리 -->
+                    <tr>
+                        <td><strong>변경관리</strong></td>
+                        <td>설계 변경 연동</td>
+                        <td class="left-align" style="font-size:9px;">
+                            <label><input type="radio" name="eco" value="1"> 이중작업(각 시스템 별도 수정)</label>
+                            <label><input type="radio" name="eco" value="2"> 수동통보(메일/전화로 알림)</label>
+                            <label><input type="radio" name="eco" value="3"> 변경요청서(문서 결재)</label>
+                            <label><input type="radio" name="eco" value="4"> ECO프로세스(시스템 워크플로우)</label>
+                            <label><input type="radio" name="eco" value="5"> 자동연동(BOM/ERP 자동반영)</label>
                         </td>
                     </tr>
                 </tbody>
-            </table>
-
-            <!-- 데이터 연동 상세 테이블 -->
-            <table>
-                <tr>
-                    <th style="width: 22%;">ERP 입력 방식</th>
-                    <td class="left-align" style="font-size:10px;">
-                        <label><input type="radio" name="if_method" value="1"> 100% 수기입력</label>
-                        <label><input type="radio" name="if_method" value="2"> 수기+복사</label>
-                        <label><input type="radio" name="if_method" value="3"> 엑셀 업로드</label>
-                        <label><input type="radio" name="if_method" value="4"> 반자동 전송</label>
-                        <label><input type="radio" name="if_method" value="5"> 완전 자동 연동</label>
-                    </td>
-                </tr>
-                <tr>
-                    <th>설계 변경 연동<br><span style="font-weight:normal;font-size:8px;">(설계 변경 시 후속 처리)</span></th>
-                    <td class="left-align" style="font-size:9px;">
-                        <label><input type="radio" name="eco" value="1"> 이중작업(각 시스템 별도 수정)</label>
-                        <label><input type="radio" name="eco" value="2"> 수동통보(메일/전화로 알림)</label>
-                        <label><input type="radio" name="eco" value="3"> 변경요청서(문서 결재)</label>
-                        <label><input type="radio" name="eco" value="4"> ECO프로세스(시스템 워크플로우)</label>
-                        <label><input type="radio" name="eco" value="5"> 자동연동(BOM/ERP 자동반영)</label>
-                    </td>
-                </tr>
-                <tr>
-                    <th>도면/BOM 관리</th>
-                    <td class="left-align" style="font-size:10px;">
-                        <label><input type="radio" name="bom_mgmt" value="1"> 개인 PC 저장</label>
-                        <label><input type="radio" name="bom_mgmt" value="2"> 공용 폴더</label>
-                        <label><input type="radio" name="bom_mgmt" value="3"> 폴더 체계화</label>
-                        <label><input type="radio" name="bom_mgmt" value="4"> 문서관리시스템</label>
-                        <label><input type="radio" name="bom_mgmt" value="5"> PDM 통합 관리</label>
-                    </td>
-                </tr>
             </table>
             <div class="remarks-box">
                 <span>※ 비고:</span>
