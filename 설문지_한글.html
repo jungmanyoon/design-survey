@@ -1,0 +1,1974 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>초고압 변압기 엔지니어링 시스템 현황 조사</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap');
+
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+            background-color: #e9ecef;
+            color: #333;
+            margin: 0;
+            padding: 30px;
+            line-height: 1.4;
+        }
+
+        /* 사용 가이드 박스 */
+        .guide-box {
+            width: 210mm;
+            margin: 0 auto 10px auto;
+            padding: 0;
+            text-align: right;
+            box-sizing: border-box;
+        }
+
+        .guide-box button {
+            background-color: #003366;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 13px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .guide-box button:hover {
+            background-color: #002244;
+        }
+
+        /* 페이지 기본 스타일 */
+        .page {
+            width: 210mm;
+            min-height: 297mm;
+            padding: 15mm 18mm;
+            margin: 0 auto 20px auto;
+            background: white;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+            box-sizing: border-box;
+            position: relative;
+        }
+
+        /* 인쇄 모드 설정 - 6페이지 A4 */
+        @media print {
+            @page {
+                size: A4 portrait;
+                margin: 10mm 12mm;
+            }
+
+            * {
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+
+            body {
+                background: none !important;
+                padding: 0 !important;
+                margin: 0 !important;
+            }
+
+            .guide-box {
+                display: none !important;
+            }
+
+            #safariNotice {
+                display: none !important;
+            }
+
+            .page {
+                width: 100% !important;
+                min-height: auto !important;
+                height: auto !important;
+                margin: 0 !important;
+                padding: 8mm 10mm !important;
+                box-shadow: none !important;
+                page-break-after: always !important;
+            }
+
+            .page:last-child {
+                page-break-after: auto !important;
+            }
+
+            /* 공통 인쇄 스타일 */
+            .header {
+                margin-bottom: 12px !important;
+                padding-bottom: 8px !important;
+            }
+            .header h1 {
+                font-size: 14px !important;
+            }
+            .header > div:last-child {
+                font-size: 9px !important;
+            }
+            .section {
+                margin-bottom: 12px !important;
+            }
+            .section-title {
+                font-size: 11px !important;
+                padding: 4px 10px !important;
+                margin-bottom: 6px !important;
+            }
+            .sub-guide {
+                font-size: 8px !important;
+                margin-bottom: 4px !important;
+            }
+            table {
+                font-size: 9px !important;
+                margin-bottom: 8px !important;
+            }
+            th, td {
+                padding: 6px 6px !important;
+                line-height: 1.4 !important;
+            }
+            th {
+                font-size: 9px !important;
+            }
+            label {
+                font-size: 8px !important;
+                margin-right: 3px !important;
+            }
+            input[type="checkbox"],
+            input[type="radio"] {
+                transform: scale(0.85) !important;
+                margin-right: 2px !important;
+            }
+            .remarks-box {
+                margin-top: 10px !important;
+                padding: 8px 10px !important;
+            }
+            .remarks-box span {
+                font-size: 8px !important;
+            }
+            .remarks-box textarea {
+                height: 30px !important;
+                min-height: 30px !important;
+                font-size: 8px !important;
+            }
+            input[type="text"],
+            input[type="number"] {
+                font-size: 8px !important;
+                padding: 2px !important;
+            }
+            .page-num {
+                font-size: 9px !important;
+                bottom: 5mm !important;
+            }
+            textarea.team-name {
+                font-size: 8px !important;
+            }
+            .edit-notice {
+                display: none !important;
+            }
+        }
+
+        /* 헤더 스타일 */
+        .header {
+            border-bottom: 2px solid #003366;
+            padding-bottom: 15px;
+            margin-bottom: 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+        }
+
+        .header h1 {
+            font-size: 18px;
+            color: #003366;
+            margin: 0;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+
+        .section {
+            margin-bottom: 25px;
+        }
+
+        .section-title {
+            font-size: 13px;
+            font-weight: 700;
+            color: #fff;
+            background-color: #003366;
+            padding: 5px 12px;
+            margin-bottom: 8px;
+            display: inline-block;
+            border-radius: 3px;
+        }
+
+        /* 테이블 스타일 */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 11px;
+            margin-bottom: 8px;
+            table-layout: fixed;
+        }
+
+        th,
+        td {
+            border: 1px solid #ccc;
+            padding: 10px 8px;
+            vertical-align: middle;
+            word-break: break-all;
+            line-height: 1.6;
+        }
+
+        th {
+            background-color: #f0f4f8;
+            font-weight: 600;
+            text-align: center;
+            color: #333;
+            white-space: nowrap;
+        }
+
+        td {
+            text-align: center;
+        }
+
+        td.left-align {
+            text-align: left;
+            line-height: 1.5;
+        }
+
+        /* 입력 필드 스타일 */
+        input[type="text"],
+        input[type="number"] {
+            width: 90%;
+            padding: 4px;
+            border: 1px solid #ddd;
+            background-color: #fcfcfc;
+            border-radius: 2px;
+            font-family: inherit;
+            text-align: center;
+            font-size: 11px;
+        }
+
+        input[type="text"]:focus,
+        textarea:focus {
+            background-color: #fff;
+            border-color: #003366;
+            outline: none;
+        }
+
+        td.left-align input[type="text"] {
+            text-align: left;
+        }
+
+        /* 수정 가능한 팀명 입력 필드 */
+        textarea.team-name {
+            font-weight: bold;
+            color: #003366;
+            border: 1px dashed #aaa;
+            background-color: #fffef5;
+            width: 95%;
+            min-height: 20px;
+            resize: vertical;
+            font-family: inherit;
+            font-size: 11px;
+            padding: 4px;
+            text-align: center;
+            line-height: 1.4;
+        }
+        textarea.team-name:focus {
+            border: 1px solid #003366;
+            background-color: #fff;
+        }
+        .edit-notice {
+            color: #ffffff;
+            font-size: 10px;
+            margin-left: 10px;
+            font-weight: normal;
+        }
+
+        /* 체크박스 그룹 */
+        .checkbox-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            justify-content: flex-start;
+        }
+
+        .checkbox-group label {
+            display: inline-flex;
+            align-items: center;
+            cursor: pointer;
+            font-size: 11px;
+        }
+
+        td.left-align label {
+            display: inline-flex;
+            align-items: center;
+            margin-right: 8px;
+            cursor: pointer;
+        }
+
+        input[type="checkbox"],
+        input[type="radio"] {
+            transform: scale(1.1);
+            margin-right: 4px;
+            cursor: pointer;
+        }
+
+        /* 페이지 번호 */
+        .page-num {
+            position: absolute;
+            bottom: 10mm;
+            right: 18mm;
+            font-size: 10px;
+            color: #666;
+        }
+
+        /* 설계 자동화 테이블 전용 스타일 */
+        .automation-table td {
+            padding: 12px 8px;
+            line-height: 2.0;
+        }
+        .automation-table td.left-align label {
+            margin-right: 12px;
+            margin-bottom: 4px;
+        }
+
+        /* 설계 표준화 테이블 전용 스타일 (컴팩트) */
+        .standardization-table td {
+            padding: 4px 5px;
+            line-height: 1.2;
+            font-size: 9px;
+        }
+        .standardization-table td.left-align label {
+            margin-bottom: 0;
+        }
+        .standardization-table td.left-align br {
+            line-height: 0.8;
+        }
+
+        .sub-guide {
+            font-size: 10px;
+            color: #666;
+            margin-bottom: 10px;
+            margin-left: 2px;
+        }
+
+        /* 기타/특이사항 박스 */
+        .remarks-box {
+            background-color: #f9f9f9;
+            border: 1px solid #ddd;
+            padding: 12px 15px;
+            font-size: 11px;
+            color: #555;
+            display: flex;
+            align-items: flex-start;
+            margin-top: 15px;
+        }
+
+        .remarks-box span {
+            font-weight: bold;
+            margin-right: 10px;
+            white-space: nowrap;
+            color: #003366;
+            margin-top: 3px;
+        }
+
+        .remarks-box textarea {
+            flex-grow: 1;
+            border: none;
+            background: transparent;
+            border-bottom: 1px dashed #aaa;
+            text-align: left;
+            padding: 0;
+            font-family: inherit;
+            font-size: 11px;
+            resize: none;
+            height: 45px;
+            line-height: 1.5;
+        }
+
+        /* 페이지 계속 표시 */
+        .page-continue {
+            font-size: 10px;
+            color: #666;
+            font-style: italic;
+            text-align: right;
+            margin-top: 10px;
+        }
+
+        /* ==================== 모바일 반응형 스타일 ==================== */
+        @media screen and (max-width: 768px) {
+            body {
+                padding: 10px;
+                background-color: #f5f5f5;
+            }
+
+            .guide-box {
+                width: 100%;
+                padding: 0 10px;
+                margin-bottom: 15px;
+                display: flex;
+                flex-wrap: wrap;
+                gap: 10px;
+                justify-content: center;
+                text-align: center;
+            }
+
+            .guide-box button {
+                padding: 12px 16px;
+                font-size: 14px;
+                flex: 1;
+                min-width: 140px;
+                max-width: 180px;
+            }
+
+            .page {
+                width: 100%;
+                min-height: auto;
+                padding: 15px;
+                margin: 0 0 15px 0;
+                box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+                border-radius: 8px;
+            }
+
+            .header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+                padding-bottom: 12px;
+                margin-bottom: 15px;
+            }
+
+            .header h1 {
+                font-size: 16px;
+                line-height: 1.3;
+            }
+
+            .header > div:last-child {
+                width: 100%;
+                text-align: left;
+            }
+
+            .header input[type="text"] {
+                width: 120px !important;
+            }
+
+            .section-title {
+                font-size: 12px;
+                padding: 6px 10px;
+                display: block;
+                text-align: center;
+            }
+
+            .sub-guide {
+                font-size: 11px;
+                line-height: 1.5;
+            }
+
+            /* 테이블 반응형 */
+            table {
+                font-size: 10px;
+                display: block;
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+            }
+
+            thead, tbody, tr {
+                display: table;
+                width: 100%;
+                table-layout: fixed;
+            }
+
+            th, td {
+                padding: 8px 5px;
+                word-break: keep-all;
+            }
+
+            /* 자동화 테이블 모바일 */
+            .automation-table td.left-align {
+                line-height: 1.8;
+            }
+
+            .automation-table td.left-align label {
+                display: block;
+                margin: 4px 0;
+                padding: 6px 8px;
+                background: #f9f9f9;
+                border-radius: 4px;
+            }
+
+            /* 표준화 테이블 모바일 */
+            .standardization-table {
+                font-size: 9px;
+            }
+
+            .standardization-table td.left-align label {
+                display: block;
+                margin: 2px 0;
+                padding: 4px 6px;
+                background: #f9f9f9;
+                border-radius: 3px;
+            }
+
+            /* 라디오/체크박스 모바일 */
+            input[type="checkbox"],
+            input[type="radio"] {
+                transform: scale(1.3);
+                margin-right: 8px;
+            }
+
+            label {
+                font-size: 11px;
+                padding: 4px 0;
+            }
+
+            /* 입력 필드 모바일 */
+            input[type="text"],
+            input[type="number"] {
+                font-size: 14px;
+                padding: 8px;
+                width: 100%;
+                box-sizing: border-box;
+            }
+
+            textarea.team-name {
+                font-size: 12px;
+                min-height: 40px;
+            }
+
+            .remarks-box {
+                flex-direction: column;
+                padding: 10px;
+            }
+
+            .remarks-box span {
+                margin-bottom: 8px;
+            }
+
+            .remarks-box textarea {
+                height: 60px;
+                font-size: 12px;
+            }
+
+            /* 체크박스 그룹 모바일 */
+            .checkbox-group {
+                flex-direction: column;
+                gap: 6px;
+            }
+
+            .checkbox-group label {
+                padding: 8px;
+                background: #f9f9f9;
+                border-radius: 4px;
+            }
+
+            /* 페이지 번호 숨김 (모바일) */
+            .page-num {
+                display: none;
+            }
+        }
+
+        /* 태블릿 스타일 (768px ~ 1024px) */
+        @media screen and (min-width: 769px) and (max-width: 1024px) {
+            body {
+                padding: 20px;
+            }
+
+            .page {
+                width: 100%;
+                max-width: 210mm;
+                padding: 20mm 15mm;
+            }
+
+            .guide-box {
+                width: 100%;
+                max-width: 210mm;
+            }
+        }
+
+    </style>
+    <script>
+        // 모바일 기기 감지
+        function isMobile() {
+            return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
+                   || window.innerWidth <= 768;
+        }
+
+        function printPage() {
+            if (isMobile()) {
+                // 모바일: 안내 메시지 표시
+                const msg = `📱 모바일 PDF 저장 방법
+
+[iPhone/iPad - Safari]
+1. 하단 "공유" 버튼 (□↑) 터치
+2. "프린트" 선택
+3. 미리보기를 두 손가락으로 확대(pinch out)
+4. 다시 "공유" → "파일에 저장"
+
+[Android - Chrome]
+1. 우측 상단 메뉴(⋮) 터치
+2. "공유" → "인쇄" 선택
+3. 프린터를 "PDF로 저장" 선택
+4. 저장 버튼 터치
+
+※ PC에서 작성하시면 더 편리합니다.`;
+                alert(msg);
+            } else {
+                // PC: 기존 방식
+                const msg = `📄 PDF 저장 설정 안내
+
+Chrome 인쇄 대화상자에서:
+✓ 대상: PDF로 저장
+✓ 여백: 기본값 또는 최소
+✓ 배경 그래픽: 체크
+✓ 머리글/바닥글: 체크 해제
+
+※ 5페이지로 출력됩니다.`;
+
+                if (confirm(msg + '\n\n계속하시겠습니까?')) {
+                    window.print();
+                }
+            }
+        }
+
+        // ==================== 점수 계산 시스템 ====================
+
+        // 카테고리별 라디오 버튼 그룹 정의
+        const scoreConfig = {
+            // 설계 자동화 (가중치 40%)
+            automation: {
+                weight: 0.40,
+                items: ['auto_elec', 'auto_fea', 'auto_wind', 'auto_core', 'auto_ap', 'auto_tank', 'auto_approval', 'auto_mech']
+            },
+            // 설계 표준화 (가중치 25%)
+            standardization: {
+                weight: 0.25,
+                items: [
+                    'manual_elec', 'check_elec', 'lib_elec', 'eco_elec',
+                    'manual_wind', 'check_wind', 'lib_wind', 'eco_wind',
+                    'manual_core', 'check_core', 'lib_core', 'eco_core',
+                    'manual_ap', 'check_ap', 'lib_ap', 'eco_ap',
+                    'manual_tank', 'check_tank', 'lib_tank', 'eco_tank',
+                    'std_lv', 'std_mgmt', 'review', 'history'
+                ],
+                naCheckboxes: [
+                    'na_manual_elec', 'na_check_elec', 'na_lib_elec', 'na_eco_elec',
+                    'na_manual_wind', 'na_check_wind', 'na_lib_wind', 'na_eco_wind',
+                    'na_manual_core', 'na_check_core', 'na_lib_core', 'na_eco_core',
+                    'na_manual_ap', 'na_check_ap', 'na_lib_ap', 'na_eco_ap',
+                    'na_manual_tank', 'na_check_tank', 'na_lib_tank', 'na_eco_tank'
+                ]
+            },
+            // 설계 리드타임 (가중치 15%)
+            leadtime: {
+                weight: 0.15,
+                items: ['lt_elec', 'lt_winding', 'lt_core', 'lt_activepart', 'lt_tank', 'lt_total']
+            },
+            // IT 시스템 (가중치 20%)
+            it_system: {
+                weight: 0.20,
+                items: ['if_method', 'eco', 'pdm', 'bom_mgmt']
+            }
+        };
+
+        // 카테고리별 점수 계산
+        function calculateCategoryScore(category) {
+            const config = scoreConfig[category];
+            let totalScore = 0;
+            let answeredCount = 0;
+
+            config.items.forEach(function(itemName) {
+                const checked = document.querySelector('input[name="' + itemName + '"]:checked');
+                if (checked) {
+                    totalScore += parseInt(checked.value);
+                    answeredCount++;
+                } else {
+                    // 해당없음 체크박스 확인
+                    const naCheckbox = document.querySelector('input[name="na_' + itemName + '"]');
+                    if (naCheckbox && naCheckbox.checked) {
+                        totalScore += 1; // 해당없음 = 1점
+                        answeredCount++;
+                    }
+                }
+            });
+
+            if (answeredCount === 0) return { avg: 0, count: 0, total: config.items.length };
+            return {
+                avg: totalScore / answeredCount,
+                count: answeredCount,
+                total: config.items.length
+            };
+        }
+
+        // DCI 계산 및 표시
+        function calculateDCI() {
+            const auto = calculateCategoryScore('automation');
+            const std = calculateCategoryScore('standardization');
+            const lt = calculateCategoryScore('leadtime');
+            const it = calculateCategoryScore('it_system');
+
+            // DCI 계산 (응답한 항목만으로 계산)
+            let dci = 0;
+            let weightSum = 0;
+
+            if (auto.count > 0) {
+                dci += auto.avg * scoreConfig.automation.weight;
+                weightSum += scoreConfig.automation.weight;
+            }
+            if (std.count > 0) {
+                dci += std.avg * scoreConfig.standardization.weight;
+                weightSum += scoreConfig.standardization.weight;
+            }
+            if (lt.count > 0) {
+                dci += lt.avg * scoreConfig.leadtime.weight;
+                weightSum += scoreConfig.leadtime.weight;
+            }
+            if (it.count > 0) {
+                dci += it.avg * scoreConfig.it_system.weight;
+                weightSum += scoreConfig.it_system.weight;
+            }
+
+            // 가중치 정규화
+            if (weightSum > 0) {
+                dci = dci / weightSum * (scoreConfig.automation.weight + scoreConfig.standardization.weight +
+                       scoreConfig.leadtime.weight + scoreConfig.it_system.weight);
+            }
+
+            return dci;
+        }
+
+        // ==================== 결과 저장 (JSON 내보내기) ====================
+
+        function exportResults() {
+            const result = {
+                meta: {
+                    surveyTitle: '초고압 변압기 엔지니어링 시스템 현황 조사',
+                    exportDate: new Date().toISOString(),
+                    exportDateKR: new Date().toLocaleString('ko-KR')
+                },
+                companyInfo: {
+                    surveyDate: document.querySelector('input[placeholder="2025.12.XX"]')?.value || '',
+                    companyName: document.querySelector('input[placeholder="기업명"]')?.value || ''
+                },
+                scores: {
+                    automation: calculateCategoryScore('automation'),
+                    standardization: calculateCategoryScore('standardization'),
+                    leadtime: calculateCategoryScore('leadtime'),
+                    it_system: calculateCategoryScore('it_system'),
+                    dci: calculateDCI()
+                },
+                responses: {}
+            };
+
+            // 모든 라디오 버튼 응답 수집
+            const allRadios = document.querySelectorAll('input[type="radio"]:checked');
+            allRadios.forEach(function(radio) {
+                result.responses[radio.name] = {
+                    value: parseInt(radio.value),
+                    label: radio.parentElement.textContent.trim()
+                };
+            });
+
+            // 해당없음 체크박스 수집
+            const naCheckboxes = document.querySelectorAll('.na-checkbox:checked');
+            naCheckboxes.forEach(function(cb) {
+                result.responses[cb.name] = {
+                    value: 1,
+                    label: '해당없음'
+                };
+            });
+
+            // 체크박스 (자동 생성 결과물, IT 시스템 등) 수집
+            const checkboxGroups = {};
+            const allCheckboxes = document.querySelectorAll('input[type="checkbox"]:checked:not(.na-checkbox)');
+            allCheckboxes.forEach(function(cb) {
+                const label = cb.parentElement.textContent.trim();
+                const section = cb.closest('tr')?.querySelector('td:first-child strong')?.textContent || 'general';
+                if (!checkboxGroups[section]) checkboxGroups[section] = [];
+                checkboxGroups[section].push(label);
+            });
+            result.checkboxResponses = checkboxGroups;
+
+            // 텍스트 입력 수집
+            result.textInputs = {};
+            const textInputs = document.querySelectorAll('input[type="text"]');
+            textInputs.forEach(function(input, idx) {
+                if (input.value) {
+                    const placeholder = input.placeholder || 'input_' + idx;
+                    result.textInputs[placeholder] = input.value;
+                }
+            });
+
+            // 숫자 입력 (인원 수) 수집
+            result.staffCounts = {};
+            const teamNames = document.querySelectorAll('textarea.team-name');
+            teamNames.forEach(function(textarea) {
+                const row = textarea.closest('tr');
+                if (row) {
+                    const numbers = row.querySelectorAll('input[type="number"]');
+                    const teamName = textarea.value.trim() || textarea.placeholder;
+                    if (numbers.length >= 2) {
+                        const internal = numbers[0].value ? parseInt(numbers[0].value) : 0;
+                        const external = numbers[1].value ? parseInt(numbers[1].value) : 0;
+                        if (internal > 0 || external > 0) {
+                            result.staffCounts[teamName] = { internal, external };
+                        }
+                    }
+                }
+            });
+
+            // 비고/특이사항 수집
+            result.remarks = [];
+            const textareas = document.querySelectorAll('.remarks-box textarea, .section textarea:not(.team-name)');
+            textareas.forEach(function(ta) {
+                if (ta.value.trim()) {
+                    result.remarks.push(ta.value.trim());
+                }
+            });
+
+            // JSON 파일 다운로드
+            const companyName = result.companyInfo.companyName || '미입력';
+            const dateStr = new Date().toISOString().slice(0, 10);
+            const filename = `설문결과_${companyName}_${dateStr}.json`;
+            const jsonString = JSON.stringify(result, null, 2);
+
+            if (isMobile()) {
+                // 모바일: Web Share API 또는 복사 모달 사용
+                if (navigator.share && navigator.canShare) {
+                    // Web Share API 지원 시 (주로 Android)
+                    const blob = new Blob([jsonString], { type: 'application/json' });
+                    const file = new File([blob], filename, { type: 'application/json' });
+
+                    if (navigator.canShare({ files: [file] })) {
+                        navigator.share({
+                            title: '설문 결과',
+                            text: `DCI 점수: ${result.scores.dci.toFixed(2)}점`,
+                            files: [file]
+                        }).then(() => {
+                            alert('✅ 공유가 완료되었습니다.');
+                        }).catch((err) => {
+                            // 공유 취소 또는 실패 시 복사 모달 표시
+                            showCopyModal(jsonString, result.scores.dci, companyName);
+                        });
+                        return;
+                    }
+                }
+                // Web Share API 미지원 시 복사 모달 표시
+                showCopyModal(jsonString, result.scores.dci, companyName);
+            } else {
+                // PC: 기존 방식 (파일 다운로드)
+                const blob = new Blob([jsonString], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = filename;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+
+                alert(`✅ 설문 결과가 저장되었습니다.\n\n파일명: ${filename}\n\nDCI 점수: ${result.scores.dci.toFixed(2)}점\n\n이 파일을 분석 담당자에게 이메일로 전송해 주세요.`);
+            }
+        }
+
+        // 모바일용 복사 모달 표시
+        function showCopyModal(jsonString, dciScore, companyName) {
+            // 기존 모달 제거
+            const existingModal = document.getElementById('copyModal');
+            if (existingModal) existingModal.remove();
+
+            // 모달 생성
+            const modal = document.createElement('div');
+            modal.id = 'copyModal';
+            modal.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: rgba(0,0,0,0.8);
+                z-index: 10000;
+                display: flex;
+                flex-direction: column;
+                padding: 20px;
+                box-sizing: border-box;
+            `;
+
+            modal.innerHTML = `
+                <div style="background: white; border-radius: 10px; padding: 20px; max-height: 90vh; display: flex; flex-direction: column;">
+                    <h3 style="margin: 0 0 10px 0; color: #003366; font-size: 16px;">📋 설문 결과 (DCI: ${dciScore.toFixed(2)}점)</h3>
+                    <p style="margin: 0 0 10px 0; font-size: 12px; color: #666;">
+                        아래 내용을 <strong>전체 선택 → 복사</strong>하여<br>
+                        이메일 또는 메모장에 붙여넣기 하세요.
+                    </p>
+                    <textarea id="jsonTextarea" readonly style="
+                        flex: 1;
+                        min-height: 200px;
+                        font-family: monospace;
+                        font-size: 10px;
+                        padding: 10px;
+                        border: 1px solid #ddd;
+                        border-radius: 5px;
+                        resize: none;
+                        background: #f9f9f9;
+                    ">${jsonString}</textarea>
+                    <div style="display: flex; gap: 10px; margin-top: 15px;">
+                        <button onclick="copyToClipboard()" style="
+                            flex: 1;
+                            padding: 12px;
+                            background: #003366;
+                            color: white;
+                            border: none;
+                            border-radius: 5px;
+                            font-size: 14px;
+                            font-weight: bold;
+                            cursor: pointer;
+                        ">📋 복사하기</button>
+                        <button onclick="sendEmail('${companyName}', ${dciScore.toFixed(2)})" style="
+                            flex: 1;
+                            padding: 12px;
+                            background: #28a745;
+                            color: white;
+                            border: none;
+                            border-radius: 5px;
+                            font-size: 14px;
+                            font-weight: bold;
+                            cursor: pointer;
+                        ">📧 이메일 전송</button>
+                    </div>
+                    <button onclick="closeModal()" style="
+                        margin-top: 10px;
+                        padding: 10px;
+                        background: #6c757d;
+                        color: white;
+                        border: none;
+                        border-radius: 5px;
+                        font-size: 14px;
+                        cursor: pointer;
+                    ">닫기</button>
+                </div>
+            `;
+
+            document.body.appendChild(modal);
+
+            // 텍스트 영역 자동 선택
+            setTimeout(() => {
+                const textarea = document.getElementById('jsonTextarea');
+                textarea.focus();
+                textarea.select();
+            }, 100);
+        }
+
+        // 클립보드 복사
+        function copyToClipboard() {
+            const textarea = document.getElementById('jsonTextarea');
+            textarea.select();
+            textarea.setSelectionRange(0, 99999); // 모바일용
+
+            try {
+                if (navigator.clipboard && navigator.clipboard.writeText) {
+                    navigator.clipboard.writeText(textarea.value).then(() => {
+                        alert('✅ 복사되었습니다!\n\n이메일에 붙여넣기 하세요.');
+                    });
+                } else {
+                    document.execCommand('copy');
+                    alert('✅ 복사되었습니다!\n\n이메일에 붙여넣기 하세요.');
+                }
+            } catch (err) {
+                alert('복사에 실패했습니다.\n텍스트를 직접 선택하여 복사해 주세요.');
+            }
+        }
+
+        // 이메일 전송 (mailto)
+        function sendEmail(companyName, dciScore) {
+            const textarea = document.getElementById('jsonTextarea');
+            const subject = encodeURIComponent(`[설문결과] ${companyName} - DCI ${dciScore}점`);
+            const body = encodeURIComponent(`설문 결과를 첨부합니다.\n\n기업명: ${companyName}\nDCI 점수: ${dciScore}점\n\n--- 설문 데이터 (JSON) ---\n\n` + textarea.value);
+
+            // mailto 링크 열기
+            window.location.href = `mailto:?subject=${subject}&body=${body}`;
+        }
+
+        // 모달 닫기
+        function closeModal() {
+            const modal = document.getElementById('copyModal');
+            if (modal) modal.remove();
+        }
+
+        // ==================== 초기화 ====================
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // 인앱 브라우저 감지 (카카오톡, 이메일 앱 등)
+            function isInAppBrowser() {
+                const ua = navigator.userAgent || navigator.vendor || window.opera;
+                // 카카오톡, 라인, 페이스북, 인스타그램, 네이버, 이메일 앱 등
+                return /KAKAOTALK|Line|FBAN|FBAV|Instagram|NAVER|Whale|GSA/i.test(ua);
+            }
+
+            // iOS 감지
+            function isIOS() {
+                return /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+            }
+
+            // 인앱 브라우저이고 iOS면 안내 표시
+            if (isIOS() && (isInAppBrowser() || !navigator.standalone)) {
+                const notice = document.getElementById('safariNotice');
+                if (notice) notice.style.display = 'block';
+            }
+
+            // 버튼 이벤트 연결 (터치 + 클릭 모두 지원)
+            const btnExport = document.getElementById('btnExport');
+            const btnPrint = document.getElementById('btnPrint');
+
+            if (btnExport) {
+                btnExport.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    this.style.opacity = '0.5';
+                    setTimeout(() => { this.style.opacity = '1'; }, 200);
+                    try {
+                        exportResults();
+                    } catch(err) {
+                        alert('오류 발생: ' + err.message);
+                    }
+                });
+            }
+
+            if (btnPrint) {
+                btnPrint.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    this.style.opacity = '0.5';
+                    setTimeout(() => { this.style.opacity = '1'; }, 200);
+                    try {
+                        printPage();
+                    } catch(err) {
+                        alert('오류 발생: ' + err.message);
+                    }
+                });
+            }
+
+            // 라디오 버튼 선택 취소 기능
+            const radios = document.querySelectorAll('input[type="radio"]');
+            radios.forEach(function(radio) {
+                radio.addEventListener('click', function(e) {
+                    // 이전에 체크되어 있었는지 확인
+                    if (this.dataset.wasChecked === 'true') {
+                        this.checked = false;
+                        this.dataset.wasChecked = 'false';
+                    } else {
+                        // 같은 그룹의 다른 라디오 버튼들의 상태 초기화
+                        const groupName = this.name;
+                        document.querySelectorAll('input[name="' + groupName + '"]').forEach(function(r) {
+                            r.dataset.wasChecked = 'false';
+                        });
+                        this.dataset.wasChecked = 'true';
+                    }
+                });
+            });
+
+            // 해당없음 체크박스 기능
+            const naCheckboxes = document.querySelectorAll('.na-checkbox');
+            naCheckboxes.forEach(function(checkbox) {
+                checkbox.addEventListener('change', function() {
+                    const targetName = this.dataset.target;
+                    const targetRadios = document.querySelectorAll('input[name="' + targetName + '"]');
+
+                    if (this.checked) {
+                        // 해당없음 선택 시: 라디오 버튼 비활성화 및 선택 해제
+                        targetRadios.forEach(function(radio) {
+                            radio.checked = false;
+                            radio.disabled = true;
+                            radio.dataset.wasChecked = 'false';
+                            radio.parentElement.style.opacity = '0.5';
+                        });
+                    } else {
+                        // 해당없음 해제 시: 라디오 버튼 활성화
+                        targetRadios.forEach(function(radio) {
+                            radio.disabled = false;
+                            radio.parentElement.style.opacity = '1';
+                        });
+                    }
+                });
+            });
+        });
+    </script>
+</head>
+
+<body>
+
+    <!-- 가이드 박스 -->
+    <div class="guide-box">
+        <button id="btnExport" type="button">💾 결과 저장</button>
+        <button id="btnPrint" type="button">🖨️ PDF 저장 / 인쇄</button>
+    </div>
+
+    <!-- iPhone Safari 안내 (인앱 브라우저에서 열릴 경우) -->
+    <div id="safariNotice" style="display:none; background:#fff3cd; border:1px solid #ffc107; padding:12px 15px; margin:0 auto 10px; max-width:210mm; border-radius:5px; font-size:12px; text-align:center;">
+        ⚠️ <strong>iPhone 사용자:</strong> 버튼이 작동하지 않으면 <br>
+        <span style="color:#0066cc;">Safari에서 열기</span>를 선택해 주세요. <button onclick="this.parentElement.style.display='none'" style="margin-left:10px; padding:3px 8px; font-size:11px;">닫기</button>
+    </div>
+
+    <!-- ==================== 1페이지: 조직 구성 ==================== -->
+    <div class="page">
+
+        <div class="header">
+            <div>
+                <h1>초고압 변압기 엔지니어링 시스템 운영 현황 조사</h1>
+                <div style="font-size: 12px; margin-top: 5px; color: #555;">Part 1. Engineering Organization</div>
+            </div>
+            <div style="text-align: right; font-size: 11px;">
+                조사 일자: <input type="text" style="width: 80px; display:inline;" placeholder="2025.12.XX"><br>
+                응답 기업: <input type="text" style="width: 80px; display:inline;" placeholder="기업명">
+            </div>
+        </div>
+
+        <!-- 1. 조직 구성 개요 -->
+        <div class="section">
+            <div class="section-title">1. 엔지니어링 조직 구성 (Engineering Organization)<span class="edit-notice">※ 팀명은 귀사에 맞게 수정 가능합니다</span></div>
+            <div class="sub-guide">
+                * <strong>자체:</strong> 우리 회사 직원(정규직 등), <strong>외주:</strong> 협력사, 파견직 등 외부 인원
+            </div>
+            <table>
+                <colgroup>
+                    <col style="width: 20%;">
+                    <col style="width: 15%;">
+                    <col style="width: 15%;">
+                    <col style="width: 20%;">
+                    <col style="width: 15%;">
+                    <col style="width: 15%;">
+                </colgroup>
+                <thead>
+                    <tr>
+                        <th>팀 구분</th>
+                        <th>자체 (명)</th>
+                        <th>외주 (명)</th>
+                        <th>팀 구분</th>
+                        <th>자체 (명)</th>
+                        <th>외주 (명)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><textarea class="team-name" rows="1">기본 설계팀</textarea></td>
+                        <td><input type="number"></td>
+                        <td><input type="number"></td>
+                        <td><textarea class="team-name" rows="1">전기 설계팀</textarea></td>
+                        <td><input type="number"></td>
+                        <td><input type="number"></td>
+                    </tr>
+                    <tr>
+                        <td><textarea class="team-name" rows="2">전기 구조팀
+(중신, 단철, 단자)</textarea></td>
+                        <td><input type="number"></td>
+                        <td><input type="number"></td>
+                        <td><textarea class="team-name" rows="2">기계 구조팀
+(외함, 탱크)</textarea></td>
+                        <td><input type="number"></td>
+                        <td><input type="number"></td>
+                    </tr>
+                    <tr>
+                        <td><textarea class="team-name" rows="1">제어반/판넬팀</textarea></td>
+                        <td><input type="number"></td>
+                        <td><input type="number"></td>
+                        <td><textarea class="team-name" rows="1">견적팀</textarea></td>
+                        <td><input type="number"></td>
+                        <td><input type="number"></td>
+                    </tr>
+                    <tr>
+                        <td><textarea class="team-name" rows="1">PM팀</textarea></td>
+                        <td><input type="number"></td>
+                        <td><input type="number"></td>
+                        <td><textarea class="team-name" rows="1">개발팀</textarea></td>
+                        <td><input type="number"></td>
+                        <td><input type="number"></td>
+                    </tr>
+                    <tr>
+                        <td><textarea class="team-name" rows="1">전산/시스템/자동화팀</textarea></td>
+                        <td><input type="number"></td>
+                        <td><input type="number"></td>
+                        <td><textarea class="team-name" rows="1" placeholder="기타 팀 1"></textarea></td>
+                        <td><input type="number"></td>
+                        <td><input type="number"></td>
+                    </tr>
+                    <tr>
+                        <td><textarea class="team-name" rows="1" placeholder="기타 팀 2"></textarea></td>
+                        <td><input type="number"></td>
+                        <td><input type="number"></td>
+                        <td><textarea class="team-name" rows="1" placeholder="기타 팀 3"></textarea></td>
+                        <td><input type="number"></td>
+                        <td><input type="number"></td>
+                    </tr>
+                </tbody>
+            </table>
+            <div class="remarks-box">
+                <span>※ 비고 / 특이사항:</span>
+                <textarea placeholder="조직 운영상의 특이사항이나 향후 개편 계획 등이 있다면 기재해 주세요."></textarea>
+            </div>
+        </div>
+
+        <!-- 1-1. 외주 활용 상세 -->
+        <div class="section">
+            <div class="section-title">1-1. 외주 설계 활용 현황 (Outsourcing)</div>
+            <div class="sub-guide">* 협력 업체가 어떤 일을 어떻게 도와주고 있는지 적어주세요.</div>
+            <table>
+                <colgroup>
+                    <col style="width: 20%;">
+                    <col style="width: 25%;">
+                    <col style="width: 30%;">
+                    <col style="width: 25%;">
+                </colgroup>
+                <thead>
+                    <tr>
+                        <th>협력 업체명</th>
+                        <th>맡기는 업무 (분야)</th>
+                        <th>업무 범위 (단순도면 / 상세설계)</th>
+                        <th>품질 검사 / 소통 방법</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><input type="text" placeholder="업체 A"></td>
+                        <td><input type="text" placeholder="예: 구조물, 제어반 등"></td>
+                        <td><input type="text" placeholder="예: 상세설계, 도면작성"></td>
+                        <td><input type="text" placeholder="예: 주간 회의, 체크리스트"></td>
+                    </tr>
+                    <tr>
+                        <td><input type="text" placeholder="업체 B"></td>
+                        <td><input type="text" placeholder=""></td>
+                        <td><input type="text" placeholder=""></td>
+                        <td><input type="text" placeholder=""></td>
+                    </tr>
+                    <tr>
+                        <td><input type="text" placeholder="업체 C"></td>
+                        <td><input type="text" placeholder=""></td>
+                        <td><input type="text" placeholder=""></td>
+                        <td><input type="text" placeholder=""></td>
+                    </tr>
+                    <tr>
+                        <td><input type="text" placeholder="업체 D"></td>
+                        <td><input type="text" placeholder=""></td>
+                        <td><input type="text" placeholder=""></td>
+                        <td><input type="text" placeholder=""></td>
+                    </tr>
+                    <tr>
+                        <td><input type="text" placeholder="업체 E"></td>
+                        <td><input type="text" placeholder=""></td>
+                        <td><input type="text" placeholder=""></td>
+                        <td><input type="text" placeholder=""></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="page-num">1 / 5</div>
+    </div>
+
+    <!-- ==================== 2페이지: 설계 자동화 (전체) ==================== -->
+    <div class="page">
+
+        <div class="header">
+            <div>
+                <h1>초고압 변압기 엔지니어링 시스템 운영 현황 조사</h1>
+                <div style="font-size: 12px; margin-top: 5px; color: #555;">Part 2. Design Automation</div>
+            </div>
+        </div>
+
+        <!-- 2. 설계 자동화 심층 분석 -->
+        <div class="section">
+            <div class="section-title">2. 설계 자동화 시스템 현황 (Design Automation)</div>
+            <div class="sub-guide">* 설계할 때 컴퓨터가 자동으로 해주는 부분이 어디까지인지 체크해 주세요.</div>
+
+            <table style="margin-top: 5px; font-size: 10px;" class="automation-table">
+                <thead>
+                    <tr>
+                        <th style="width: 12%;">부품 구분</th>
+                        <th style="width: 50%;">자동화 수준 (5점 척도)</th>
+                        <th style="width: 38%;">자동 생성 결과물</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- 전기설계 -->
+                    <tr>
+                        <td><strong>전기설계</strong></td>
+                        <td class="left-align">
+                            <label><input type="radio" name="auto_elec" value="1"> 수계산(수동)</label>
+                            <label><input type="radio" name="auto_elec" value="2"> Excel(보조)</label>
+                            <label><input type="radio" name="auto_elec" value="3"> 전용S/W(입력)</label>
+                            <label><input type="radio" name="auto_elec" value="4"> 전용S/W(반자동)</label>
+                            <label><input type="radio" name="auto_elec" value="5"> 전용S/W(자동)</label>
+                        </td>
+                        <td class="left-align">
+                            <label><input type="checkbox"> 전기계산지</label>
+                            <label><input type="checkbox"> 절연설계검토서</label>
+                            <label><input type="checkbox"> 단락검토서</label>
+                        </td>
+                    </tr>
+                    <!-- 전계해석 -->
+                    <tr>
+                        <td><strong>전계해석</strong></td>
+                        <td class="left-align">
+                            <label><input type="radio" name="auto_fea" value="1"> 미수행</label>
+                            <label><input type="radio" name="auto_fea" value="2"> 필요시(수동)</label>
+                            <label><input type="radio" name="auto_fea" value="3"> 전건(수동)</label>
+                            <label><input type="radio" name="auto_fea" value="4"> 설계연동(반자동)</label>
+                            <label><input type="radio" name="auto_fea" value="5"> 설계연동(자동)</label>
+                        </td>
+                        <td class="left-align">
+                            <label><input type="checkbox"> 전계분포도</label>
+                            <label><input type="checkbox"> 해석보고서</label>
+                        </td>
+                    </tr>
+                    <!-- 권선 -->
+                    <tr>
+                        <td><strong>권선</strong></td>
+                        <td class="left-align">
+                            <label><input type="radio" name="auto_wind" value="1"> 수작업(수동)</label>
+                            <label><input type="radio" name="auto_wind" value="2"> Lib일부(보조)</label>
+                            <label><input type="radio" name="auto_wind" value="3"> 치수입력(반수동)</label>
+                            <label><input type="radio" name="auto_wind" value="4"> 파라메트릭(반자동)</label>
+                            <label><input type="radio" name="auto_wind" value="5"> 완전자동</label>
+                        </td>
+                        <td class="left-align">
+                            <label><input type="checkbox"> 3D모델</label>
+                            <label><input type="checkbox"> 2D도면</label>
+                            <label><input type="checkbox"> 3D Draft</label>
+                            <label><input type="checkbox"> 자재표</label>
+                        </td>
+                    </tr>
+                    <!-- 철심/클램프 -->
+                    <tr>
+                        <td><strong>철심/클램프</strong></td>
+                        <td class="left-align">
+                            <label><input type="radio" name="auto_core" value="1"> 수작업(수동)</label>
+                            <label><input type="radio" name="auto_core" value="2"> Lib일부(보조)</label>
+                            <label><input type="radio" name="auto_core" value="3"> Lib조립(반수동)</label>
+                            <label><input type="radio" name="auto_core" value="4"> 규칙기반(반자동)</label>
+                            <label><input type="radio" name="auto_core" value="5"> 완전자동</label>
+                        </td>
+                        <td class="left-align">
+                            <label><input type="checkbox"> 3D모델</label>
+                            <label><input type="checkbox"> 2D도면</label>
+                            <label><input type="checkbox"> 3D Draft</label>
+                            <label><input type="checkbox"> 자재BOM</label>
+                        </td>
+                    </tr>
+                    <!-- 중신/리드 -->
+                    <tr>
+                        <td><strong>중신/리드</strong></td>
+                        <td class="left-align">
+                            <label><input type="radio" name="auto_ap" value="1"> 수작업(수동)</label>
+                            <label><input type="radio" name="auto_ap" value="2"> 참조도면(보조)</label>
+                            <label><input type="radio" name="auto_ap" value="3"> Lib조립(반수동)</label>
+                            <label><input type="radio" name="auto_ap" value="4"> 리드자동(반자동)</label>
+                            <label><input type="radio" name="auto_ap" value="5"> 완전자동</label>
+                        </td>
+                        <td class="left-align">
+                            <label><input type="checkbox"> 3D모델</label>
+                            <label><input type="checkbox"> 2D도면</label>
+                            <label><input type="checkbox"> 3D Draft</label>
+                            <label><input type="checkbox"> 치수표</label>
+                            <label><input type="checkbox"> 자재표</label>
+                        </td>
+                    </tr>
+                    <!-- 외함/탱크 -->
+                    <tr>
+                        <td><strong>외함/탱크</strong></td>
+                        <td class="left-align">
+                            <label><input type="radio" name="auto_tank" value="1"> 수작업(수동)</label>
+                            <label><input type="radio" name="auto_tank" value="2"> 표준복사(보조)</label>
+                            <label><input type="radio" name="auto_tank" value="3"> Lib조립(반수동)</label>
+                            <label><input type="radio" name="auto_tank" value="4"> 치수변동(반자동)</label>
+                            <label><input type="radio" name="auto_tank" value="5"> 완전자동</label>
+                        </td>
+                        <td class="left-align">
+                            <label><input type="checkbox"> 3D모델</label>
+                            <label><input type="checkbox"> 2D도면</label>
+                            <label><input type="checkbox"> 3D Draft</label>
+                            <label><input type="checkbox"> 용접BOM</label>
+                        </td>
+                    </tr>
+                    <!-- 승인도면 -->
+                    <tr>
+                        <td><strong>승인도면</strong></td>
+                        <td class="left-align">
+                            <label><input type="radio" name="auto_approval" value="1"> 수작업(수동)</label>
+                            <label><input type="radio" name="auto_approval" value="2"> 표준복사(보조)</label>
+                            <label><input type="radio" name="auto_approval" value="3"> Lib조립(반수동)</label>
+                            <label><input type="radio" name="auto_approval" value="4"> 치수변동(반자동)</label>
+                            <label><input type="radio" name="auto_approval" value="5"> 완전자동</label>
+                        </td>
+                        <td class="left-align">
+                            <label><input type="checkbox"> 3D모델</label>
+                            <label><input type="checkbox"> 2D도면</label>
+                            <label><input type="checkbox"> 외형도</label>
+                            <label><input type="checkbox"> 기초도</label>
+                        </td>
+                    </tr>
+                    <!-- 기계해석 -->
+                    <tr>
+                        <td><strong>기계해석</strong></td>
+                        <td class="left-align">
+                            <label><input type="radio" name="auto_mech" value="1"> 미수행</label>
+                            <label><input type="radio" name="auto_mech" value="2"> 외부의뢰(보조)</label>
+                            <label><input type="radio" name="auto_mech" value="3"> 내부수행(수동)</label>
+                            <label><input type="radio" name="auto_mech" value="4"> 설계연동(반자동)</label>
+                            <label><input type="radio" name="auto_mech" value="5"> 설계연동(자동)</label>
+                        </td>
+                        <td class="left-align">
+                            <label><input type="checkbox"> 내진해석</label>
+                            <label><input type="checkbox"> 진동해석</label>
+                            <label><input type="checkbox"> 냉각해석</label>
+                            <label><input type="checkbox"> 구조해석</label>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <div class="remarks-box" style="margin-top: 10px;">
+                <span>※ 비고:</span>
+                <textarea placeholder="설계 자동화 관련 애로사항이나 개선 희망 사항을 기재해 주세요."></textarea>
+            </div>
+        </div>
+
+        <div class="page-num">2 / 5</div>
+    </div>
+
+    <!-- ==================== 3페이지: 설계 프로그램 ==================== -->
+    <div class="page">
+
+        <div class="header">
+            <div>
+                <h1>초고압 변압기 엔지니어링 시스템 운영 현황 조사</h1>
+                <div style="font-size: 12px; margin-top: 5px; color: #555;">Part 3. Design Tools & Programs</div>
+            </div>
+        </div>
+
+        <!-- 2-1. 설계/해석 툴 상세 -->
+        <div class="section">
+            <div class="section-title">2-1. 사용 중인 설계 프로그램 (Design Tools)</div>
+            <div class="sub-guide">* 현재 사용 중인 설계/해석 프로그램과 개발 방식을 기재해 주세요.</div>
+            <table>
+                <colgroup>
+                    <col style="width: 15%;">
+                    <col style="width: 20%;">
+                    <col style="width: 35%;">
+                    <col style="width: 30%;">
+                </colgroup>
+                <thead>
+                    <tr>
+                        <th>대분류</th>
+                        <th>세부 구분</th>
+                        <th>사용 중인 프로그램 이름</th>
+                        <th>구분 (직접개발 / 돈주고삼)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- 전기 -->
+                    <tr>
+                        <td rowspan="3"><strong>전기 설계</strong></td>
+                        <td>기본 설계 (Basic)</td>
+                        <td><input type="text" placeholder="예: PRT / VIT"></td>
+                        <td><input type="text" placeholder="예: 사내개발 / 상용"></td>
+                    </tr>
+                    <tr>
+                        <td>상세 설계 (Detail)</td>
+                        <td><input type="text" placeholder="예: SAPRTON, TURNINS"></td>
+                        <td><input type="text" placeholder=""></td>
+                    </tr>
+                    <tr>
+                        <td>전계 해석 (E-Field)</td>
+                        <td><input type="text" placeholder="예: ELAX 2D"></td>
+                        <td><input type="text" placeholder=""></td>
+                    </tr>
+                    <!-- 구조 -->
+                    <tr>
+                        <td rowspan="4"><strong>기계/구조</strong></td>
+                        <td>자계/구조 해석</td>
+                        <td><input type="text" placeholder="예: ANSYS MAXWELL"></td>
+                        <td><input type="text" placeholder=""></td>
+                    </tr>
+                    <tr>
+                        <td>냉각/중신 설계</td>
+                        <td><input type="text" placeholder="예: 사내개발툴"></td>
+                        <td><input type="text" placeholder=""></td>
+                    </tr>
+                    <tr>
+                        <td>3D 설계 (CAD)</td>
+                        <td><input type="text" placeholder="예: Solid Edge, Creo"></td>
+                        <td><input type="text" placeholder=""></td>
+                    </tr>
+                    <tr>
+                        <td>2D 설계 (CAD)</td>
+                        <td><input type="text" placeholder="예: AutoCAD"></td>
+                        <td><input type="text" placeholder=""></td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <table style="margin-top: 10px;">
+                <tr>
+                    <th style="width: 20%;">개발 언어 및 도구<br>(Dev Tools)</th>
+                    <td class="left-align">
+                        <div class="checkbox-group">
+                            <label><input type="checkbox"> <strong>엑셀 매크로</strong> (VBA)</label>
+                            <label><input type="checkbox"> <strong>CAD 자체 기능</strong> (LISP 등)</label>
+                            <label><input type="checkbox"> <strong>자체 개발</strong> (C#, Python 등)</label>
+                            <label><input type="checkbox"> <strong>외주 개발</strong> (SI업체)</label>
+                            <label><input type="checkbox"> <strong>상용 솔루션</strong> (Tacton, DriveWorks 등)</label>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <th>설계 표준화 수준<br>(우리 회사의 단계는?)</th>
+                    <td class="left-align" style="line-height: 2.2; padding: 12px 10px;">
+                        <label><input type="radio" name="std_lv" value="1"> <strong>1점:</strong> 개인의 경험과 노하우에 의존함</label><br>
+                        <label><input type="radio" name="std_lv" value="2"> <strong>2점:</strong> 표준 양식(템플릿)이나 가이드가 있음</label><br>
+                        <label><input type="radio" name="std_lv" value="3"> <strong>3점:</strong> 표준 부품(라이브러리)을 조립해서 설계함</label><br>
+                        <label><input type="radio" name="std_lv" value="4"> <strong>4점:</strong> 시스템이 설계 규칙(Rule)을 검증해줌</label><br>
+                        <label><input type="radio" name="std_lv" value="5"> <strong>5점:</strong> 규칙 기반 자동 설계가 가능함</label>
+                    </td>
+                </tr>
+            </table>
+            <div class="remarks-box">
+                <span>※ 비고 / 특이사항:</span>
+                <textarea placeholder="도입된 툴이나 기술적 이슈 사항이 있다면 기재해 주세요."></textarea>
+            </div>
+        </div>
+
+        <div class="page-num">3 / 5</div>
+    </div>
+
+    <!-- ==================== 4페이지: 설계 표준화 ==================== -->
+    <div class="page">
+
+        <div class="header">
+            <div>
+                <h1>초고압 변압기 엔지니어링 시스템 운영 현황 조사</h1>
+                <div style="font-size: 12px; margin-top: 5px; color: #555;">Part 4. Design Standardization</div>
+            </div>
+        </div>
+
+        <!-- 3. 설계 표준화 시스템 현황 -->
+        <div class="section">
+            <div class="section-title">3. 설계 표준화 시스템 현황 (Design Standardization)</div>
+            <div class="sub-guide">* 각 부품별로 설계 기준서, DR 체크리스트, 표준 라이브러리, ECO 프로세스 수준을 선택해 주세요. (5점 척도)</div>
+
+            <table style="margin-top: 5px; font-size: 10px;" class="standardization-table">
+                <thead>
+                    <tr>
+                        <th style="width: 12%;">부품</th>
+                        <th style="width: 22%;">설계 기준서</th>
+                        <th style="width: 22%;">DR 체크리스트</th>
+                        <th style="width: 22%;">표준 라이브러리</th>
+                        <th style="width: 22%;">ECO 프로세스</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- 전기설계 -->
+                    <tr>
+                        <td><strong>전기설계</strong></td>
+                        <td class="left-align">
+                            <label><input type="checkbox" name="na_manual_elec" class="na-checkbox" data-target="manual_elec"> <strong>해당없음</strong></label><br>
+                            <label><input type="radio" name="manual_elec" value="2"> 비공식 메모</label><br>
+                            <label><input type="radio" name="manual_elec" value="3"> 문서화 (Word/PDF)</label><br>
+                            <label><input type="radio" name="manual_elec" value="4"> 항목별 체계화</label><br>
+                            <label><input type="radio" name="manual_elec" value="5"> 시스템 내재화</label>
+                        </td>
+                        <td class="left-align">
+                            <label><input type="checkbox" name="na_check_elec" class="na-checkbox" data-target="check_elec"> <strong>해당없음</strong></label><br>
+                            <label><input type="radio" name="check_elec" value="2"> 개인별 상이</label><br>
+                            <label><input type="radio" name="check_elec" value="3"> 표준양식 (Excel)</label><br>
+                            <label><input type="radio" name="check_elec" value="4"> 단계별 구분(1/2/최종)</label><br>
+                            <label><input type="radio" name="check_elec" value="5"> 자동검증 (시스템)</label>
+                        </td>
+                        <td class="left-align">
+                            <label><input type="checkbox" name="na_lib_elec" class="na-checkbox" data-target="lib_elec"> <strong>해당없음</strong></label><br>
+                            <label><input type="radio" name="lib_elec" value="2"> 개인별 보유</label><br>
+                            <label><input type="radio" name="lib_elec" value="3"> 일부 있음</label><br>
+                            <label><input type="radio" name="lib_elec" value="4"> 체계적 구축</label><br>
+                            <label><input type="radio" name="lib_elec" value="5"> PDM/PLM 연동</label>
+                        </td>
+                        <td class="left-align">
+                            <label><input type="checkbox" name="na_eco_elec" class="na-checkbox" data-target="eco_elec"> <strong>해당없음</strong></label><br>
+                            <label><input type="radio" name="eco_elec" value="2"> 구두 통보</label><br>
+                            <label><input type="radio" name="eco_elec" value="3"> ECO 문서 (수기)</label><br>
+                            <label><input type="radio" name="eco_elec" value="4"> 전자결재</label><br>
+                            <label><input type="radio" name="eco_elec" value="5"> 자동반영 (BOM연동)</label>
+                        </td>
+                    </tr>
+                    <!-- 권선 -->
+                    <tr>
+                        <td><strong>권선</strong></td>
+                        <td class="left-align">
+                            <label><input type="checkbox" name="na_manual_wind" class="na-checkbox" data-target="manual_wind"> <strong>해당없음</strong></label><br>
+                            <label><input type="radio" name="manual_wind" value="2"> 비공식 메모</label><br>
+                            <label><input type="radio" name="manual_wind" value="3"> 문서화 (Word/PDF)</label><br>
+                            <label><input type="radio" name="manual_wind" value="4"> 항목별 체계화</label><br>
+                            <label><input type="radio" name="manual_wind" value="5"> 시스템 내재화</label>
+                        </td>
+                        <td class="left-align">
+                            <label><input type="checkbox" name="na_check_wind" class="na-checkbox" data-target="check_wind"> <strong>해당없음</strong></label><br>
+                            <label><input type="radio" name="check_wind" value="2"> 개인별 상이</label><br>
+                            <label><input type="radio" name="check_wind" value="3"> 표준양식 (Excel)</label><br>
+                            <label><input type="radio" name="check_wind" value="4"> 단계별 구분(1/2/최종)</label><br>
+                            <label><input type="radio" name="check_wind" value="5"> 자동검증 (시스템)</label>
+                        </td>
+                        <td class="left-align">
+                            <label><input type="checkbox" name="na_lib_wind" class="na-checkbox" data-target="lib_wind"> <strong>해당없음</strong></label><br>
+                            <label><input type="radio" name="lib_wind" value="2"> 개인별 보유</label><br>
+                            <label><input type="radio" name="lib_wind" value="3"> 일부 있음</label><br>
+                            <label><input type="radio" name="lib_wind" value="4"> 체계적 구축</label><br>
+                            <label><input type="radio" name="lib_wind" value="5"> PDM/PLM 연동</label>
+                        </td>
+                        <td class="left-align">
+                            <label><input type="checkbox" name="na_eco_wind" class="na-checkbox" data-target="eco_wind"> <strong>해당없음</strong></label><br>
+                            <label><input type="radio" name="eco_wind" value="2"> 구두 통보</label><br>
+                            <label><input type="radio" name="eco_wind" value="3"> ECO 문서 (수기)</label><br>
+                            <label><input type="radio" name="eco_wind" value="4"> 전자결재</label><br>
+                            <label><input type="radio" name="eco_wind" value="5"> 자동반영 (BOM연동)</label>
+                        </td>
+                    </tr>
+                    <!-- 철심/클램프 -->
+                    <tr>
+                        <td><strong>철심/클램프</strong></td>
+                        <td class="left-align">
+                            <label><input type="checkbox" name="na_manual_core" class="na-checkbox" data-target="manual_core"> <strong>해당없음</strong></label><br>
+                            <label><input type="radio" name="manual_core" value="2"> 비공식 메모</label><br>
+                            <label><input type="radio" name="manual_core" value="3"> 문서화 (Word/PDF)</label><br>
+                            <label><input type="radio" name="manual_core" value="4"> 항목별 체계화</label><br>
+                            <label><input type="radio" name="manual_core" value="5"> 시스템 내재화</label>
+                        </td>
+                        <td class="left-align">
+                            <label><input type="checkbox" name="na_check_core" class="na-checkbox" data-target="check_core"> <strong>해당없음</strong></label><br>
+                            <label><input type="radio" name="check_core" value="2"> 개인별 상이</label><br>
+                            <label><input type="radio" name="check_core" value="3"> 표준양식 (Excel)</label><br>
+                            <label><input type="radio" name="check_core" value="4"> 단계별 구분(1/2/최종)</label><br>
+                            <label><input type="radio" name="check_core" value="5"> 자동검증 (시스템)</label>
+                        </td>
+                        <td class="left-align">
+                            <label><input type="checkbox" name="na_lib_core" class="na-checkbox" data-target="lib_core"> <strong>해당없음</strong></label><br>
+                            <label><input type="radio" name="lib_core" value="2"> 개인별 보유</label><br>
+                            <label><input type="radio" name="lib_core" value="3"> 일부 있음</label><br>
+                            <label><input type="radio" name="lib_core" value="4"> 체계적 구축</label><br>
+                            <label><input type="radio" name="lib_core" value="5"> PDM/PLM 연동</label>
+                        </td>
+                        <td class="left-align">
+                            <label><input type="checkbox" name="na_eco_core" class="na-checkbox" data-target="eco_core"> <strong>해당없음</strong></label><br>
+                            <label><input type="radio" name="eco_core" value="2"> 구두 통보</label><br>
+                            <label><input type="radio" name="eco_core" value="3"> ECO 문서 (수기)</label><br>
+                            <label><input type="radio" name="eco_core" value="4"> 전자결재</label><br>
+                            <label><input type="radio" name="eco_core" value="5"> 자동반영 (BOM연동)</label>
+                        </td>
+                    </tr>
+                    <!-- 중신/리드 -->
+                    <tr>
+                        <td><strong>중신/리드</strong></td>
+                        <td class="left-align">
+                            <label><input type="checkbox" name="na_manual_ap" class="na-checkbox" data-target="manual_ap"> <strong>해당없음</strong></label><br>
+                            <label><input type="radio" name="manual_ap" value="2"> 비공식 메모</label><br>
+                            <label><input type="radio" name="manual_ap" value="3"> 문서화 (Word/PDF)</label><br>
+                            <label><input type="radio" name="manual_ap" value="4"> 항목별 체계화</label><br>
+                            <label><input type="radio" name="manual_ap" value="5"> 시스템 내재화</label>
+                        </td>
+                        <td class="left-align">
+                            <label><input type="checkbox" name="na_check_ap" class="na-checkbox" data-target="check_ap"> <strong>해당없음</strong></label><br>
+                            <label><input type="radio" name="check_ap" value="2"> 개인별 상이</label><br>
+                            <label><input type="radio" name="check_ap" value="3"> 표준양식 (Excel)</label><br>
+                            <label><input type="radio" name="check_ap" value="4"> 단계별 구분(1/2/최종)</label><br>
+                            <label><input type="radio" name="check_ap" value="5"> 자동검증 (시스템)</label>
+                        </td>
+                        <td class="left-align">
+                            <label><input type="checkbox" name="na_lib_ap" class="na-checkbox" data-target="lib_ap"> <strong>해당없음</strong></label><br>
+                            <label><input type="radio" name="lib_ap" value="2"> 개인별 보유</label><br>
+                            <label><input type="radio" name="lib_ap" value="3"> 일부 있음</label><br>
+                            <label><input type="radio" name="lib_ap" value="4"> 체계적 구축</label><br>
+                            <label><input type="radio" name="lib_ap" value="5"> PDM/PLM 연동</label>
+                        </td>
+                        <td class="left-align">
+                            <label><input type="checkbox" name="na_eco_ap" class="na-checkbox" data-target="eco_ap"> <strong>해당없음</strong></label><br>
+                            <label><input type="radio" name="eco_ap" value="2"> 구두 통보</label><br>
+                            <label><input type="radio" name="eco_ap" value="3"> ECO 문서 (수기)</label><br>
+                            <label><input type="radio" name="eco_ap" value="4"> 전자결재</label><br>
+                            <label><input type="radio" name="eco_ap" value="5"> 자동반영 (BOM연동)</label>
+                        </td>
+                    </tr>
+                    <!-- 외함/탱크 -->
+                    <tr>
+                        <td><strong>외함/탱크</strong></td>
+                        <td class="left-align">
+                            <label><input type="checkbox" name="na_manual_tank" class="na-checkbox" data-target="manual_tank"> <strong>해당없음</strong></label><br>
+                            <label><input type="radio" name="manual_tank" value="2"> 비공식 메모</label><br>
+                            <label><input type="radio" name="manual_tank" value="3"> 문서화 (Word/PDF)</label><br>
+                            <label><input type="radio" name="manual_tank" value="4"> 항목별 체계화</label><br>
+                            <label><input type="radio" name="manual_tank" value="5"> 시스템 내재화</label>
+                        </td>
+                        <td class="left-align">
+                            <label><input type="checkbox" name="na_check_tank" class="na-checkbox" data-target="check_tank"> <strong>해당없음</strong></label><br>
+                            <label><input type="radio" name="check_tank" value="2"> 개인별 상이</label><br>
+                            <label><input type="radio" name="check_tank" value="3"> 표준양식 (Excel)</label><br>
+                            <label><input type="radio" name="check_tank" value="4"> 단계별 구분(1/2/최종)</label><br>
+                            <label><input type="radio" name="check_tank" value="5"> 자동검증 (시스템)</label>
+                        </td>
+                        <td class="left-align">
+                            <label><input type="checkbox" name="na_lib_tank" class="na-checkbox" data-target="lib_tank"> <strong>해당없음</strong></label><br>
+                            <label><input type="radio" name="lib_tank" value="2"> 개인별 보유</label><br>
+                            <label><input type="radio" name="lib_tank" value="3"> 일부 있음</label><br>
+                            <label><input type="radio" name="lib_tank" value="4"> 체계적 구축</label><br>
+                            <label><input type="radio" name="lib_tank" value="5"> PDM/PLM 연동</label>
+                        </td>
+                        <td class="left-align">
+                            <label><input type="checkbox" name="na_eco_tank" class="na-checkbox" data-target="eco_tank"> <strong>해당없음</strong></label><br>
+                            <label><input type="radio" name="eco_tank" value="2"> 구두 통보</label><br>
+                            <label><input type="radio" name="eco_tank" value="3"> ECO 문서 (수기)</label><br>
+                            <label><input type="radio" name="eco_tank" value="4"> 전자결재</label><br>
+                            <label><input type="radio" name="eco_tank" value="5"> 자동반영 (BOM연동)</label>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <!-- 설계 표준화 상세 -->
+            <table style="margin-top: 10px;">
+                <tr>
+                    <th style="width: 25%;">설계 기준 관리 방식</th>
+                    <td class="left-align" style="font-size:10px;">
+                        <label><input type="radio" name="std_mgmt" value="1"> 관리안함(개인PC)</label>
+                        <label><input type="radio" name="std_mgmt" value="2"> 개인별보관</label>
+                        <label><input type="radio" name="std_mgmt" value="3"> 공용폴더/서버</label>
+                        <label><input type="radio" name="std_mgmt" value="4"> 문서관리시스템</label>
+                        <label><input type="radio" name="std_mgmt" value="5"> 전사PDM/KMS</label>
+                    </td>
+                </tr>
+                <tr>
+                    <th>설계 Review 프로세스</th>
+                    <td class="left-align" style="font-size:10px;">
+                        <label><input type="radio" name="review" value="1"> 검토없음 (담당자재량)</label>
+                        <label><input type="radio" name="review" value="2"> 비공식검토 (구두확인)</label>
+                        <label><input type="radio" name="review" value="3"> 팀장승인 (서명기반)</label>
+                        <label><input type="radio" name="review" value="4"> 공식DR회의 (정기운영)</label>
+                        <label><input type="radio" name="review" value="5"> Gate Review (시스템기반)</label>
+                    </td>
+                </tr>
+                <tr>
+                    <th>설계 변경 이력 관리<br>(변경 기록이 남나요?)</th>
+                    <td class="left-align" style="font-size:10px;">
+                        <label><input type="radio" name="history" value="1"> 관리안함</label>
+                        <label><input type="radio" name="history" value="2"> 파일명버전</label>
+                        <label><input type="radio" name="history" value="3"> 폴더구분</label>
+                        <label><input type="radio" name="history" value="4"> 문서대장</label>
+                        <label><input type="radio" name="history" value="5"> PDM자동관리</label>
+                    </td>
+                </tr>
+            </table>
+            <div class="remarks-box">
+                <span>※ 비고 / 특이사항:</span>
+                <textarea placeholder="설계 표준화 관련 애로사항이나 개선 희망 사항을 기재해 주세요."></textarea>
+            </div>
+        </div>
+
+        <div class="page-num">4 / 5</div>
+    </div>
+
+    <!-- ==================== 5페이지: 리드타임 + IT시스템 + 종합의견 ==================== -->
+    <div class="page">
+
+        <div class="header">
+            <div>
+                <h1>초고압 변압기 엔지니어링 시스템 운영 현황 조사</h1>
+                <div style="font-size: 12px; margin-top: 5px; color: #555;">Part 5. Engineering Lead Time & IT Systems</div>
+            </div>
+        </div>
+
+        <!-- 4. 설계 리드타임 -->
+        <div class="section">
+            <div class="section-title">4. 설계 리드타임 분석 (Engineering Lead Time)</div>
+            <div class="sub-guide">* 표준 기종(100MVA 이하/154KV급/OLTC) 기준으로 평균 소요 시간을 선택해 주세요. (5점 척도)<br>
+            * <strong>순수 설계 작업일 (Man-days)</strong> 기준으로 응답해 주세요. (대기/검토/승인 시간 제외)</div>
+
+            <table>
+                <tr>
+                    <th style="width: 22%;">전기설계 L/T<br><span style="font-weight:normal;font-size:9px;">(기본설계/전기설계팀)</span></th>
+                    <td class="left-align" style="font-size:10px;">
+                        <label><input type="radio" name="lt_elec" value="1"> 30일 이상</label>
+                        <label><input type="radio" name="lt_elec" value="2"> 20~30일</label>
+                        <label><input type="radio" name="lt_elec" value="3"> 15~20일</label>
+                        <label><input type="radio" name="lt_elec" value="4"> 10~15일</label>
+                        <label><input type="radio" name="lt_elec" value="5"> 10일 이내</label>
+                    </td>
+                </tr>
+                <tr>
+                    <th>권선 L/T<br><span style="font-weight:normal;font-size:9px;">(권선조립 포함)</span></th>
+                    <td class="left-align" style="font-size:10px;">
+                        <label><input type="radio" name="lt_winding" value="1"> 20일 이상</label>
+                        <label><input type="radio" name="lt_winding" value="2"> 15~20일</label>
+                        <label><input type="radio" name="lt_winding" value="3"> 10~15일</label>
+                        <label><input type="radio" name="lt_winding" value="4"> 7~10일</label>
+                        <label><input type="radio" name="lt_winding" value="5"> 7일 이내</label>
+                    </td>
+                </tr>
+                <tr>
+                    <th>철심/클램프 L/T<br><span style="font-weight:normal;font-size:9px;">(Core & Clamp)</span></th>
+                    <td class="left-align" style="font-size:10px;">
+                        <label><input type="radio" name="lt_core" value="1"> 10일 이상</label>
+                        <label><input type="radio" name="lt_core" value="2"> 8~10일</label>
+                        <label><input type="radio" name="lt_core" value="3"> 6~8일</label>
+                        <label><input type="radio" name="lt_core" value="4"> 4~6일</label>
+                        <label><input type="radio" name="lt_core" value="5"> 4일 이내</label>
+                    </td>
+                </tr>
+                <tr>
+                    <th>중신/리드 L/T<br><span style="font-weight:normal;font-size:9px;">(Active Part/Lead)</span></th>
+                    <td class="left-align" style="font-size:10px;">
+                        <label><input type="radio" name="lt_activepart" value="1"> 20일 이상</label>
+                        <label><input type="radio" name="lt_activepart" value="2"> 15~20일</label>
+                        <label><input type="radio" name="lt_activepart" value="3"> 10~15일</label>
+                        <label><input type="radio" name="lt_activepart" value="4"> 7~10일</label>
+                        <label><input type="radio" name="lt_activepart" value="5"> 7일 이내</label>
+                    </td>
+                </tr>
+                <tr>
+                    <th>외함/탱크 L/T<br><span style="font-weight:normal;font-size:9px;">(Tank & Cover)</span></th>
+                    <td class="left-align" style="font-size:10px;">
+                        <label><input type="radio" name="lt_tank" value="1"> 50일 이상</label>
+                        <label><input type="radio" name="lt_tank" value="2"> 40~50일</label>
+                        <label><input type="radio" name="lt_tank" value="3"> 30~40일</label>
+                        <label><input type="radio" name="lt_tank" value="4"> 20~30일</label>
+                        <label><input type="radio" name="lt_tank" value="5"> 20일 이내</label>
+                    </td>
+                </tr>
+                <tr>
+                    <th>총 설계 L/T<br><span style="font-weight:normal;font-size:9px;">(수주~도면출도)</span></th>
+                    <td class="left-align" style="font-size:10px;">
+                        <label><input type="radio" name="lt_total" value="1"> 8주 이상</label>
+                        <label><input type="radio" name="lt_total" value="2"> 6~8주</label>
+                        <label><input type="radio" name="lt_total" value="3"> 4~6주</label>
+                        <label><input type="radio" name="lt_total" value="4"> 3~4주</label>
+                        <label><input type="radio" name="lt_total" value="5"> 3주 이내</label>
+                    </td>
+                </tr>
+            </table>
+            <div class="remarks-box">
+                <span>※ 비고:</span>
+                <textarea placeholder="리드타임 관련 애로사항이나 지연 원인을 기재해 주세요."></textarea>
+            </div>
+        </div>
+
+        <!-- 5. IT 시스템 및 데이터 연동 -->
+        <div class="section">
+            <div class="section-title">5. IT 시스템 및 데이터 연동 (IT Systems & Interface)</div>
+            <div class="sub-guide">* ERP, PDM, PMS 등 주요 시스템 운영 현황과 연동 방식을 체크해 주세요.</div>
+
+            <!-- 시스템 보유 현황 테이블 -->
+            <table style="margin-bottom: 8px;">
+                <colgroup>
+                    <col style="width: 22%;">
+                    <col style="width: 78%;">
+                </colgroup>
+                <thead>
+                    <tr>
+                        <th>시스템 종류</th>
+                        <th>운영 형태 (Check)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>ERP</strong><br><span style="font-size:9px;">(전사 자원 관리)</span></td>
+                        <td class="left-align">
+                            <div class="checkbox-group">
+                                <label><input type="checkbox"> Oracle</label>
+                                <label><input type="checkbox"> SAP</label>
+                                <label><input type="checkbox"> 더존/UniERP</label>
+                                <label><input type="checkbox"> 기타 <input type="text" placeholder="시스템명" style="width: 200px;"></label>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><strong>PDM / PLM</strong><br><span style="font-size:9px;">(도면/BOM 관리)</span></td>
+                        <td class="left-align">
+                            <div class="checkbox-group">
+                                <label><input type="checkbox"> ERP 내장 기능</label>
+                                <label><input type="checkbox"> 자체 구축</label>
+                                <label><input type="checkbox"> 상용 솔루션</label>
+                                <label><input type="checkbox"> 미사용</label>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><strong>PMS</strong><br><span style="font-size:9px;">(프로젝트 관리)</span></td>
+                        <td class="left-align">
+                            <div class="checkbox-group">
+                                <label><input type="checkbox"> ERP 내장 기능</label>
+                                <label><input type="checkbox"> 자체 구축</label>
+                                <label><input type="checkbox"> 상용 솔루션</label>
+                                <label><input type="checkbox"> 미사용</label>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <!-- 데이터 연동 상세 테이블 -->
+            <table>
+                <tr>
+                    <th style="width: 22%;">ERP 입력 방식</th>
+                    <td class="left-align" style="font-size:10px;">
+                        <label><input type="radio" name="if_method" value="1"> 100% 수기입력</label>
+                        <label><input type="radio" name="if_method" value="2"> 수기+복사</label>
+                        <label><input type="radio" name="if_method" value="3"> 엑셀 업로드</label>
+                        <label><input type="radio" name="if_method" value="4"> 반자동 전송</label>
+                        <label><input type="radio" name="if_method" value="5"> 완전 자동 연동</label>
+                    </td>
+                </tr>
+                <tr>
+                    <th>설계 변경 연동</th>
+                    <td class="left-align" style="font-size:10px;">
+                        <label><input type="radio" name="eco" value="1"> 이중 작업</label>
+                        <label><input type="radio" name="eco" value="2"> 수동 통보</label>
+                        <label><input type="radio" name="eco" value="3"> 변경 요청서</label>
+                        <label><input type="radio" name="eco" value="4"> ECO 프로세스</label>
+                        <label><input type="radio" name="eco" value="5"> 자동 변경 연동</label>
+                    </td>
+                </tr>
+                <tr>
+                    <th>PDM/PLM 운영</th>
+                    <td class="left-align" style="font-size:10px;">
+                        <label><input type="radio" name="pdm" value="1"> 미사용</label>
+                        <label><input type="radio" name="pdm" value="2"> 공용 서버</label>
+                        <label><input type="radio" name="pdm" value="3"> 자체 구축</label>
+                        <label><input type="radio" name="pdm" value="4"> 상용솔루션(부분)</label>
+                        <label><input type="radio" name="pdm" value="5"> 상용솔루션(전사)</label>
+                    </td>
+                </tr>
+                <tr>
+                    <th>도면/BOM 관리</th>
+                    <td class="left-align" style="font-size:10px;">
+                        <label><input type="radio" name="bom_mgmt" value="1"> 개인 PC 저장</label>
+                        <label><input type="radio" name="bom_mgmt" value="2"> 공용 폴더</label>
+                        <label><input type="radio" name="bom_mgmt" value="3"> 폴더 체계화</label>
+                        <label><input type="radio" name="bom_mgmt" value="4"> 문서관리시스템</label>
+                        <label><input type="radio" name="bom_mgmt" value="5"> PDM 통합 관리</label>
+                    </td>
+                </tr>
+            </table>
+            <div class="remarks-box">
+                <span>※ 비고:</span>
+                <textarea placeholder="IT 시스템 관련 불편한 점이나 특이사항을 적어주세요."></textarea>
+            </div>
+        </div>
+
+        <!-- 6. 종합 의견 -->
+        <div class="section">
+            <div class="section-title">6. 종합 의견 (General Comments)</div>
+            <div style="border: 1px solid #ccc; height: 60px; padding: 8px;">
+                <textarea
+                    style="width: 100%; height: 100%; border: none; resize: none; font-family: inherit; font-size: 11px;"
+                    placeholder="시스템 운영하면서 힘들었던 점이나, 앞으로 이렇게 바뀌었으면 좋겠다 하는 점을 자유롭게 적어주세요."></textarea>
+            </div>
+        </div>
+
+        <div class="page-num">5 / 5</div>
+    </div>
+
+</body>
+
+</html>
