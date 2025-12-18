@@ -4,16 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>설문 결과 변환기</title>
-    <!-- JSZip for creating ZIP files -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
-    <!-- SheetJS for creating Excel files -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap');
 
-        * {
-            box-sizing: border-box;
-        }
+        * { box-sizing: border-box; }
 
         body {
             font-family: 'Noto Sans KR', sans-serif;
@@ -24,23 +20,57 @@
             color: #333;
         }
 
-        .container {
-            max-width: 900px;
-            margin: 0 auto;
+        .container { max-width: 900px; margin: 0 auto; }
+
+        h1 { color: white; text-align: center; margin-bottom: 10px; font-size: 28px; }
+
+        .subtitle { color: #8892b0; text-align: center; margin-bottom: 30px; font-size: 14px; }
+
+        /* 설정 섹션 */
+        .config-section {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
         }
 
-        h1 {
-            color: white;
-            text-align: center;
+        .config-section h3 {
+            margin: 0 0 15px 0;
+            color: #003366;
+            font-size: 16px;
+        }
+
+        .config-row {
+            display: flex;
+            gap: 15px;
+            align-items: center;
             margin-bottom: 10px;
-            font-size: 28px;
         }
 
-        .subtitle {
-            color: #8892b0;
-            text-align: center;
-            margin-bottom: 30px;
-            font-size: 14px;
+        .config-row label {
+            min-width: 120px;
+            font-weight: 600;
+            color: #555;
+        }
+
+        .config-row input[type="file"] {
+            flex: 1;
+        }
+
+        .template-status {
+            padding: 8px 15px;
+            border-radius: 5px;
+            font-size: 13px;
+        }
+
+        .template-status.loaded {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .template-status.empty {
+            background: #fff3cd;
+            color: #856404;
         }
 
         /* 드롭존 */
@@ -60,21 +90,9 @@
             background: #f0fff0;
         }
 
-        .dropzone-icon {
-            font-size: 60px;
-            margin-bottom: 15px;
-        }
-
-        .dropzone-text {
-            font-size: 18px;
-            color: #666;
-            margin-bottom: 10px;
-        }
-
-        .dropzone-hint {
-            font-size: 13px;
-            color: #999;
-        }
+        .dropzone-icon { font-size: 60px; margin-bottom: 15px; }
+        .dropzone-text { font-size: 18px; color: #666; margin-bottom: 10px; }
+        .dropzone-hint { font-size: 13px; color: #999; }
 
         /* 파일 목록 */
         .file-list {
@@ -85,9 +103,7 @@
             display: none;
         }
 
-        .file-list.show {
-            display: block;
-        }
+        .file-list.show { display: block; }
 
         .file-list h3 {
             margin: 0 0 15px 0;
@@ -106,22 +122,9 @@
             margin-bottom: 8px;
         }
 
-        .file-item .icon {
-            font-size: 20px;
-            margin-right: 12px;
-        }
-
-        .file-item .name {
-            flex: 1;
-            font-size: 14px;
-        }
-
-        .file-item .company {
-            color: #4CAF50;
-            font-weight: 600;
-            margin-right: 15px;
-        }
-
+        .file-item .icon { font-size: 20px; margin-right: 12px; }
+        .file-item .name { flex: 1; font-size: 14px; }
+        .file-item .company { color: #4CAF50; font-weight: 600; margin-right: 15px; }
         .file-item .dci {
             background: #003366;
             color: white;
@@ -130,7 +133,6 @@
             font-size: 12px;
             font-weight: 600;
         }
-
         .file-item .remove {
             background: none;
             border: none;
@@ -177,21 +179,10 @@
             color: white;
         }
 
-        .btn-secondary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 20px rgba(33, 150, 243, 0.4);
-        }
-
-        .btn-danger {
-            background: #dc3545;
-            color: white;
-        }
-
         .btn:disabled {
             background: #ccc;
             cursor: not-allowed;
             transform: none;
-            box-shadow: none;
         }
 
         /* 진행 상태 */
@@ -203,9 +194,7 @@
             display: none;
         }
 
-        .progress-section.show {
-            display: block;
-        }
+        .progress-section.show { display: block; }
 
         .progress-bar {
             height: 20px;
@@ -222,13 +211,9 @@
             width: 0%;
         }
 
-        .progress-text {
-            text-align: center;
-            font-size: 14px;
-            color: #666;
-        }
+        .progress-text { text-align: center; font-size: 14px; color: #666; }
 
-        /* 결과 요약 */
+        /* 요약 테이블 */
         .summary {
             background: white;
             border-radius: 10px;
@@ -237,14 +222,8 @@
             display: none;
         }
 
-        .summary.show {
-            display: block;
-        }
-
-        .summary h3 {
-            margin: 0 0 15px 0;
-            color: #003366;
-        }
+        .summary.show { display: block; }
+        .summary h3 { margin: 0 0 15px 0; color: #003366; }
 
         .summary-table {
             width: 100%;
@@ -258,16 +237,10 @@
             text-align: center;
         }
 
-        .summary-table th {
-            background: #003366;
-            color: white;
-        }
+        .summary-table th { background: #003366; color: white; }
+        .summary-table tr:nth-child(even) { background: #f8f9fa; }
 
-        .summary-table tr:nth-child(even) {
-            background: #f8f9fa;
-        }
-
-        /* 안내 박스 */
+        /* 안내 */
         .info-box {
             background: rgba(255,255,255,0.1);
             border-radius: 10px;
@@ -277,50 +250,50 @@
             font-size: 13px;
         }
 
-        .info-box h4 {
-            color: white;
-            margin: 0 0 10px 0;
-        }
-
-        .info-box ul {
-            margin: 0;
-            padding-left: 20px;
-        }
-
-        .info-box li {
-            margin-bottom: 5px;
-        }
+        .info-box h4 { color: white; margin: 0 0 10px 0; }
+        .info-box ul { margin: 0; padding-left: 20px; }
+        .info-box li { margin-bottom: 5px; }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>📊 설문 결과 변환기</h1>
-        <p class="subtitle">JSON 파일들을 업로드하면 → 설문지(HTML) + 종합분석(Excel)로 변환</p>
+        <p class="subtitle">JSON 파일 → 원본 설문지에 응답이 채워진 HTML + Excel</p>
 
-        <!-- 드롭존 -->
+        <!-- 설문지 템플릿 업로드 -->
+        <div class="config-section">
+            <h3>1️⃣ 설문지 템플릿 선택</h3>
+            <div class="config-row">
+                <label>설문지 HTML:</label>
+                <input type="file" id="templateInput" accept=".html">
+                <span class="template-status empty" id="templateStatus">템플릿 필요</span>
+            </div>
+            <div style="font-size: 12px; color: #888; margin-top: 8px;">
+                * 설문지_한글.html 또는 설문지_해외.html 파일을 선택하세요.
+            </div>
+        </div>
+
+        <!-- JSON 드롭존 -->
         <div class="dropzone" id="dropzone">
             <div class="dropzone-icon">📁</div>
-            <div class="dropzone-text">JSON 파일들을 여기에 드래그 & 드롭</div>
+            <div class="dropzone-text">2️⃣ JSON 파일들을 여기에 드래그 & 드롭</div>
             <div class="dropzone-hint">또는 클릭하여 파일 선택 (여러 파일 가능)</div>
             <input type="file" id="fileInput" multiple accept=".json" style="display: none;">
         </div>
 
         <!-- 파일 목록 -->
         <div class="file-list" id="fileList">
-            <h3>📋 업로드된 파일 (<span id="fileCount">0</span>개)</h3>
+            <h3>📋 업로드된 JSON 파일 (<span id="fileCount">0</span>개)</h3>
             <div id="fileItems"></div>
         </div>
 
-        <!-- 액션 버튼 -->
+        <!-- 버튼 -->
         <div class="actions">
             <button class="btn btn-primary" id="btnConvert" disabled>
                 🔄 변환 및 다운로드 (ZIP)
             </button>
             <button class="btn btn-secondary" id="btnExcelOnly" disabled>
                 📊 Excel만 다운로드
-            </button>
-            <button class="btn btn-danger" id="btnClear" style="display:none;">
-                🗑️ 전체 삭제
             </button>
         </div>
 
@@ -332,10 +305,10 @@
             <div class="progress-text" id="progressText">변환 중...</div>
         </div>
 
-        <!-- 결과 요약 -->
+        <!-- 요약 -->
         <div class="summary" id="summary">
             <h3>📈 DCI 점수 요약</h3>
-            <table class="summary-table" id="summaryTable">
+            <table class="summary-table">
                 <thead>
                     <tr>
                         <th>회사명</th>
@@ -354,18 +327,20 @@
         <div class="info-box">
             <h4>📌 사용 방법</h4>
             <ul>
-                <li>설문 응답자로부터 받은 JSON 파일들을 드래그 & 드롭하세요.</li>
-                <li>"변환 및 다운로드" 클릭 → ZIP 파일 생성 (각 업체별 설문지 + Excel)</li>
-                <li>생성된 HTML 파일은 브라우저에서 열어 인쇄/PDF 저장 가능합니다.</li>
+                <li><strong>1단계:</strong> 설문지 템플릿 HTML 파일 선택 (설문지_한글.html)</li>
+                <li><strong>2단계:</strong> 응답자로부터 받은 JSON 파일들 드래그 & 드롭</li>
+                <li><strong>3단계:</strong> "변환 및 다운로드" 클릭</li>
+                <li>결과: 각 업체별로 응답이 채워진 설문지 HTML + 종합분석 Excel</li>
             </ul>
         </div>
     </div>
 
     <script>
-        // 업로드된 파일 데이터 저장
+        let surveyTemplate = null;
         let uploadedFiles = [];
 
-        // DOM 요소
+        const templateInput = document.getElementById('templateInput');
+        const templateStatus = document.getElementById('templateStatus');
         const dropzone = document.getElementById('dropzone');
         const fileInput = document.getElementById('fileInput');
         const fileList = document.getElementById('fileList');
@@ -373,73 +348,63 @@
         const fileCount = document.getElementById('fileCount');
         const btnConvert = document.getElementById('btnConvert');
         const btnExcelOnly = document.getElementById('btnExcelOnly');
-        const btnClear = document.getElementById('btnClear');
         const progressSection = document.getElementById('progressSection');
         const progressFill = document.getElementById('progressFill');
         const progressText = document.getElementById('progressText');
         const summary = document.getElementById('summary');
         const summaryBody = document.getElementById('summaryBody');
 
-        // 드롭존 이벤트
-        dropzone.addEventListener('click', () => fileInput.click());
+        // 템플릿 로드
+        templateInput.addEventListener('change', async (e) => {
+            const file = e.target.files[0];
+            if (file && file.name.endsWith('.html')) {
+                surveyTemplate = await file.text();
+                templateStatus.textContent = '✅ ' + file.name;
+                templateStatus.classList.remove('empty');
+                templateStatus.classList.add('loaded');
+                updateButtons();
+            }
+        });
 
+        // 드롭존
+        dropzone.addEventListener('click', () => fileInput.click());
         dropzone.addEventListener('dragover', (e) => {
             e.preventDefault();
             dropzone.classList.add('dragover');
         });
-
-        dropzone.addEventListener('dragleave', () => {
-            dropzone.classList.remove('dragover');
-        });
-
+        dropzone.addEventListener('dragleave', () => dropzone.classList.remove('dragover'));
         dropzone.addEventListener('drop', (e) => {
             e.preventDefault();
             dropzone.classList.remove('dragover');
             handleFiles(e.dataTransfer.files);
         });
+        fileInput.addEventListener('change', (e) => handleFiles(e.target.files));
 
-        fileInput.addEventListener('change', (e) => {
-            handleFiles(e.target.files);
-        });
-
-        // 파일 처리
         async function handleFiles(files) {
             for (let file of files) {
                 if (file.name.endsWith('.json')) {
                     try {
                         const text = await file.text();
                         const data = JSON.parse(text);
-
-                        // 중복 체크
                         const companyName = data.companyInfo?.companyName || '미입력';
-                        const exists = uploadedFiles.some(f => f.companyName === companyName);
 
-                        if (!exists) {
-                            uploadedFiles.push({
-                                fileName: file.name,
-                                companyName: companyName,
-                                data: data
-                            });
+                        if (!uploadedFiles.some(f => f.companyName === companyName)) {
+                            uploadedFiles.push({ fileName: file.name, companyName, data });
                         }
                     } catch (err) {
-                        alert(`파일 읽기 오류: ${file.name}\n${err.message}`);
+                        alert(`파일 읽기 오류: ${file.name}`);
                     }
                 }
             }
             updateUI();
         }
 
-        // UI 업데이트
         function updateUI() {
             fileCount.textContent = uploadedFiles.length;
 
             if (uploadedFiles.length > 0) {
                 fileList.classList.add('show');
-                btnConvert.disabled = false;
-                btnExcelOnly.disabled = false;
-                btnClear.style.display = 'inline-flex';
-
-                fileItems.innerHTML = uploadedFiles.map((file, index) => {
+                fileItems.innerHTML = uploadedFiles.map((file, i) => {
                     const dci = file.data.scores?.dci || 0;
                     return `
                         <div class="file-item">
@@ -447,40 +412,31 @@
                             <span class="name">${file.fileName}</span>
                             <span class="company">${file.companyName}</span>
                             <span class="dci">DCI ${dci.toFixed(2)}점</span>
-                            <button class="remove" onclick="removeFile(${index})">✕</button>
+                            <button class="remove" onclick="removeFile(${i})">✕</button>
                         </div>
                     `;
                 }).join('');
-
-                // 요약 테이블 업데이트
                 updateSummary();
             } else {
                 fileList.classList.remove('show');
-                btnConvert.disabled = true;
-                btnExcelOnly.disabled = true;
-                btnClear.style.display = 'none';
                 summary.classList.remove('show');
             }
+            updateButtons();
         }
 
-        // 파일 삭제
+        function updateButtons() {
+            const ready = surveyTemplate && uploadedFiles.length > 0;
+            btnConvert.disabled = !ready;
+            btnExcelOnly.disabled = uploadedFiles.length === 0;
+        }
+
         function removeFile(index) {
             uploadedFiles.splice(index, 1);
             updateUI();
         }
 
-        // 전체 삭제
-        btnClear.addEventListener('click', () => {
-            if (confirm('모든 파일을 삭제하시겠습니까?')) {
-                uploadedFiles = [];
-                updateUI();
-            }
-        });
-
-        // 요약 테이블 업데이트
         function updateSummary() {
             summary.classList.add('show');
-
             summaryBody.innerHTML = uploadedFiles.map(file => {
                 const s = file.data.scores || {};
                 return `
@@ -496,90 +452,67 @@
             }).join('');
         }
 
-        // 변환 및 다운로드 (ZIP)
+        // 변환
         btnConvert.addEventListener('click', async () => {
-            if (uploadedFiles.length === 0) return;
+            if (!surveyTemplate || uploadedFiles.length === 0) return;
 
             progressSection.classList.add('show');
             progressFill.style.width = '0%';
-            progressText.textContent = '변환 준비 중...';
 
             try {
                 const zip = new JSZip();
                 const total = uploadedFiles.length;
 
-                // 각 파일별 HTML 생성
                 for (let i = 0; i < total; i++) {
                     const file = uploadedFiles[i];
                     progressText.textContent = `${file.companyName} 변환 중... (${i + 1}/${total})`;
                     progressFill.style.width = `${((i + 1) / (total + 1)) * 100}%`;
 
-                    const html = generateFilledSurveyHTML(file.data);
-                    const fileName = `${file.companyName}_설문결과.html`;
-                    zip.file(fileName, html);
-
-                    await sleep(100); // UI 업데이트를 위한 딜레이
+                    const html = generateFilledHTML(surveyTemplate, file.data);
+                    zip.file(`${file.companyName}_설문결과.html`, html);
+                    await sleep(50);
                 }
 
                 // Excel 생성
                 progressText.textContent = 'Excel 생성 중...';
-                const excelData = generateExcelData();
                 const wb = XLSX.utils.book_new();
-                const ws = XLSX.utils.aoa_to_sheet(excelData);
+                const ws = XLSX.utils.aoa_to_sheet(generateExcelData());
+                ws['!cols'] = [{wch:15},{wch:12},{wch:12},{wch:12},{wch:12},{wch:10}];
                 XLSX.utils.book_append_sheet(wb, ws, 'DCI 분석');
                 const excelBuffer = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
                 zip.file('종합분석_DCI.xlsx', excelBuffer);
 
                 progressFill.style.width = '100%';
-                progressText.textContent = 'ZIP 파일 생성 중...';
+                progressText.textContent = 'ZIP 생성 중...';
 
-                // ZIP 다운로드
                 const content = await zip.generateAsync({ type: 'blob' });
                 const dateStr = new Date().toISOString().slice(0, 10);
-                downloadBlob(content, `설문결과_변환_${dateStr}.zip`);
+                downloadBlob(content, `설문결과_${dateStr}.zip`);
 
-                progressText.textContent = '✅ 완료! 다운로드가 시작됩니다.';
-                setTimeout(() => {
-                    progressSection.classList.remove('show');
-                }, 3000);
+                progressText.textContent = '✅ 완료!';
+                setTimeout(() => progressSection.classList.remove('show'), 2000);
 
             } catch (err) {
-                alert('변환 중 오류 발생: ' + err.message);
+                alert('오류: ' + err.message);
                 progressSection.classList.remove('show');
             }
         });
 
         // Excel만 다운로드
         btnExcelOnly.addEventListener('click', () => {
-            if (uploadedFiles.length === 0) return;
-
-            const excelData = generateExcelData();
             const wb = XLSX.utils.book_new();
-            const ws = XLSX.utils.aoa_to_sheet(excelData);
-
-            // 열 너비 설정
-            ws['!cols'] = [
-                { wch: 15 }, // 회사명
-                { wch: 12 }, // 자동화
-                { wch: 12 }, // 표준화
-                { wch: 12 }, // 리드타임
-                { wch: 12 }, // IT시스템
-                { wch: 10 }, // DCI
-            ];
-
+            const ws = XLSX.utils.aoa_to_sheet(generateExcelData());
+            ws['!cols'] = [{wch:15},{wch:12},{wch:12},{wch:12},{wch:12},{wch:10}];
             XLSX.utils.book_append_sheet(wb, ws, 'DCI 분석');
-
-            const dateStr = new Date().toISOString().slice(0, 10);
-            XLSX.writeFile(wb, `DCI_종합분석_${dateStr}.xlsx`);
+            XLSX.writeFile(wb, `DCI_종합분석_${new Date().toISOString().slice(0,10)}.xlsx`);
         });
 
-        // Excel 데이터 생성
         function generateExcelData() {
-            const headers = ['회사명', '자동화 (40%)', '표준화 (25%)', '리드타임 (15%)', 'IT시스템 (20%)', 'DCI 종합'];
-            const rows = uploadedFiles.map(file => {
-                const s = file.data.scores || {};
+            const headers = ['회사명', '자동화(40%)', '표준화(25%)', '리드타임(15%)', 'IT시스템(20%)', 'DCI'];
+            const rows = uploadedFiles.map(f => {
+                const s = f.data.scores || {};
                 return [
-                    file.companyName,
+                    f.companyName,
                     (s.automation?.avg || 0).toFixed(2),
                     (s.standardization?.avg || 0).toFixed(2),
                     (s.leadtime?.avg || 0).toFixed(2),
@@ -587,201 +520,125 @@
                     (s.dci || 0).toFixed(2)
                 ];
             });
-
-            // DCI 기준 정렬 (높은 순)
             rows.sort((a, b) => parseFloat(b[5]) - parseFloat(a[5]));
-
             return [headers, ...rows];
         }
 
-        // 채워진 설문지 HTML 생성
-        function generateFilledSurveyHTML(data) {
-            const companyName = data.companyInfo?.companyName || '미입력';
-            const surveyDate = data.companyInfo?.surveyDate || '';
-            const scores = data.scores || {};
-            const responses = data.responses || {};
+        // 핵심: 원본 설문지 HTML에 JSON 데이터 채워넣기
+        function generateFilledHTML(template, jsonData) {
+            const companyName = jsonData.companyInfo?.companyName || '미입력';
+            const surveyDate = jsonData.companyInfo?.surveyDate || '';
+            const responses = jsonData.responses || {};
+            const textInputs = jsonData.textInputs || {};
+            const staffCounts = jsonData.staffCounts || {};
+            const checkboxResponses = jsonData.checkboxResponses || {};
+            const remarks = jsonData.remarks || [];
+            const scores = jsonData.scores || {};
 
-            // 라디오 버튼 체크 스크립트 생성
-            let checkScript = '';
-            for (const [name, resp] of Object.entries(responses)) {
-                if (resp.value) {
-                    checkScript += `
-                        try {
-                            const radio = document.querySelector('input[name="${name}"][value="${resp.value}"]');
-                            if (radio) radio.checked = true;
-                            const naCheckbox = document.querySelector('input[name="na_${name}"]');
-                            if (naCheckbox && ${resp.value === 1}) naCheckbox.checked = true;
-                        } catch(e) {}
-                    `;
+            // DCI 점수 표시 배너 추가
+            const scoreBanner = `
+            <div style="background: linear-gradient(135deg, #003366, #004080); color: white; padding: 15px 20px; margin: 0 auto 10px; max-width: 210mm; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+                <div style="font-size: 18px; font-weight: bold;">📋 ${companyName} 설문 결과</div>
+                <div style="display: flex; gap: 15px; font-size: 13px;">
+                    <span>자동화: <strong>${(scores.automation?.avg || 0).toFixed(1)}</strong></span>
+                    <span>표준화: <strong>${(scores.standardization?.avg || 0).toFixed(1)}</strong></span>
+                    <span>L/T: <strong>${(scores.leadtime?.avg || 0).toFixed(1)}</strong></span>
+                    <span>IT: <strong>${(scores.it_system?.avg || 0).toFixed(1)}</strong></span>
+                    <span style="color: #ffd700; font-size: 16px;">DCI: <strong>${(scores.dci || 0).toFixed(2)}</strong></span>
+                </div>
+            </div>`;
+
+            // 데이터 채워넣기 스크립트
+            const fillScript = `
+            <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                const responses = ${JSON.stringify(responses)};
+                const textInputs = ${JSON.stringify(textInputs)};
+                const staffCounts = ${JSON.stringify(staffCounts)};
+                const checkboxResponses = ${JSON.stringify(checkboxResponses)};
+                const remarks = ${JSON.stringify(remarks)};
+
+                // 회사명, 날짜 입력
+                const dateInput = document.querySelector('input[placeholder="2025.12.XX"]');
+                const companyInput = document.querySelector('input[placeholder="기업명"]');
+                if (dateInput) dateInput.value = "${surveyDate}";
+                if (companyInput) companyInput.value = "${companyName}";
+
+                // 라디오 버튼 체크
+                for (const [name, resp] of Object.entries(responses)) {
+                    if (name.startsWith('na_')) {
+                        // 해당없음 체크박스
+                        const cb = document.querySelector('input[name="' + name + '"]');
+                        if (cb) cb.checked = true;
+                    } else {
+                        const radio = document.querySelector('input[name="' + name + '"][value="' + resp.value + '"]');
+                        if (radio) radio.checked = true;
+                    }
                 }
-            }
 
-            return `<!DOCTYPE html>
-<html lang="ko">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>설문결과 - ${companyName}</title>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap');
+                // 체크박스 (자동 생성 결과물 등)
+                for (const [section, labels] of Object.entries(checkboxResponses)) {
+                    labels.forEach(label => {
+                        const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+                        checkboxes.forEach(cb => {
+                            const cbLabel = cb.parentElement?.textContent?.trim();
+                            if (cbLabel && cbLabel.includes(label.replace(/\\s/g, ''))) {
+                                cb.checked = true;
+                            }
+                        });
+                    });
+                }
 
-        body {
-            font-family: 'Noto Sans KR', sans-serif;
-            background-color: #f5f5f5;
-            margin: 0;
-            padding: 20px;
+                // 텍스트 입력
+                for (const [placeholder, value] of Object.entries(textInputs)) {
+                    const input = document.querySelector('input[placeholder="' + placeholder + '"]');
+                    if (input) input.value = value;
+                }
+
+                // 인원수 입력 (팀별)
+                const teamTextareas = document.querySelectorAll('textarea.team-name');
+                teamTextareas.forEach(ta => {
+                    const teamName = ta.value.trim() || ta.placeholder;
+                    if (staffCounts[teamName]) {
+                        const row = ta.closest('tr');
+                        const numbers = row?.querySelectorAll('input[type="number"]');
+                        if (numbers && numbers.length >= 2) {
+                            numbers[0].value = staffCounts[teamName].internal || '';
+                            numbers[1].value = staffCounts[teamName].external || '';
+                        }
+                    }
+                });
+
+                // 비고/특이사항
+                if (remarks.length > 0) {
+                    const remarkTextareas = document.querySelectorAll('.remarks-box textarea');
+                    remarkTextareas.forEach((ta, idx) => {
+                        if (remarks[idx]) ta.value = remarks[idx];
+                    });
+                }
+
+                // 폼 비활성화 (읽기 전용)
+                document.querySelectorAll('input, textarea, select').forEach(el => {
+                    el.style.pointerEvents = 'none';
+                });
+            });
+            <\/script>`;
+
+            // 템플릿에 배너와 스크립트 삽입
+            let result = template;
+
+            // <body> 태그 바로 뒤에 배너 삽입
+            result = result.replace(/<body[^>]*>/i, (match) => match + scoreBanner);
+
+            // </body> 태그 앞에 스크립트 삽입
+            result = result.replace('</body>', fillScript + '</body>');
+
+            // 타이틀 변경
+            result = result.replace(/<title>[^<]*<\/title>/i, `<title>설문결과 - ${companyName}</title>`);
+
+            return result;
         }
 
-        .result-header {
-            background: linear-gradient(135deg, #003366, #004080);
-            color: white;
-            padding: 20px 30px;
-            border-radius: 10px;
-            margin-bottom: 20px;
-            max-width: 800px;
-            margin-left: auto;
-            margin-right: auto;
-        }
-
-        .result-header h1 {
-            margin: 0 0 10px 0;
-            font-size: 20px;
-        }
-
-        .result-header .company {
-            font-size: 28px;
-            font-weight: bold;
-            margin-bottom: 15px;
-        }
-
-        .score-grid {
-            display: grid;
-            grid-template-columns: repeat(5, 1fr);
-            gap: 15px;
-            margin-top: 15px;
-        }
-
-        .score-box {
-            background: rgba(255,255,255,0.15);
-            padding: 12px;
-            border-radius: 8px;
-            text-align: center;
-        }
-
-        .score-box .label {
-            font-size: 11px;
-            opacity: 0.8;
-            margin-bottom: 5px;
-        }
-
-        .score-box .value {
-            font-size: 22px;
-            font-weight: bold;
-        }
-
-        .score-box.dci {
-            background: rgba(255, 215, 0, 0.3);
-        }
-
-        .score-box.dci .value {
-            color: #ffd700;
-        }
-
-        .response-section {
-            background: white;
-            border-radius: 10px;
-            padding: 20px;
-            margin-bottom: 15px;
-            max-width: 800px;
-            margin-left: auto;
-            margin-right: auto;
-        }
-
-        .response-section h3 {
-            color: #003366;
-            margin: 0 0 15px 0;
-            font-size: 16px;
-            border-bottom: 2px solid #003366;
-            padding-bottom: 8px;
-        }
-
-        .response-item {
-            display: flex;
-            justify-content: space-between;
-            padding: 8px 0;
-            border-bottom: 1px solid #eee;
-        }
-
-        .response-item:last-child {
-            border-bottom: none;
-        }
-
-        .response-item .question {
-            color: #666;
-        }
-
-        .response-item .answer {
-            font-weight: 600;
-            color: #003366;
-        }
-
-        @media print {
-            body { background: white; padding: 0; }
-            .result-header { margin: 0 0 20px 0; }
-            .response-section { margin: 0 0 15px 0; box-shadow: none; }
-        }
-    </style>
-</head>
-<body>
-    <div class="result-header">
-        <h1>📋 설문 결과</h1>
-        <div class="company">${companyName}</div>
-        <div>조사 일자: ${surveyDate || data.meta?.exportDateKR || '-'}</div>
-        <div class="score-grid">
-            <div class="score-box">
-                <div class="label">자동화 (40%)</div>
-                <div class="value">${(scores.automation?.avg || 0).toFixed(1)}</div>
-            </div>
-            <div class="score-box">
-                <div class="label">표준화 (25%)</div>
-                <div class="value">${(scores.standardization?.avg || 0).toFixed(1)}</div>
-            </div>
-            <div class="score-box">
-                <div class="label">리드타임 (15%)</div>
-                <div class="value">${(scores.leadtime?.avg || 0).toFixed(1)}</div>
-            </div>
-            <div class="score-box">
-                <div class="label">IT시스템 (20%)</div>
-                <div class="value">${(scores.it_system?.avg || 0).toFixed(1)}</div>
-            </div>
-            <div class="score-box dci">
-                <div class="label">DCI 종합</div>
-                <div class="value">${(scores.dci || 0).toFixed(2)}</div>
-            </div>
-        </div>
-    </div>
-
-    <div class="response-section">
-        <h3>📊 상세 응답 내역</h3>
-        ${Object.entries(responses).map(([key, val]) => `
-            <div class="response-item">
-                <span class="question">${key}</span>
-                <span class="answer">${val.label || val.value || '-'} (${val.value}점)</span>
-            </div>
-        `).join('')}
-    </div>
-
-    ${data.remarks && data.remarks.length > 0 ? `
-    <div class="response-section">
-        <h3>📝 비고/특이사항</h3>
-        ${data.remarks.map(r => `<p>${r}</p>`).join('')}
-    </div>
-    ` : ''}
-</body>
-</html>`;
-        }
-
-        // 유틸리티 함수
         function downloadBlob(blob, fileName) {
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
