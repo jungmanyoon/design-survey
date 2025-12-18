@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>설문 결과 변환기</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.4.0/exceljs.min.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap');
 
@@ -26,7 +26,6 @@
 
         .subtitle { color: #8892b0; text-align: center; margin-bottom: 30px; font-size: 14px; }
 
-        /* 설정 섹션 */
         .config-section {
             background: white;
             border-radius: 10px;
@@ -53,9 +52,7 @@
             color: #555;
         }
 
-        .config-row input[type="file"] {
-            flex: 1;
-        }
+        .config-row input[type="file"] { flex: 1; }
 
         .template-status {
             padding: 8px 15px;
@@ -63,17 +60,9 @@
             font-size: 13px;
         }
 
-        .template-status.loaded {
-            background: #d4edda;
-            color: #155724;
-        }
+        .template-status.loaded { background: #d4edda; color: #155724; }
+        .template-status.empty { background: #fff3cd; color: #856404; }
 
-        .template-status.empty {
-            background: #fff3cd;
-            color: #856404;
-        }
-
-        /* 드롭존 */
         .dropzone {
             background: white;
             border: 3px dashed #ccc;
@@ -94,7 +83,6 @@
         .dropzone-text { font-size: 18px; color: #666; margin-bottom: 10px; }
         .dropzone-hint { font-size: 13px; color: #999; }
 
-        /* 파일 목록 */
         .file-list {
             background: white;
             border-radius: 10px;
@@ -143,7 +131,6 @@
             margin-left: 10px;
         }
 
-        /* 버튼 */
         .actions {
             display: flex;
             gap: 15px;
@@ -185,7 +172,6 @@
             transform: none;
         }
 
-        /* 진행 상태 */
         .progress-section {
             background: white;
             border-radius: 10px;
@@ -213,7 +199,6 @@
 
         .progress-text { text-align: center; font-size: 14px; color: #666; }
 
-        /* 요약 테이블 */
         .summary {
             background: white;
             border-radius: 10px;
@@ -240,7 +225,6 @@
         .summary-table th { background: #003366; color: white; }
         .summary-table tr:nth-child(even) { background: #f8f9fa; }
 
-        /* 안내 */
         .info-box {
             background: rgba(255,255,255,0.1);
             border-radius: 10px;
@@ -258,9 +242,8 @@
 <body>
     <div class="container">
         <h1>📊 설문 결과 변환기</h1>
-        <p class="subtitle">JSON 파일 → 원본 설문지에 응답이 채워진 HTML + Excel</p>
+        <p class="subtitle">JSON 파일 → 원본 설문지에 응답이 채워진 HTML + 분석 Excel 대시보드</p>
 
-        <!-- 설문지 템플릿 업로드 -->
         <div class="config-section">
             <h3>1️⃣ 설문지 템플릿 선택</h3>
             <div class="config-row">
@@ -273,7 +256,6 @@
             </div>
         </div>
 
-        <!-- JSON 드롭존 -->
         <div class="dropzone" id="dropzone">
             <div class="dropzone-icon">📁</div>
             <div class="dropzone-text">2️⃣ JSON 파일들을 여기에 드래그 & 드롭</div>
@@ -281,23 +263,20 @@
             <input type="file" id="fileInput" multiple accept=".json" style="display: none;">
         </div>
 
-        <!-- 파일 목록 -->
         <div class="file-list" id="fileList">
             <h3>📋 업로드된 JSON 파일 (<span id="fileCount">0</span>개)</h3>
             <div id="fileItems"></div>
         </div>
 
-        <!-- 버튼 -->
         <div class="actions">
             <button class="btn btn-primary" id="btnConvert" disabled>
                 🔄 변환 및 다운로드 (ZIP)
             </button>
             <button class="btn btn-secondary" id="btnExcelOnly" disabled>
-                📊 Excel만 다운로드
+                📊 Excel 분석만 다운로드
             </button>
         </div>
 
-        <!-- 진행 상태 -->
         <div class="progress-section" id="progressSection">
             <div class="progress-bar">
                 <div class="progress-fill" id="progressFill"></div>
@@ -305,7 +284,6 @@
             <div class="progress-text" id="progressText">변환 중...</div>
         </div>
 
-        <!-- 요약 -->
         <div class="summary" id="summary">
             <h3>📈 DCI 점수 요약</h3>
             <table class="summary-table">
@@ -323,14 +301,19 @@
             </table>
         </div>
 
-        <!-- 안내 -->
         <div class="info-box">
             <h4>📌 사용 방법</h4>
             <ul>
                 <li><strong>1단계:</strong> 설문지 템플릿 HTML 파일 선택 (설문지_한글.html)</li>
                 <li><strong>2단계:</strong> 응답자로부터 받은 JSON 파일들 드래그 & 드롭</li>
                 <li><strong>3단계:</strong> "변환 및 다운로드" 클릭</li>
-                <li>결과: 각 업체별로 응답이 채워진 설문지 HTML + 종합분석 Excel</li>
+                <li>결과: 각 업체별 설문지 HTML + <strong>종합분석 Excel 대시보드</strong></li>
+            </ul>
+            <h4 style="margin-top: 15px;">📊 Excel 분석 내용</h4>
+            <ul>
+                <li><strong>대시보드:</strong> 전체 현황 요약, 선진사 대비 Gap 분석</li>
+                <li><strong>상세분석:</strong> 카테고리별 점수 및 순위</li>
+                <li><strong>Gap분석:</strong> 항목별 개선 필요 영역 식별</li>
             </ul>
         </div>
     </div>
@@ -338,6 +321,13 @@
     <script>
         let surveyTemplate = null;
         let uploadedFiles = [];
+
+        // 벤치마크 기준점
+        const BENCHMARK = {
+            globalTop: 4.4,      // ABB, Siemens
+            domestic: 3.7,       // 현대, 효성
+            average: 2.8         // 업계 평균
+        };
 
         const templateInput = document.getElementById('templateInput');
         const templateStatus = document.getElementById('templateStatus');
@@ -354,7 +344,6 @@
         const summary = document.getElementById('summary');
         const summaryBody = document.getElementById('summaryBody');
 
-        // 템플릿 로드
         templateInput.addEventListener('change', async (e) => {
             const file = e.target.files[0];
             if (file && file.name.endsWith('.html')) {
@@ -366,7 +355,6 @@
             }
         });
 
-        // 드롭존
         dropzone.addEventListener('click', () => fileInput.click());
         dropzone.addEventListener('dragover', (e) => {
             e.preventDefault();
@@ -452,6 +440,344 @@
             }).join('');
         }
 
+        // =====================================================
+        // Excel 생성 - ExcelJS로 전문적인 대시보드 생성
+        // =====================================================
+        async function generateExcelDashboard() {
+            const workbook = new ExcelJS.Workbook();
+            workbook.creator = '설계혁신TFT';
+            workbook.created = new Date();
+
+            // 색상 정의
+            const colors = {
+                headerBg: '003366',
+                headerText: 'FFFFFF',
+                excellent: '28A745',    // 4.0 이상 (초록)
+                good: '17A2B8',         // 3.0~4.0 (파랑)
+                warning: 'FFC107',      // 2.0~3.0 (노랑)
+                danger: 'DC3545',       // 2.0 미만 (빨강)
+                lightGray: 'F8F9FA',
+                borderColor: 'DEE2E6'
+            };
+
+            // 점수별 색상 반환
+            function getScoreColor(score) {
+                if (score >= 4.0) return colors.excellent;
+                if (score >= 3.0) return colors.good;
+                if (score >= 2.0) return colors.warning;
+                return colors.danger;
+            }
+
+            // 점수별 등급
+            function getGrade(score) {
+                if (score >= 4.5) return 'S';
+                if (score >= 4.0) return 'A';
+                if (score >= 3.5) return 'B+';
+                if (score >= 3.0) return 'B';
+                if (score >= 2.5) return 'C+';
+                if (score >= 2.0) return 'C';
+                return 'D';
+            }
+
+            // 데이터 준비
+            const companies = uploadedFiles.map(f => ({
+                name: f.companyName,
+                automation: f.data.scores?.automation?.avg || 0,
+                standardization: f.data.scores?.standardization?.avg || 0,
+                leadtime: f.data.scores?.leadtime?.avg || 0,
+                it_system: f.data.scores?.it_system?.avg || 0,
+                dci: f.data.scores?.dci || 0
+            })).sort((a, b) => b.dci - a.dci);
+
+            // =====================================================
+            // Sheet 1: 대시보드
+            // =====================================================
+            const dashboardSheet = workbook.addWorksheet('대시보드', {
+                properties: { tabColor: { argb: '003366' } }
+            });
+
+            // 제목
+            dashboardSheet.mergeCells('A1:H1');
+            const titleCell = dashboardSheet.getCell('A1');
+            titleCell.value = '📊 설계 역량 벤치마킹 분석 대시보드';
+            titleCell.font = { name: '맑은 고딕', size: 20, bold: true, color: { argb: '003366' } };
+            titleCell.alignment = { horizontal: 'center', vertical: 'middle' };
+            dashboardSheet.getRow(1).height = 40;
+
+            // 분석일자
+            dashboardSheet.mergeCells('A2:H2');
+            const dateCell = dashboardSheet.getCell('A2');
+            dateCell.value = `분석일: ${new Date().toLocaleDateString('ko-KR')} | 분석 대상: ${companies.length}개 회사`;
+            dateCell.font = { name: '맑은 고딕', size: 11, color: { argb: '666666' } };
+            dateCell.alignment = { horizontal: 'center' };
+
+            // 벤치마크 기준 박스
+            dashboardSheet.mergeCells('A4:H4');
+            dashboardSheet.getCell('A4').value = '■ 벤치마크 기준';
+            dashboardSheet.getCell('A4').font = { name: '맑은 고딕', size: 12, bold: true };
+
+            dashboardSheet.getCell('A5').value = '글로벌 Top (ABB, Siemens)';
+            dashboardSheet.getCell('B5').value = BENCHMARK.globalTop;
+            dashboardSheet.getCell('B5').fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: colors.excellent } };
+            dashboardSheet.getCell('B5').font = { color: { argb: 'FFFFFF' }, bold: true };
+
+            dashboardSheet.getCell('C5').value = '국내 선두 (현대, 효성)';
+            dashboardSheet.getCell('D5').value = BENCHMARK.domestic;
+            dashboardSheet.getCell('D5').fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: colors.good } };
+            dashboardSheet.getCell('D5').font = { color: { argb: 'FFFFFF' }, bold: true };
+
+            dashboardSheet.getCell('E5').value = '업계 평균';
+            dashboardSheet.getCell('F5').value = BENCHMARK.average;
+            dashboardSheet.getCell('F5').fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: colors.warning } };
+            dashboardSheet.getCell('F5').font = { bold: true };
+
+            // DCI 종합 순위표
+            dashboardSheet.mergeCells('A7:H7');
+            dashboardSheet.getCell('A7').value = '■ DCI 종합 순위 (Design Competitiveness Index)';
+            dashboardSheet.getCell('A7').font = { name: '맑은 고딕', size: 12, bold: true };
+
+            // 헤더
+            const headerRow = dashboardSheet.getRow(8);
+            const headers = ['순위', '회사명', '자동화(40%)', '표준화(25%)', '리드타임(15%)', 'IT시스템(20%)', 'DCI 점수', '등급'];
+            headers.forEach((h, i) => {
+                const cell = headerRow.getCell(i + 1);
+                cell.value = h;
+                cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: colors.headerBg } };
+                cell.font = { name: '맑은 고딕', size: 11, bold: true, color: { argb: colors.headerText } };
+                cell.alignment = { horizontal: 'center', vertical: 'middle' };
+                cell.border = {
+                    top: { style: 'thin', color: { argb: colors.borderColor } },
+                    bottom: { style: 'thin', color: { argb: colors.borderColor } },
+                    left: { style: 'thin', color: { argb: colors.borderColor } },
+                    right: { style: 'thin', color: { argb: colors.borderColor } }
+                };
+            });
+            headerRow.height = 25;
+
+            // 데이터
+            companies.forEach((company, idx) => {
+                const row = dashboardSheet.getRow(9 + idx);
+                const rowData = [
+                    idx + 1,
+                    company.name,
+                    company.automation.toFixed(2),
+                    company.standardization.toFixed(2),
+                    company.leadtime.toFixed(2),
+                    company.it_system.toFixed(2),
+                    company.dci.toFixed(2),
+                    getGrade(company.dci)
+                ];
+
+                rowData.forEach((val, i) => {
+                    const cell = row.getCell(i + 1);
+                    cell.value = val;
+                    cell.alignment = { horizontal: 'center', vertical: 'middle' };
+                    cell.border = {
+                        top: { style: 'thin', color: { argb: colors.borderColor } },
+                        bottom: { style: 'thin', color: { argb: colors.borderColor } },
+                        left: { style: 'thin', color: { argb: colors.borderColor } },
+                        right: { style: 'thin', color: { argb: colors.borderColor } }
+                    };
+
+                    // 점수 셀에 조건부 색상
+                    if (i >= 2 && i <= 6) {
+                        const score = parseFloat(val);
+                        cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: getScoreColor(score) } };
+                        cell.font = { color: { argb: score >= 2.0 && score < 3.0 ? '000000' : 'FFFFFF' }, bold: i === 6 };
+                    }
+
+                    // 등급 셀 강조
+                    if (i === 7) {
+                        cell.font = { bold: true, size: 12 };
+                        cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: getScoreColor(company.dci) } };
+                        cell.font = { color: { argb: company.dci >= 2.0 && company.dci < 3.0 ? '000000' : 'FFFFFF' }, bold: true };
+                    }
+                });
+
+                // 짝수행 배경
+                if (idx % 2 === 1) {
+                    for (let i = 1; i <= 2; i++) {
+                        row.getCell(i).fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: colors.lightGray } };
+                    }
+                }
+
+                row.height = 22;
+            });
+
+            // 컬럼 너비
+            dashboardSheet.columns = [
+                { width: 8 }, { width: 18 }, { width: 14 }, { width: 14 },
+                { width: 14 }, { width: 14 }, { width: 12 }, { width: 8 }
+            ];
+
+            // =====================================================
+            // Sheet 2: Gap 분석
+            // =====================================================
+            const gapSheet = workbook.addWorksheet('Gap분석', {
+                properties: { tabColor: { argb: 'DC3545' } }
+            });
+
+            gapSheet.mergeCells('A1:G1');
+            gapSheet.getCell('A1').value = '📉 선진사 대비 Gap 분석 (글로벌 Top 기준: 4.4점)';
+            gapSheet.getCell('A1').font = { name: '맑은 고딕', size: 16, bold: true, color: { argb: '003366' } };
+            gapSheet.getRow(1).height = 35;
+
+            // Gap 헤더
+            const gapHeaderRow = gapSheet.getRow(3);
+            const gapHeaders = ['회사명', '자동화 Gap', '표준화 Gap', '리드타임 Gap', 'IT시스템 Gap', 'DCI Gap', '달성률(%)'];
+            gapHeaders.forEach((h, i) => {
+                const cell = gapHeaderRow.getCell(i + 1);
+                cell.value = h;
+                cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: colors.headerBg } };
+                cell.font = { name: '맑은 고딕', size: 11, bold: true, color: { argb: colors.headerText } };
+                cell.alignment = { horizontal: 'center', vertical: 'middle' };
+                cell.border = {
+                    top: { style: 'thin' }, bottom: { style: 'thin' },
+                    left: { style: 'thin' }, right: { style: 'thin' }
+                };
+            });
+
+            companies.forEach((company, idx) => {
+                const row = gapSheet.getRow(4 + idx);
+                const gapData = [
+                    company.name,
+                    (company.automation - BENCHMARK.globalTop).toFixed(2),
+                    (company.standardization - BENCHMARK.globalTop).toFixed(2),
+                    (company.leadtime - BENCHMARK.globalTop).toFixed(2),
+                    (company.it_system - BENCHMARK.globalTop).toFixed(2),
+                    (company.dci - BENCHMARK.globalTop).toFixed(2),
+                    ((company.dci / BENCHMARK.globalTop) * 100).toFixed(1)
+                ];
+
+                gapData.forEach((val, i) => {
+                    const cell = row.getCell(i + 1);
+                    cell.value = val;
+                    cell.alignment = { horizontal: 'center', vertical: 'middle' };
+                    cell.border = {
+                        top: { style: 'thin' }, bottom: { style: 'thin' },
+                        left: { style: 'thin' }, right: { style: 'thin' }
+                    };
+
+                    // Gap 값에 색상 (음수는 빨강, 양수는 초록)
+                    if (i >= 1 && i <= 5) {
+                        const gap = parseFloat(val);
+                        if (gap < 0) {
+                            cell.font = { color: { argb: colors.danger }, bold: true };
+                        } else {
+                            cell.font = { color: { argb: colors.excellent }, bold: true };
+                        }
+                    }
+
+                    // 달성률 색상
+                    if (i === 6) {
+                        const rate = parseFloat(val);
+                        cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: getScoreColor(rate / 25) } };
+                        cell.font = { color: { argb: rate < 75 ? 'FFFFFF' : '000000' }, bold: true };
+                    }
+                });
+            });
+
+            gapSheet.columns = [
+                { width: 18 }, { width: 14 }, { width: 14 }, { width: 14 },
+                { width: 14 }, { width: 12 }, { width: 12 }
+            ];
+
+            // 개선 우선순위 섹션
+            const priorityStartRow = 4 + companies.length + 2;
+            gapSheet.mergeCells(`A${priorityStartRow}:G${priorityStartRow}`);
+            gapSheet.getCell(`A${priorityStartRow}`).value = '■ 카테고리별 평균 Gap (개선 우선순위)';
+            gapSheet.getCell(`A${priorityStartRow}`).font = { name: '맑은 고딕', size: 12, bold: true };
+
+            const avgGaps = [
+                { name: '설계 자동화 (40%)', gap: companies.reduce((s, c) => s + c.automation, 0) / companies.length - BENCHMARK.globalTop },
+                { name: '설계 표준화 (25%)', gap: companies.reduce((s, c) => s + c.standardization, 0) / companies.length - BENCHMARK.globalTop },
+                { name: '리드타임 (15%)', gap: companies.reduce((s, c) => s + c.leadtime, 0) / companies.length - BENCHMARK.globalTop },
+                { name: 'IT시스템 (20%)', gap: companies.reduce((s, c) => s + c.it_system, 0) / companies.length - BENCHMARK.globalTop }
+            ].sort((a, b) => a.gap - b.gap);
+
+            avgGaps.forEach((item, idx) => {
+                const row = gapSheet.getRow(priorityStartRow + 2 + idx);
+                row.getCell(1).value = `${idx + 1}순위`;
+                row.getCell(2).value = item.name;
+                row.getCell(3).value = item.gap.toFixed(2);
+                row.getCell(3).font = { color: { argb: colors.danger }, bold: true };
+                row.getCell(4).value = '← 우선 개선 필요';
+                row.getCell(4).font = { color: { argb: '666666' } };
+            });
+
+            // =====================================================
+            // Sheet 3: 상세 데이터
+            // =====================================================
+            const detailSheet = workbook.addWorksheet('상세데이터', {
+                properties: { tabColor: { argb: '17A2B8' } }
+            });
+
+            detailSheet.mergeCells('A1:F1');
+            detailSheet.getCell('A1').value = '📋 전체 응답 데이터 (정렬: DCI 점수 내림차순)';
+            detailSheet.getCell('A1').font = { name: '맑은 고딕', size: 16, bold: true, color: { argb: '003366' } };
+            detailSheet.getRow(1).height = 35;
+
+            // 통계 요약
+            const avgDCI = companies.reduce((s, c) => s + c.dci, 0) / companies.length;
+            const maxDCI = Math.max(...companies.map(c => c.dci));
+            const minDCI = Math.min(...companies.map(c => c.dci));
+
+            detailSheet.getCell('A3').value = '평균 DCI:';
+            detailSheet.getCell('B3').value = avgDCI.toFixed(2);
+            detailSheet.getCell('B3').font = { bold: true };
+
+            detailSheet.getCell('C3').value = '최고 DCI:';
+            detailSheet.getCell('D3').value = maxDCI.toFixed(2);
+            detailSheet.getCell('D3').font = { bold: true, color: { argb: colors.excellent } };
+
+            detailSheet.getCell('E3').value = '최저 DCI:';
+            detailSheet.getCell('F3').value = minDCI.toFixed(2);
+            detailSheet.getCell('F3').font = { bold: true, color: { argb: colors.danger } };
+
+            // 상세 데이터 테이블
+            const detailHeaderRow = detailSheet.getRow(5);
+            const detailHeaders = ['순위', '회사명', '자동화', '표준화', '리드타임', 'IT시스템', 'DCI', '등급', '선진사대비'];
+            detailHeaders.forEach((h, i) => {
+                const cell = detailHeaderRow.getCell(i + 1);
+                cell.value = h;
+                cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: colors.headerBg } };
+                cell.font = { name: '맑은 고딕', size: 10, bold: true, color: { argb: colors.headerText } };
+                cell.alignment = { horizontal: 'center' };
+                cell.border = { top: { style: 'thin' }, bottom: { style: 'thin' }, left: { style: 'thin' }, right: { style: 'thin' } };
+            });
+
+            companies.forEach((company, idx) => {
+                const row = detailSheet.getRow(6 + idx);
+                const rowData = [
+                    idx + 1,
+                    company.name,
+                    company.automation.toFixed(2),
+                    company.standardization.toFixed(2),
+                    company.leadtime.toFixed(2),
+                    company.it_system.toFixed(2),
+                    company.dci.toFixed(2),
+                    getGrade(company.dci),
+                    `${((company.dci / BENCHMARK.globalTop) * 100).toFixed(0)}%`
+                ];
+
+                rowData.forEach((val, i) => {
+                    const cell = row.getCell(i + 1);
+                    cell.value = val;
+                    cell.alignment = { horizontal: 'center' };
+                    cell.border = { top: { style: 'thin' }, bottom: { style: 'thin' }, left: { style: 'thin' }, right: { style: 'thin' } };
+                });
+            });
+
+            detailSheet.columns = [
+                { width: 6 }, { width: 16 }, { width: 10 }, { width: 10 },
+                { width: 10 }, { width: 10 }, { width: 8 }, { width: 6 }, { width: 10 }
+            ];
+
+            // Excel 버퍼 생성
+            const buffer = await workbook.xlsx.writeBuffer();
+            return buffer;
+        }
+
         // 변환
         btnConvert.addEventListener('click', async () => {
             if (!surveyTemplate || uploadedFiles.length === 0) return;
@@ -474,13 +800,9 @@
                 }
 
                 // Excel 생성
-                progressText.textContent = 'Excel 생성 중...';
-                const wb = XLSX.utils.book_new();
-                const ws = XLSX.utils.aoa_to_sheet(generateExcelData());
-                ws['!cols'] = [{wch:15},{wch:12},{wch:12},{wch:12},{wch:12},{wch:10}];
-                XLSX.utils.book_append_sheet(wb, ws, 'DCI 분석');
-                const excelBuffer = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
-                zip.file('종합분석_DCI.xlsx', excelBuffer);
+                progressText.textContent = 'Excel 분석 대시보드 생성 중...';
+                const excelBuffer = await generateExcelDashboard();
+                zip.file('DCI_분석_대시보드.xlsx', excelBuffer);
 
                 progressFill.style.width = '100%';
                 progressText.textContent = 'ZIP 생성 중...';
@@ -494,35 +816,31 @@
 
             } catch (err) {
                 alert('오류: ' + err.message);
+                console.error(err);
                 progressSection.classList.remove('show');
             }
         });
 
         // Excel만 다운로드
-        btnExcelOnly.addEventListener('click', () => {
-            const wb = XLSX.utils.book_new();
-            const ws = XLSX.utils.aoa_to_sheet(generateExcelData());
-            ws['!cols'] = [{wch:15},{wch:12},{wch:12},{wch:12},{wch:12},{wch:10}];
-            XLSX.utils.book_append_sheet(wb, ws, 'DCI 분석');
-            XLSX.writeFile(wb, `DCI_종합분석_${new Date().toISOString().slice(0,10)}.xlsx`);
-        });
+        btnExcelOnly.addEventListener('click', async () => {
+            try {
+                progressSection.classList.add('show');
+                progressText.textContent = 'Excel 분석 대시보드 생성 중...';
+                progressFill.style.width = '50%';
 
-        function generateExcelData() {
-            const headers = ['회사명', '자동화(40%)', '표준화(25%)', '리드타임(15%)', 'IT시스템(20%)', 'DCI'];
-            const rows = uploadedFiles.map(f => {
-                const s = f.data.scores || {};
-                return [
-                    f.companyName,
-                    (s.automation?.avg || 0).toFixed(2),
-                    (s.standardization?.avg || 0).toFixed(2),
-                    (s.leadtime?.avg || 0).toFixed(2),
-                    (s.it_system?.avg || 0).toFixed(2),
-                    (s.dci || 0).toFixed(2)
-                ];
-            });
-            rows.sort((a, b) => parseFloat(b[5]) - parseFloat(a[5]));
-            return [headers, ...rows];
-        }
+                const buffer = await generateExcelDashboard();
+                const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+                downloadBlob(blob, `DCI_분석_대시보드_${new Date().toISOString().slice(0, 10)}.xlsx`);
+
+                progressFill.style.width = '100%';
+                progressText.textContent = '✅ 완료!';
+                setTimeout(() => progressSection.classList.remove('show'), 2000);
+            } catch (err) {
+                alert('오류: ' + err.message);
+                console.error(err);
+                progressSection.classList.remove('show');
+            }
+        });
 
         // 핵심: 원본 설문지 HTML에 JSON 데이터 채워넣기
         function generateFilledHTML(template, jsonData) {
@@ -535,7 +853,6 @@
             const remarks = jsonData.remarks || [];
             const scores = jsonData.scores || {};
 
-            // DCI 점수 표시 배너 추가
             const scoreBanner = `
             <div style="background: linear-gradient(135deg, #003366, #004080); color: white; padding: 15px 20px; margin: 0 auto 10px; max-width: 210mm; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
                 <div style="font-size: 18px; font-weight: bold;">📋 ${companyName} 설문 결과</div>
@@ -548,7 +865,6 @@
                 </div>
             </div>`;
 
-            // 데이터 채워넣기 스크립트
             const fillScript = `
             <script>
             document.addEventListener('DOMContentLoaded', function() {
@@ -558,16 +874,13 @@
                 const checkboxResponses = ${JSON.stringify(checkboxResponses)};
                 const remarks = ${JSON.stringify(remarks)};
 
-                // 회사명, 날짜 입력
                 const dateInput = document.querySelector('input[placeholder="2025.12.XX"]');
                 const companyInput = document.querySelector('input[placeholder="기업명"]');
                 if (dateInput) dateInput.value = "${surveyDate}";
                 if (companyInput) companyInput.value = "${companyName}";
 
-                // 라디오 버튼 체크
                 for (const [name, resp] of Object.entries(responses)) {
                     if (name.startsWith('na_')) {
-                        // 해당없음 체크박스
                         const cb = document.querySelector('input[name="' + name + '"]');
                         if (cb) cb.checked = true;
                     } else {
@@ -576,7 +889,6 @@
                     }
                 }
 
-                // 체크박스 (자동 생성 결과물 등)
                 for (const [section, labels] of Object.entries(checkboxResponses)) {
                     labels.forEach(label => {
                         const checkboxes = document.querySelectorAll('input[type="checkbox"]');
@@ -589,13 +901,11 @@
                     });
                 }
 
-                // 텍스트 입력
                 for (const [placeholder, value] of Object.entries(textInputs)) {
                     const input = document.querySelector('input[placeholder="' + placeholder + '"]');
                     if (input) input.value = value;
                 }
 
-                // 인원수 입력 (팀별)
                 const teamTextareas = document.querySelectorAll('textarea.team-name');
                 teamTextareas.forEach(ta => {
                     const teamName = ta.value.trim() || ta.placeholder;
@@ -609,7 +919,6 @@
                     }
                 });
 
-                // 비고/특이사항
                 if (remarks.length > 0) {
                     const remarkTextareas = document.querySelectorAll('.remarks-box textarea');
                     remarkTextareas.forEach((ta, idx) => {
@@ -617,25 +926,16 @@
                     });
                 }
 
-                // 폼 비활성화 (읽기 전용)
                 document.querySelectorAll('input, textarea, select').forEach(el => {
                     el.style.pointerEvents = 'none';
                 });
             });
             <\/script>`;
 
-            // 템플릿에 배너와 스크립트 삽입
             let result = template;
-
-            // <body> 태그 바로 뒤에 배너 삽입
             result = result.replace(/<body[^>]*>/i, (match) => match + scoreBanner);
-
-            // </body> 태그 앞에 스크립트 삽입
             result = result.replace('</body>', fillScript + '</body>');
-
-            // 타이틀 변경
             result = result.replace(/<title>[^<]*<\/title>/i, `<title>설문결과 - ${companyName}</title>`);
-
             return result;
         }
 
