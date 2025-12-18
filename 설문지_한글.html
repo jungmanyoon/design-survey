@@ -1893,6 +1893,17 @@ Chrome 인쇄 대화상자에서:
             <div class="section-title">5. IT 시스템 및 데이터 연동 (IT Systems & Interface)</div>
             <div class="sub-guide">* ERP, PDM, PMS 등 주요 시스템 운영 현황과 연동 방식을 체크해 주세요.</div>
 
+            <!-- 용어 설명 박스 -->
+            <div style="background: #f0f4f8; border: 1px solid #ccc; border-radius: 5px; padding: 8px 12px; margin: 8px 0; font-size: 9px; line-height: 1.6;">
+                <strong>📖 용어 설명</strong><br>
+                • <strong>ERP</strong>: 전사자원관리 - 구매/생산/재고/회계 통합 시스템 (예: SAP, Oracle)
+                • <strong>PDM</strong>: 제품데이터관리 - 도면/BOM/문서 버전 관리<br>
+                • <strong>PLM</strong>: 제품수명주기관리 - 설계~폐기까지 전체 이력 관리
+                • <strong>PMS</strong>: 프로젝트관리시스템 - 일정/자원/진척 관리<br>
+                • <strong>ECO</strong>: 설계변경오더 - 공식적인 설계 변경 승인 프로세스
+                • <strong>KMS</strong>: 지식관리시스템 - 노하우/기술문서 공유 시스템
+            </div>
+
             <!-- 시스템 보유 현황 테이블 -->
             <table style="margin-bottom: 8px;">
                 <colgroup>
@@ -1955,13 +1966,13 @@ Chrome 인쇄 대화상자에서:
                     </td>
                 </tr>
                 <tr>
-                    <th>설계 변경 연동</th>
-                    <td class="left-align" style="font-size:10px;">
-                        <label><input type="radio" name="eco" value="1"> 이중 작업</label>
-                        <label><input type="radio" name="eco" value="2"> 수동 통보</label>
-                        <label><input type="radio" name="eco" value="3"> 변경 요청서</label>
-                        <label><input type="radio" name="eco" value="4"> ECO 프로세스</label>
-                        <label><input type="radio" name="eco" value="5"> 자동 변경 연동</label>
+                    <th>설계 변경 연동<br><span style="font-weight:normal;font-size:8px;">(설계 변경 시 후속 처리)</span></th>
+                    <td class="left-align" style="font-size:9px;">
+                        <label><input type="radio" name="eco" value="1"> 이중작업(각 시스템 별도 수정)</label>
+                        <label><input type="radio" name="eco" value="2"> 수동통보(메일/전화로 알림)</label>
+                        <label><input type="radio" name="eco" value="3"> 변경요청서(문서 결재)</label>
+                        <label><input type="radio" name="eco" value="4"> ECO프로세스(시스템 워크플로우)</label>
+                        <label><input type="radio" name="eco" value="5"> 자동연동(BOM/ERP 자동반영)</label>
                     </td>
                 </tr>
                 <tr>
