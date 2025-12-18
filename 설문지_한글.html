@@ -1279,12 +1279,13 @@ Chrome 인쇄 대화상자에서:
             <div class="section-title">2. 설계 자동화 시스템 현황 (Design Automation)</div>
             <div class="sub-guide">* 설계할 때 컴퓨터가 자동으로 해주는 부분이 어디까지인지 체크해 주세요.</div>
 
-            <table style="margin-top: 5px; font-size: 10px;" class="automation-table">
+            <table style="margin-top: 5px; font-size: 9px;" class="automation-table">
                 <thead>
                     <tr>
-                        <th style="width: 12%;">부품 구분</th>
-                        <th style="width: 50%;">자동화 수준 (5점 척도)</th>
-                        <th style="width: 38%;">자동 생성 결과물</th>
+                        <th style="width: 9%;">부품 구분</th>
+                        <th style="width: 36%;">자동화 수준 (5점 척도)</th>
+                        <th style="width: 28%;">자동 생성 결과물</th>
+                        <th style="width: 27%;">수작업 보정률 (5점 척도)</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -1303,6 +1304,13 @@ Chrome 인쇄 대화상자에서:
                             <label><input type="checkbox"> 절연설계검토서</label>
                             <label><input type="checkbox"> 단락검토서</label>
                         </td>
+                        <td class="left-align">
+                            <label><input type="radio" name="corr_elec" value="1"> 50%↑</label>
+                            <label><input type="radio" name="corr_elec" value="2"> 30~50%</label>
+                            <label><input type="radio" name="corr_elec" value="3"> 10~30%</label>
+                            <label><input type="radio" name="corr_elec" value="4"> 5~10%</label>
+                            <label><input type="radio" name="corr_elec" value="5"> 5%↓</label>
+                        </td>
                     </tr>
                     <!-- 전계해석 -->
                     <tr>
@@ -1317,6 +1325,13 @@ Chrome 인쇄 대화상자에서:
                         <td class="left-align">
                             <label><input type="checkbox"> 전계분포도</label>
                             <label><input type="checkbox"> 해석보고서</label>
+                        </td>
+                        <td class="left-align">
+                            <label><input type="radio" name="corr_fea" value="1"> 50%↑</label>
+                            <label><input type="radio" name="corr_fea" value="2"> 30~50%</label>
+                            <label><input type="radio" name="corr_fea" value="3"> 10~30%</label>
+                            <label><input type="radio" name="corr_fea" value="4"> 5~10%</label>
+                            <label><input type="radio" name="corr_fea" value="5"> 5%↓</label>
                         </td>
                     </tr>
                     <!-- 권선 -->
@@ -1335,6 +1350,13 @@ Chrome 인쇄 대화상자에서:
                             <label><input type="checkbox"> 3D Draft</label>
                             <label><input type="checkbox"> 자재표</label>
                         </td>
+                        <td class="left-align">
+                            <label><input type="radio" name="corr_wind" value="1"> 50%↑</label>
+                            <label><input type="radio" name="corr_wind" value="2"> 30~50%</label>
+                            <label><input type="radio" name="corr_wind" value="3"> 10~30%</label>
+                            <label><input type="radio" name="corr_wind" value="4"> 5~10%</label>
+                            <label><input type="radio" name="corr_wind" value="5"> 5%↓</label>
+                        </td>
                     </tr>
                     <!-- 철심/클램프 -->
                     <tr>
@@ -1351,6 +1373,13 @@ Chrome 인쇄 대화상자에서:
                             <label><input type="checkbox"> 2D도면</label>
                             <label><input type="checkbox"> 3D Draft</label>
                             <label><input type="checkbox"> 자재BOM</label>
+                        </td>
+                        <td class="left-align">
+                            <label><input type="radio" name="corr_core" value="1"> 50%↑</label>
+                            <label><input type="radio" name="corr_core" value="2"> 30~50%</label>
+                            <label><input type="radio" name="corr_core" value="3"> 10~30%</label>
+                            <label><input type="radio" name="corr_core" value="4"> 5~10%</label>
+                            <label><input type="radio" name="corr_core" value="5"> 5%↓</label>
                         </td>
                     </tr>
                     <!-- 중신/리드 -->
@@ -1370,6 +1399,13 @@ Chrome 인쇄 대화상자에서:
                             <label><input type="checkbox"> 치수표</label>
                             <label><input type="checkbox"> 자재표</label>
                         </td>
+                        <td class="left-align">
+                            <label><input type="radio" name="corr_ap" value="1"> 50%↑</label>
+                            <label><input type="radio" name="corr_ap" value="2"> 30~50%</label>
+                            <label><input type="radio" name="corr_ap" value="3"> 10~30%</label>
+                            <label><input type="radio" name="corr_ap" value="4"> 5~10%</label>
+                            <label><input type="radio" name="corr_ap" value="5"> 5%↓</label>
+                        </td>
                     </tr>
                     <!-- 외함/탱크 -->
                     <tr>
@@ -1387,6 +1423,13 @@ Chrome 인쇄 대화상자에서:
                             <label><input type="checkbox"> 3D Draft</label>
                             <label><input type="checkbox"> 용접BOM</label>
                         </td>
+                        <td class="left-align">
+                            <label><input type="radio" name="corr_tank" value="1"> 50%↑</label>
+                            <label><input type="radio" name="corr_tank" value="2"> 30~50%</label>
+                            <label><input type="radio" name="corr_tank" value="3"> 10~30%</label>
+                            <label><input type="radio" name="corr_tank" value="4"> 5~10%</label>
+                            <label><input type="radio" name="corr_tank" value="5"> 5%↓</label>
+                        </td>
                     </tr>
                     <!-- 승인도면 -->
                     <tr>
@@ -1401,6 +1444,13 @@ Chrome 인쇄 대화상자에서:
                         <td class="left-align">
                             <label><input type="checkbox"> 3D모델</label>
                             <label><input type="checkbox"> 2D도면</label>
+                        </td>
+                        <td class="left-align">
+                            <label><input type="radio" name="corr_approval" value="1"> 50%↑</label>
+                            <label><input type="radio" name="corr_approval" value="2"> 30~50%</label>
+                            <label><input type="radio" name="corr_approval" value="3"> 10~30%</label>
+                            <label><input type="radio" name="corr_approval" value="4"> 5~10%</label>
+                            <label><input type="radio" name="corr_approval" value="5"> 5%↓</label>
                         </td>
                     </tr>
                     <!-- 기계해석 -->
@@ -1418,6 +1468,13 @@ Chrome 인쇄 대화상자에서:
                             <label><input type="checkbox"> 진동해석</label>
                             <label><input type="checkbox"> 냉각해석</label>
                             <label><input type="checkbox"> 구조해석</label>
+                        </td>
+                        <td class="left-align">
+                            <label><input type="radio" name="corr_mech" value="1"> 50%↑</label>
+                            <label><input type="radio" name="corr_mech" value="2"> 30~50%</label>
+                            <label><input type="radio" name="corr_mech" value="3"> 10~30%</label>
+                            <label><input type="radio" name="corr_mech" value="4"> 5~10%</label>
+                            <label><input type="radio" name="corr_mech" value="5"> 5%↓</label>
                         </td>
                     </tr>
                 </tbody>
