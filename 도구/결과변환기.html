@@ -842,7 +842,7 @@
             }
         });
 
-        // 핵심: 원본 설문지 HTML에 JSON 데이터 채워넣기
+        // 핵심: 원본 설문지 HTML에 JSON 데이터 채워넣기 (HTML 직접 수정 방식)
         function generateFilledHTML(template, jsonData) {
             const companyName = jsonData.companyInfo?.companyName || '미입력';
             const surveyDate = jsonData.companyInfo?.surveyDate || '';
@@ -853,8 +853,14 @@
             const remarks = jsonData.remarks || [];
             const scores = jsonData.scores || {};
 
-            const scoreBanner = `
-            <div style="background: linear-gradient(135deg, #003366, #004080); color: white; padding: 15px 20px; margin: 0 auto 10px; max-width: 210mm; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+            // DOMParser로 HTML 파싱
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(template, 'text/html');
+
+            // 1. 점수 배너 추가
+            const scoreBanner = doc.createElement('div');
+            scoreBanner.style.cssText = 'background: linear-gradient(135deg, #003366, #004080); color: white; padding: 15px 20px; margin: 0 auto 10px; max-width: 210mm; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;';
+            scoreBanner.innerHTML = `
                 <div style="font-size: 18px; font-weight: bold;">📋 ${companyName} 설문 결과</div>
                 <div style="display: flex; gap: 15px; font-size: 13px;">
                     <span>자동화: <strong>${(scores.automation?.avg || 0).toFixed(1)}</strong></span>
@@ -862,81 +868,84 @@
                     <span>L/T: <strong>${(scores.leadtime?.avg || 0).toFixed(1)}</strong></span>
                     <span>IT: <strong>${(scores.it_system?.avg || 0).toFixed(1)}</strong></span>
                     <span style="color: #ffd700; font-size: 16px;">DCI: <strong>${(scores.dci || 0).toFixed(2)}</strong></span>
-                </div>
-            </div>`;
+                </div>`;
+            doc.body.insertBefore(scoreBanner, doc.body.firstChild);
 
-            const fillScript = `
-            <script>
-            document.addEventListener('DOMContentLoaded', function() {
-                const responses = ${JSON.stringify(responses)};
-                const textInputs = ${JSON.stringify(textInputs)};
-                const staffCounts = ${JSON.stringify(staffCounts)};
-                const checkboxResponses = ${JSON.stringify(checkboxResponses)};
-                const remarks = ${JSON.stringify(remarks)};
+            // 2. 제목 변경
+            const titleEl = doc.querySelector('title');
+            if (titleEl) titleEl.textContent = `설문결과 - ${companyName}`;
 
-                const dateInput = document.querySelector('input[placeholder="2025.12.XX"]');
-                const companyInput = document.querySelector('input[placeholder="기업명"]');
-                if (dateInput) dateInput.value = "${surveyDate}";
-                if (companyInput) companyInput.value = "${companyName}";
+            // 3. 회사명/날짜 입력
+            const dateInput = doc.querySelector('input[placeholder="2025.12.XX"]');
+            const companyInput = doc.querySelector('input[placeholder="기업명"]');
+            if (dateInput) dateInput.setAttribute('value', surveyDate);
+            if (companyInput) companyInput.setAttribute('value', companyName);
 
-                for (const [name, resp] of Object.entries(responses)) {
-                    if (name.startsWith('na_')) {
-                        const cb = document.querySelector('input[name="' + name + '"]');
-                        if (cb) cb.checked = true;
-                    } else {
-                        const radio = document.querySelector('input[name="' + name + '"][value="' + resp.value + '"]');
-                        if (radio) radio.checked = true;
-                    }
+            // 4. 라디오 버튼 직접 체크 (핵심!)
+            for (const [name, resp] of Object.entries(responses)) {
+                if (name.startsWith('na_')) {
+                    // 해당없음 체크박스
+                    const cb = doc.querySelector(`input[name="${name}"]`);
+                    if (cb) cb.setAttribute('checked', 'checked');
+                } else {
+                    // 라디오 버튼
+                    const radio = doc.querySelector(`input[name="${name}"][value="${resp.value}"]`);
+                    if (radio) radio.setAttribute('checked', 'checked');
                 }
+            }
 
-                for (const [section, labels] of Object.entries(checkboxResponses)) {
-                    labels.forEach(label => {
-                        const checkboxes = document.querySelectorAll('input[type="checkbox"]');
-                        checkboxes.forEach(cb => {
-                            const cbLabel = cb.parentElement?.textContent?.trim();
-                            if (cbLabel && cbLabel.includes(label.replace(/\\s/g, ''))) {
-                                cb.checked = true;
-                            }
-                        });
-                    });
-                }
-
-                for (const [placeholder, value] of Object.entries(textInputs)) {
-                    const input = document.querySelector('input[placeholder="' + placeholder + '"]');
-                    if (input) input.value = value;
-                }
-
-                const teamTextareas = document.querySelectorAll('textarea.team-name');
-                teamTextareas.forEach(ta => {
-                    const teamName = ta.value.trim() || ta.placeholder;
-                    if (staffCounts[teamName]) {
-                        const row = ta.closest('tr');
-                        const numbers = row?.querySelectorAll('input[type="number"]');
-                        if (numbers && numbers.length >= 2) {
-                            numbers[0].value = staffCounts[teamName].internal || '';
-                            numbers[1].value = staffCounts[teamName].external || '';
+            // 5. 체크박스 직접 체크
+            for (const [section, labels] of Object.entries(checkboxResponses)) {
+                labels.forEach(label => {
+                    const checkboxes = doc.querySelectorAll('input[type="checkbox"]');
+                    const normalizedLabel = label.replace(/\s/g, '');
+                    checkboxes.forEach(cb => {
+                        const cbLabel = cb.parentElement?.textContent?.trim().replace(/\s/g, '');
+                        if (cbLabel && cbLabel.includes(normalizedLabel)) {
+                            cb.setAttribute('checked', 'checked');
                         }
-                    }
-                });
-
-                if (remarks.length > 0) {
-                    const remarkTextareas = document.querySelectorAll('.remarks-box textarea');
-                    remarkTextareas.forEach((ta, idx) => {
-                        if (remarks[idx]) ta.value = remarks[idx];
                     });
-                }
-
-                document.querySelectorAll('input, textarea, select').forEach(el => {
-                    el.style.pointerEvents = 'none';
                 });
-            });
-            <\/script>`;
+            }
 
-            let result = template;
-            result = result.replace(/<body[^>]*>/i, (match) => match + scoreBanner);
-            result = result.replace('</body>', fillScript + '</body>');
-            result = result.replace(/<title>[^<]*<\/title>/i, `<title>설문결과 - ${companyName}</title>`);
-            return result;
+            // 6. 텍스트 입력 필드 값 설정
+            for (const [placeholder, value] of Object.entries(textInputs)) {
+                const input = doc.querySelector(`input[placeholder="${placeholder}"]`);
+                if (input) input.setAttribute('value', value);
+            }
+
+            // 7. 인원수 입력
+            const teamTextareas = doc.querySelectorAll('textarea.team-name');
+            teamTextareas.forEach(ta => {
+                const teamName = ta.value?.trim() || ta.getAttribute('placeholder') || ta.textContent?.trim();
+                if (staffCounts[teamName]) {
+                    const row = ta.closest('tr');
+                    const numbers = row?.querySelectorAll('input[type="number"]');
+                    if (numbers && numbers.length >= 2) {
+                        numbers[0].setAttribute('value', staffCounts[teamName].internal || '');
+                        numbers[1].setAttribute('value', staffCounts[teamName].external || '');
+                    }
+                }
+            });
+
+            // 8. 비고/의견 입력
+            if (remarks.length > 0) {
+                const remarkTextareas = doc.querySelectorAll('.remarks-box textarea');
+                remarkTextareas.forEach((ta, idx) => {
+                    if (remarks[idx]) ta.textContent = remarks[idx];
+                });
+            }
+
+            // 9. 읽기 전용 스타일 추가
+            const readOnlyStyle = doc.createElement('style');
+            readOnlyStyle.textContent = `
+                input, textarea, select { pointer-events: none; background-color: #f8f9fa; }
+                input[type="radio"]:checked + span, input[type="checkbox"]:checked + span { font-weight: bold; }
+            `;
+            doc.head.appendChild(readOnlyStyle);
+
+            // HTML 문자열로 반환
+            return '<!DOCTYPE html>\n' + doc.documentElement.outerHTML;
         }
 
         function downloadBlob(blob, fileName) {
