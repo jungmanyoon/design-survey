@@ -875,9 +875,11 @@
             const titleEl = doc.querySelector('title');
             if (titleEl) titleEl.textContent = `설문결과 - ${companyName}`;
 
-            // 3. 회사명/날짜 입력
+            // 3. 회사명/날짜 입력 (언어 독립적 셀렉터)
             const dateInput = doc.querySelector('input[placeholder="2025.12.XX"]');
-            const companyInput = doc.querySelector('input[placeholder="기업명"]');
+            const companyInput = doc.querySelector('input[data-placeholder-kr="기업명"]') ||
+                                 doc.querySelector('input[placeholder="기업명"]') ||
+                                 doc.querySelector('input[placeholder="Company Name"]');
             if (dateInput) dateInput.setAttribute('value', surveyDate);
             if (companyInput) companyInput.setAttribute('value', companyName);
 
@@ -908,22 +910,31 @@
                 });
             }
 
-            // 6. 텍스트 입력 필드 값 설정
+            // 6. 텍스트 입력 필드 값 설정 (언어 독립적 매칭)
             for (const [placeholder, value] of Object.entries(textInputs)) {
-                const input = doc.querySelector(`input[placeholder="${placeholder}"]`);
+                // data-placeholder-kr 속성 또는 placeholder 속성으로 검색
+                const input = doc.querySelector(`input[data-placeholder-kr="${placeholder}"]`) ||
+                              doc.querySelector(`input[placeholder="${placeholder}"]`);
                 if (input) input.setAttribute('value', value);
             }
 
-            // 7. 인원수 입력
+            // 7. 인원수 입력 - 각 팀별로 올바른 입력칸 매핑 (언어 독립적)
             const teamTextareas = doc.querySelectorAll('textarea.team-name');
             teamTextareas.forEach(ta => {
-                const teamName = ta.value?.trim() || ta.getAttribute('placeholder') || ta.textContent?.trim();
+                // 템플릿 HTML의 원본 텍스트(한글)를 우선 사용
+                const teamName = ta.textContent?.trim() || ta.value?.trim() || ta.getAttribute('placeholder');
                 if (staffCounts[teamName]) {
-                    const row = ta.closest('tr');
-                    const numbers = row?.querySelectorAll('input[type="number"]');
-                    if (numbers && numbers.length >= 2) {
-                        numbers[0].setAttribute('value', staffCounts[teamName].internal || '');
-                        numbers[1].setAttribute('value', staffCounts[teamName].external || '');
+                    const td = ta.closest('td');
+                    if (td) {
+                        // 해당 팀 textarea 다음의 2개 td에서 숫자 입력값 설정
+                        const nextTd1 = td.nextElementSibling;
+                        const nextTd2 = nextTd1 ? nextTd1.nextElementSibling : null;
+
+                        const internalInput = nextTd1 ? nextTd1.querySelector('input[type="number"]') : null;
+                        const externalInput = nextTd2 ? nextTd2.querySelector('input[type="number"]') : null;
+
+                        if (internalInput) internalInput.setAttribute('value', staffCounts[teamName].internal || '');
+                        if (externalInput) externalInput.setAttribute('value', staffCounts[teamName].external || '');
                     }
                 }
             });
