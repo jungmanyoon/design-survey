@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="ko" id="html-root">
 
 <head>
     <meta charset="UTF-8">
@@ -17,16 +17,16 @@
             line-height: 1.4;
         }
 
-        /* 사용 가이드 박스 */
+        /* 사용 가이드 박스 - 해외_직접작성 버전과 동일 */
         .guide-box {
             width: 210mm;
             margin: 0 auto 10px auto;
-            padding: 0;
-            text-align: right;
-            box-sizing: border-box;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
 
-        .guide-box button {
+        .action-buttons button {
             background-color: #003366;
             color: white;
             border: none;
@@ -36,12 +36,10 @@
             font-weight: bold;
             font-size: 13px;
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
+            margin-left: 10px;
         }
 
-        .guide-box button:hover {
+        .action-buttons button:hover {
             background-color: #002244;
         }
 
@@ -225,7 +223,9 @@
             font-weight: 600;
             text-align: center;
             color: #333;
-            white-space: nowrap;
+            white-space: normal;
+            word-break: keep-all;
+            overflow-wrap: break-word;
         }
 
         td {
@@ -299,7 +299,30 @@
             display: inline-flex;
             align-items: center;
             cursor: pointer;
-            font-size: 11px;
+            font-size: 10px;
+            white-space: nowrap;
+        }
+
+        /* 영문 모드 텍스트 축소 */
+        html[lang="en"] .checkbox-group label {
+            font-size: 9px;
+        }
+
+        html[lang="en"] th {
+            font-size: 10px;
+        }
+
+        html[lang="en"] td label {
+            font-size: 9px;
+        }
+
+        html[lang="en"] textarea.team-name {
+            font-size: 9px;
+            line-height: 1.2;
+        }
+
+        html[lang="en"] .header input[type="text"] {
+            font-size: 9px;
         }
 
         td.left-align label {
@@ -410,18 +433,22 @@
                 padding: 0 10px;
                 margin-bottom: 15px;
                 display: flex;
+                flex-direction: column;
+                gap: 10px;
+                align-items: center;
+            }
+
+            .action-buttons {
+                display: flex;
                 flex-wrap: wrap;
                 gap: 10px;
                 justify-content: center;
-                text-align: center;
             }
 
-            .guide-box button {
+            .action-buttons button {
                 padding: 12px 16px;
                 font-size: 14px;
-                flex: 1;
-                min-width: 140px;
-                max-width: 180px;
+                margin-left: 0;
             }
 
             .page {
@@ -585,6 +612,45 @@
             .guide-box {
                 width: 100%;
                 max-width: 210mm;
+            }
+        }
+
+        /* 언어 토글 버튼 스타일 - 해외_직접작성 버전과 동일 */
+        .lang-toggle {
+            display: flex;
+            gap: 5px;
+        }
+
+        .lang-toggle button {
+            padding: 8px 16px;
+            border: 2px solid #003366;
+            background: white;
+            color: #003366;
+            font-weight: bold;
+            cursor: pointer;
+            border-radius: 4px;
+            font-size: 12px;
+        }
+
+        .lang-toggle button.active {
+            background: #003366;
+            color: white;
+        }
+
+        .lang-toggle button:hover:not(.active) {
+            background-color: #e6eef5;
+        }
+
+        @media print {
+            .lang-toggle {
+                display: none !important;
+            }
+        }
+
+        @media screen and (max-width: 768px) {
+            .lang-toggle button {
+                padding: 12px 20px;
+                font-size: 14px;
             }
         }
 
@@ -801,20 +867,25 @@ Chrome 인쇄 대화상자에서:
                 }
             });
 
-            // 숫자 입력 (인원 수) 수집
+            // 숫자 입력 (인원 수) 수집 - 각 팀별로 올바른 입력칸 매핑
             result.staffCounts = {};
             const teamNames = document.querySelectorAll('textarea.team-name');
             teamNames.forEach(function(textarea) {
-                const row = textarea.closest('tr');
-                if (row) {
-                    const numbers = row.querySelectorAll('input[type="number"]');
+                const td = textarea.closest('td');
+                if (td) {
+                    // 해당 팀 textarea 다음의 2개 td에서 숫자 입력값 가져오기
+                    const nextTd1 = td.nextElementSibling;
+                    const nextTd2 = nextTd1 ? nextTd1.nextElementSibling : null;
+
+                    const internalInput = nextTd1 ? nextTd1.querySelector('input[type="number"]') : null;
+                    const externalInput = nextTd2 ? nextTd2.querySelector('input[type="number"]') : null;
+
                     const teamName = textarea.value.trim() || textarea.placeholder;
-                    if (numbers.length >= 2) {
-                        const internal = numbers[0].value ? parseInt(numbers[0].value) : 0;
-                        const external = numbers[1].value ? parseInt(numbers[1].value) : 0;
-                        if (internal > 0 || external > 0) {
-                            result.staffCounts[teamName] = { internal, external };
-                        }
+                    const internal = internalInput && internalInput.value ? parseInt(internalInput.value) : 0;
+                    const external = externalInput && externalInput.value ? parseInt(externalInput.value) : 0;
+
+                    if (internal > 0 || external > 0) {
+                        result.staffCounts[teamName] = { internal, external };
                     }
                 }
             });
@@ -997,9 +1068,431 @@ Chrome 인쇄 대화상자에서:
             if (modal) modal.remove();
         }
 
+        // ==================== 언어 전환 시스템 ====================
+        var currentLang = 'kr';
+
+        const translations = {
+            // 버튼
+            btn_export: { kr: '결과 저장 (JSON)', en: 'Save Results (JSON)' },
+            btn_print: { kr: '인쇄 / PDF 저장', en: 'Print / Save as PDF' },
+
+            // 제목
+            main_title: { kr: '초고압 변압기 엔지니어링 시스템 운영 현황 조사', en: 'HV Transformer Engineering System Survey' },
+            part1_sub: { kr: 'Part 1. Engineering Organization', en: 'Part 1. Engineering Organization' },
+            part2_sub: { kr: 'Part 2. Design Automation', en: 'Part 2. Design Automation' },
+            part3_sub: { kr: 'Part 3. Design Tools & Programs', en: 'Part 3. Design Tools & Programs' },
+            part4_sub: { kr: 'Part 4. Design Standardization', en: 'Part 4. Design Standardization' },
+            part5_sub: { kr: 'Part 5. Engineering Lead Time & IT Systems', en: 'Part 5. Engineering Lead Time & IT Systems' },
+
+            // 헤더 입력 필드
+            survey_date: { kr: '조사 일자:', en: 'Survey Date:' },
+            company_name: { kr: '응답 기업:', en: 'Company:' },
+
+            // 섹션 1: 조직 구성
+            sec1_title: { kr: '1. 엔지니어링 조직 구성 (Engineering Organization)', en: '1. Engineering Organization' },
+            sec1_edit_notice: { kr: '※ 팀명은 귀사에 맞게 수정 가능합니다', en: '※ Team names can be customized' },
+            sec1_guide: { kr: '* <strong>자체:</strong> 우리 회사 직원(정규직 등), <strong>외주:</strong> 협력사, 파견직 등 외부 인원', en: '* <strong>Internal:</strong> Company employees, <strong>External:</strong> Contractors, outsourced staff' },
+            th_team: { kr: '팀 구분', en: 'Team' },
+            th_internal: { kr: '자체 (명)', en: 'Internal' },
+            th_external: { kr: '외주 (명)', en: 'External' },
+
+            // 팀명 (영문은 짧게)
+            team_basic: { kr: '기본 설계팀', en: 'Basic Design' },
+            team_elec: { kr: '전기 설계팀', en: 'Elec. Design' },
+            team_elec_struct: { kr: '전기 구조팀\n(중신, 단철, 단자)', en: 'Elec. Structure\n(Active Part)' },
+            team_mech_struct: { kr: '기계 구조팀\n(외함, 탱크)', en: 'Mech. Structure\n(Tank, Cover)' },
+            team_control: { kr: '제어반/판넬팀', en: 'Control Panel' },
+            team_estimation: { kr: '견적팀', en: 'Estimation' },
+            team_pm: { kr: 'PM팀', en: 'PM' },
+            team_dev: { kr: '개발팀', en: 'Development' },
+            team_it: { kr: '전산/시스템/자동화팀', en: 'IT/Automation' },
+            team_other1: { kr: '기타 팀 1', en: 'Other 1' },
+            team_other2: { kr: '기타 팀 2', en: 'Other 2' },
+            team_other3: { kr: '기타 팀 3', en: 'Other 3' },
+
+            // 비고
+            remarks_label: { kr: '※ 비고 / 특이사항:', en: '※ Remarks:' },
+            remarks_org: { kr: '조직 운영상의 특이사항이나 향후 개편 계획 등이 있다면 기재해 주세요.', en: 'Please describe any organizational changes or future plans.' },
+
+            // 섹션 1-1: 외주 설계
+            sec1_1_title: { kr: '1-1. 외주 설계 활용 현황 (Outsourcing)', en: '1-1. Outsourcing Status' },
+            sec1_1_guide: { kr: '* 협력 업체가 어떤 일을 어떻게 도와주고 있는지 적어주세요.', en: '* Please describe how partner companies are assisting.' },
+            th_partner: { kr: '협력 업체명', en: 'Partner Company' },
+            th_scope: { kr: '맡기는 업무 (분야)', en: 'Scope of Work' },
+            th_range: { kr: '업무 범위 (단순도면 / 상세설계)', en: 'Work Range' },
+            th_qc: { kr: '품질 검사 / 소통 방법', en: 'QC / Communication' },
+            ph_company_a: { kr: '업체 A', en: 'Company A' },
+            ph_scope: { kr: '예: 구조물, 제어반 등', en: 'e.g., Structure, Control panel' },
+            ph_range: { kr: '예: 상세설계, 도면작성', en: 'e.g., Detail design, Drawing' },
+            ph_qc: { kr: '예: 주간 회의, 체크리스트', en: 'e.g., Weekly meeting, Checklist' },
+
+            // 섹션 2: 설계 자동화
+            sec2_title: { kr: '2. 설계 자동화 시스템 현황 (Design Automation)', en: '2. Design Automation Status' },
+            sec2_guide: { kr: '* 설계할 때 컴퓨터가 자동으로 해주는 부분이 어디까지인지 체크해 주세요.', en: '* Please check the automation level in your design process.' },
+            th_part: { kr: '팀/파트명', en: 'Team/Part' },
+            th_auto_level: { kr: '자동화 수준', en: 'Automation Level' },
+            th_auto_output: { kr: '자동 생성 결과물', en: 'Auto-generated Outputs' },
+            th_correction: { kr: '수작업 보정률', en: 'Manual Correction Rate' },
+
+            // 부품명
+            part_elec: { kr: '전기설계', en: 'Electrical Design' },
+            part_fea: { kr: '전계해석', en: 'E-Field Analysis' },
+            part_wind: { kr: '권선', en: 'Winding' },
+            part_core: { kr: '철심/클램프', en: 'Core/Clamp' },
+            part_ap: { kr: '중신/리드', en: 'Active Part/Lead' },
+            part_tank: { kr: '외함/탱크', en: 'Tank/Cover' },
+            part_approval: { kr: '승인도면', en: 'Approval Drawing' },
+            part_mech: { kr: '기계해석', en: 'Mechanical Analysis' },
+
+            // 자동화 수준 - 전기설계
+            auto_elec_1: { kr: '수계산(수동)', en: 'Manual calculation' },
+            auto_elec_2: { kr: 'Excel(보조)', en: 'Excel (assisted)' },
+            auto_elec_3: { kr: '전용S/W(입력)', en: 'Dedicated S/W (input)' },
+            auto_elec_4: { kr: '전용S/W(반자동)', en: 'Dedicated S/W (semi-auto)' },
+            auto_elec_5: { kr: '전용S/W(자동)', en: 'Dedicated S/W (auto)' },
+
+            // 자동화 수준 - 전계해석
+            auto_fea_1: { kr: '미수행', en: 'Not performed' },
+            auto_fea_2: { kr: '필요시(수동)', en: 'As needed (manual)' },
+            auto_fea_3: { kr: '전건(수동)', en: 'All cases (manual)' },
+            auto_fea_4: { kr: '설계연동(반자동)', en: 'Design linked (semi-auto)' },
+            auto_fea_5: { kr: '설계연동(자동)', en: 'Design linked (auto)' },
+
+            // 자동화 수준 - 권선
+            auto_wind_1: { kr: '수작업(수동)', en: 'Manual' },
+            auto_wind_2: { kr: '라이브러리(보조)', en: 'Library (assisted)' },
+            auto_wind_3: { kr: '치수입력(반수동)', en: 'Dimension input (semi-manual)' },
+            auto_wind_4: { kr: '파라메트릭(반자동)', en: 'Parametric (semi-auto)' },
+            auto_wind_5: { kr: '완전자동', en: 'Fully automated' },
+
+            // 자동화 수준 - 철심/클램프
+            auto_core_1: { kr: '수작업(수동)', en: 'Manual' },
+            auto_core_2: { kr: '라이브러리(보조)', en: 'Library (assisted)' },
+            auto_core_3: { kr: '라이브러리(반수동)', en: 'Library (semi-manual)' },
+            auto_core_4: { kr: '규칙기반(반자동)', en: 'Rule-based (semi-auto)' },
+            auto_core_5: { kr: '완전자동', en: 'Fully automated' },
+
+            // 자동화 수준 - 중신/리드
+            auto_ap_1: { kr: '수작업(수동)', en: 'Manual' },
+            auto_ap_2: { kr: '참조도면(보조)', en: 'Reference drawing (assisted)' },
+            auto_ap_3: { kr: '라이브러리(반수동)', en: 'Library (semi-manual)' },
+            auto_ap_4: { kr: '리드자동(반자동)', en: 'Lead auto (semi-auto)' },
+            auto_ap_5: { kr: '완전자동', en: 'Fully automated' },
+
+            // 자동화 수준 - 외함/탱크
+            auto_tank_1: { kr: '수작업(수동)', en: 'Manual' },
+            auto_tank_2: { kr: '표준복사(보조)', en: 'Standard copy (assisted)' },
+            auto_tank_3: { kr: '라이브러리(반수동)', en: 'Library (semi-manual)' },
+            auto_tank_4: { kr: '치수변동(반자동)', en: 'Dimension change (semi-auto)' },
+            auto_tank_5: { kr: '완전자동', en: 'Fully automated' },
+
+            // 자동화 수준 - 승인도면
+            auto_approval_1: { kr: '수작업(수동)', en: 'Manual' },
+            auto_approval_2: { kr: '표준복사(보조)', en: 'Standard copy (assisted)' },
+            auto_approval_3: { kr: '라이브러리(반수동)', en: 'Library (semi-manual)' },
+            auto_approval_4: { kr: '치수변동(반자동)', en: 'Dimension change (semi-auto)' },
+            auto_approval_5: { kr: '완전자동', en: 'Fully automated' },
+
+            // 자동화 수준 - 기계해석
+            auto_mech_1: { kr: '미수행', en: 'Not performed' },
+            auto_mech_2: { kr: '외부의뢰(보조)', en: 'Outsourced (assisted)' },
+            auto_mech_3: { kr: '내부수행(수동)', en: 'In-house (manual)' },
+            auto_mech_4: { kr: '설계연동(반자동)', en: 'Design linked (semi-auto)' },
+            auto_mech_5: { kr: '설계연동(자동)', en: 'Design linked (auto)' },
+
+            // 자동 생성 결과물
+            output_calc: { kr: '전기계산지', en: 'Electrical calculation' },
+            output_insulation: { kr: '절연설계검토서', en: 'Insulation review' },
+            output_short: { kr: '단락검토서', en: 'Short-circuit review' },
+            output_efield: { kr: '전계분포도', en: 'E-field distribution' },
+            output_report: { kr: '해석보고서', en: 'Analysis report' },
+            output_3d: { kr: '3D모델', en: '3D Model' },
+            output_2d: { kr: '2D도면', en: '2D Drawing' },
+            output_3d_draft: { kr: '3D Draft', en: '3D Draft' },
+            output_material: { kr: '자재표', en: 'Material list' },
+            output_bom: { kr: '자재BOM', en: 'Material BOM' },
+            output_dimension: { kr: '치수표', en: 'Dimension table' },
+            output_weld_bom: { kr: '용접BOM', en: 'Welding BOM' },
+            output_seismic: { kr: '내진해석', en: 'Seismic analysis' },
+            output_vibration: { kr: '진동해석', en: 'Vibration analysis' },
+            output_cooling: { kr: '냉각해석', en: 'Cooling analysis' },
+            output_struct: { kr: '구조해석', en: 'Structural analysis' },
+
+            // 수작업 보정률
+            corr_1: { kr: '80~100%', en: '80~100%' },
+            corr_2: { kr: '50~80%', en: '50~80%' },
+            corr_3: { kr: '20~50%', en: '20~50%' },
+            corr_4: { kr: '5~20%', en: '5~20%' },
+            corr_5: { kr: '0~5%', en: '0~5%' },
+
+            // 비고 - 자동화
+            remarks_auto: { kr: '설계 자동화 관련 애로사항이나 개선 희망 사항을 기재해 주세요.', en: 'Please describe any issues or improvement needs for design automation.' },
+
+            // 섹션 2-1: 설계 프로그램
+            sec2_1_title: { kr: '2-1. 사용 중인 설계 프로그램 (Design Tools)', en: '2-1. Design Programs in Use' },
+            sec2_1_guide: { kr: '* 현재 사용 중인 설계/해석 프로그램과 개발 방식을 기재해 주세요.', en: '* Please list the design/analysis programs currently in use.' },
+            th_category: { kr: '대분류', en: 'Category' },
+            th_subcategory: { kr: '세부 구분', en: 'Sub-category' },
+            th_program: { kr: '사용 중인 프로그램 이름', en: 'Program Name' },
+            th_dev_type: { kr: '구분 (직접개발 / 돈주고삼)', en: 'Type (In-house / Commercial)' },
+
+            cat_elec_design: { kr: '전기 설계', en: 'Electrical Design' },
+            cat_mech_struct: { kr: '기계/구조', en: 'Mechanical/Structural' },
+            sub_basic: { kr: '기본 설계 (Basic)', en: 'Basic Design' },
+            sub_detail: { kr: '상세 설계 (Detail)', en: 'Detail Design' },
+            sub_efield: { kr: '전계 해석 (E-Field)', en: 'E-Field Analysis' },
+            sub_magnetic: { kr: '자계/구조 해석', en: 'Magnetic/Structural Analysis' },
+            sub_cooling: { kr: '냉각/중신 설계', en: 'Cooling/Active Part Design' },
+            sub_3d_cad: { kr: '3D 설계 (CAD)', en: '3D Design (CAD)' },
+            sub_2d_cad: { kr: '2D 설계 (CAD)', en: '2D Design (CAD)' },
+
+            th_dev_tools: { kr: '개발 언어 및 도구<br>(Dev Tools)', en: 'Development Languages & Tools<br>(Dev Tools)' },
+            dev_vba: { kr: '<strong>엑셀 매크로</strong> (VBA)', en: '<strong>Excel Macro</strong> (VBA)' },
+            dev_cad: { kr: '<strong>CAD 자체 기능</strong> (LISP 등)', en: '<strong>CAD Functions</strong> (LISP, etc.)' },
+            dev_inhouse: { kr: '<strong>자체 개발</strong> (C#, Python 등)', en: '<strong>In-house Dev</strong> (C#, Python, etc.)' },
+            dev_outsource: { kr: '<strong>외주 개발</strong> (SI업체)', en: '<strong>Outsourced Dev</strong> (SI company)' },
+            dev_commercial: { kr: '<strong>상용 솔루션</strong> (Tacton, DriveWorks 등)', en: '<strong>Commercial Solutions</strong> (Tacton, DriveWorks, etc.)' },
+            remarks_tools: { kr: '도입된 툴이나 기술적 이슈 사항이 있다면 기재해 주세요.', en: 'Please describe any tools or technical issues.' },
+
+            // 섹션 3: 설계 표준화
+            sec3_title: { kr: '3. 설계 표준화 시스템 현황 (Design Standardization)', en: '3. Design Standardization Status' },
+            sec3_guide: { kr: '* 각 팀/파트별로 설계 기준서, DR 체크리스트, 표준 라이브러리, ECO 프로세스 수준을 선택해 주세요.', en: '* Please select the level for design manual, DR checklist, standard library, and ECO process for each team.' },
+            th_manual: { kr: '설계 기준서', en: 'Design Manual' },
+            th_checklist: { kr: 'DR 체크리스트', en: 'DR Checklist' },
+            th_library: { kr: '표준 라이브러리', en: 'Standard Library' },
+            th_library_sub: { kr: '(재사용 부품, 3D 부품, 템플릿)', en: '(Reusable parts, 3D parts, Templates)' },
+            th_eco: { kr: 'ECO 프로세스', en: 'ECO Process' },
+
+            // 해당없음
+            na: { kr: '<strong>해당없음</strong>', en: '<strong>N/A</strong>' },
+
+            // 설계 기준서
+            manual_2: { kr: '비공식 메모', en: 'Informal memo' },
+            manual_3: { kr: '문서화 (Word/PDF)', en: 'Documented (Word/PDF)' },
+            manual_4: { kr: '항목별 체계화', en: 'Systematized by item' },
+            manual_5: { kr: '시스템 내재화', en: 'System embedded' },
+
+            // DR 체크리스트
+            check_2: { kr: '개인별 상이', en: 'Individual variation' },
+            check_3: { kr: '표준양식 (Excel)', en: 'Standard form (Excel)' },
+            check_4: { kr: '단계별 구분(1/2/최종)', en: 'Phased (1/2/Final)' },
+            check_5: { kr: '자동검증 (시스템)', en: 'Auto verification (System)' },
+
+            // 표준 라이브러리
+            lib_2: { kr: '개인별 보유', en: 'Individual possession' },
+            lib_3: { kr: '일부 있음', en: 'Partially available' },
+            lib_4: { kr: '체계적 구축', en: 'Systematically built' },
+            lib_5: { kr: 'PDM/PLM 연동', en: 'PDM/PLM integrated' },
+
+            // ECO 프로세스
+            eco_2: { kr: '구두 통보', en: 'Verbal notification' },
+            eco_3: { kr: 'ECO 문서 (메일)', en: 'ECO document (Email)' },
+            eco_4: { kr: '전자결재', en: 'Electronic approval' },
+            eco_5: { kr: '자동반영 (BOM연동)', en: 'Auto update (BOM linked)' },
+
+            // 설계 기준 관리
+            th_std_mgmt: { kr: '설계 기준 관리 방식', en: 'Design Standard Management' },
+            std_1: { kr: '관리안함(개인PC)', en: 'No management (Personal PC)' },
+            std_2: { kr: '개인별보관', en: 'Individual storage' },
+            std_3: { kr: '공용폴더/서버', en: 'Shared folder/Server' },
+            std_4: { kr: '문서관리시스템', en: 'Document management system' },
+            std_5: { kr: '전사PDM/KMS', en: 'Enterprise PDM/KMS' },
+
+            // 설계 Review
+            th_review: { kr: '설계 Review 프로세스', en: 'Design Review Process' },
+            review_1: { kr: '검토없음 (담당자재량)', en: 'No review (Discretionary)' },
+            review_2: { kr: '비공식검토 (구두확인)', en: 'Informal review (Verbal)' },
+            review_3: { kr: '팀장승인 (서명기반)', en: 'Team lead approval (Signature)' },
+            review_4: { kr: '공식DR회의 (정기운영)', en: 'Formal DR meeting (Regular)' },
+            review_5: { kr: 'Gate Review (시스템기반)', en: 'Gate Review (System-based)' },
+
+            // 변경 이력 관리
+            th_history: { kr: '설계 변경 이력 관리', en: 'Design Change History Management' },
+            th_history_sub: { kr: '(변경 기록이 남나요?)', en: '(Are changes recorded?)' },
+            history_1: { kr: '관리안함', en: 'No management' },
+            history_2: { kr: '파일명버전', en: 'Filename version' },
+            history_3: { kr: '폴더구분', en: 'Folder separation' },
+            history_4: { kr: '문서대장', en: 'Document registry' },
+            history_5: { kr: 'PDM자동관리', en: 'PDM auto management' },
+
+            remarks_std: { kr: '설계 표준화 관련 애로사항이나 개선 희망 사항을 기재해 주세요.', en: 'Please describe any issues or improvement needs for design standardization.' },
+
+            // 섹션 4: 리드타임
+            sec4_title: { kr: '4. 설계 리드타임 분석 (Engineering Lead Time)', en: '4. Engineering Lead Time Analysis' },
+            sec4_guide: { kr: '* 표준 기종(100MVA 이하/154KV급/OLTC) 기준으로 평균 소요 시간을 선택해 주세요.', en: '* Please select average time based on standard model (≤100MVA/154kV/OLTC).' },
+            sec4_guide2: { kr: '* <strong>순수 설계 작업일 (Man-days)</strong> 기준으로 응답해 주세요. (대기/검토/승인 시간 제외)', en: '* Please answer in <strong>pure design man-days</strong> (excluding waiting/review/approval time).' },
+
+            th_lt_elec: { kr: '전기설계 L/T', en: 'Electrical Design L/T' },
+            th_lt_elec_sub: { kr: '(기본설계/전기설계팀)', en: '(Basic/Electrical Design Team)' },
+            th_lt_wind: { kr: '권선 L/T', en: 'Winding L/T' },
+            th_lt_wind_sub: { kr: '(권선조립 포함)', en: '(Including winding assembly)' },
+            th_lt_core: { kr: '철심/클램프 L/T', en: 'Core/Clamp L/T' },
+            th_lt_core_sub: { kr: '(Core & Clamp)', en: '(Core & Clamp)' },
+            th_lt_ap: { kr: '중신/리드 L/T', en: 'Active Part/Lead L/T' },
+            th_lt_ap_sub: { kr: '(Active Part/Lead)', en: '(Active Part/Lead)' },
+            th_lt_tank: { kr: '외함/탱크 L/T', en: 'Tank/Cover L/T' },
+            th_lt_tank_sub: { kr: '(Tank & Cover)', en: '(Tank & Cover)' },
+
+            lt_elec_1: { kr: '40일 이상', en: '40+ days' },
+            lt_elec_2: { kr: '30~40일', en: '30~40 days' },
+            lt_elec_3: { kr: '20~30일', en: '20~30 days' },
+            lt_elec_4: { kr: '10~20일', en: '10~20 days' },
+            lt_elec_5: { kr: '10일 이내', en: 'Within 10 days' },
+
+            lt_wind_1: { kr: '20일 이상', en: '20+ days' },
+            lt_wind_2: { kr: '15~20일', en: '15~20 days' },
+            lt_wind_3: { kr: '10~15일', en: '10~15 days' },
+            lt_wind_4: { kr: '7~10일', en: '7~10 days' },
+            lt_wind_5: { kr: '7일 이내', en: 'Within 7 days' },
+
+            lt_core_1: { kr: '10일 이상', en: '10+ days' },
+            lt_core_2: { kr: '8~10일', en: '8~10 days' },
+            lt_core_3: { kr: '6~8일', en: '6~8 days' },
+            lt_core_4: { kr: '4~6일', en: '4~6 days' },
+            lt_core_5: { kr: '4일 이내', en: 'Within 4 days' },
+
+            lt_ap_1: { kr: '20일 이상', en: '20+ days' },
+            lt_ap_2: { kr: '15~20일', en: '15~20 days' },
+            lt_ap_3: { kr: '10~15일', en: '10~15 days' },
+            lt_ap_4: { kr: '7~10일', en: '7~10 days' },
+            lt_ap_5: { kr: '7일 이내', en: 'Within 7 days' },
+
+            lt_tank_1: { kr: '50일 이상', en: '50+ days' },
+            lt_tank_2: { kr: '40~50일', en: '40~50 days' },
+            lt_tank_3: { kr: '30~40일', en: '30~40 days' },
+            lt_tank_4: { kr: '20~30일', en: '20~30 days' },
+            lt_tank_5: { kr: '20일 이내', en: 'Within 20 days' },
+
+            remarks_lt: { kr: '리드타임 관련 애로사항이나 지연 원인을 기재해 주세요.', en: 'Please describe any lead time issues or delay causes.' },
+
+            // 섹션 5: IT 시스템
+            sec5_title: { kr: '5. IT 시스템 및 데이터 연동 (IT Systems & Interface)', en: '5. IT Systems & Data Interface' },
+            sec5_guide: { kr: '* ERP, PDM, PMS 등 주요 시스템 운영 현황과 연동 방식을 체크해 주세요.', en: '* Please check the status of major systems like ERP, PDM, PMS.' },
+
+            terms_title: { kr: '<strong>📖 용어 설명</strong>', en: '<strong>📖 Terminology</strong>' },
+            terms_erp: { kr: '• <strong>ERP</strong>: 전사자원관리 - 구매/생산/재고/회계 통합 시스템 (예: SAP, Oracle)', en: '• <strong>ERP</strong>: Enterprise Resource Planning - Integrated system for purchasing/production/inventory/accounting' },
+            terms_pdm: { kr: '• <strong>PDM</strong>: 제품데이터관리 - 도면/BOM/문서 버전 관리', en: '• <strong>PDM</strong>: Product Data Management - Drawing/BOM/Document version control' },
+            terms_plm: { kr: '• <strong>PLM</strong>: 제품수명주기관리 - 설계~폐기까지 전체 이력 관리', en: '• <strong>PLM</strong>: Product Lifecycle Management - Full lifecycle from design to disposal' },
+            terms_pms: { kr: '• <strong>PMS</strong>: 프로젝트관리시스템 - 일정/자원/진척 관리', en: '• <strong>PMS</strong>: Project Management System - Schedule/resource/progress management' },
+            terms_eco: { kr: '• <strong>ECO</strong>: 설계변경오더 - 공식적인 설계 변경 승인 프로세스', en: '• <strong>ECO</strong>: Engineering Change Order - Formal design change approval process' },
+            terms_kms: { kr: '• <strong>KMS</strong>: 지식관리시스템 - 노하우/기술문서 공유 시스템', en: '• <strong>KMS</strong>: Knowledge Management System - Know-how/technical document sharing' },
+
+            th_it_category: { kr: '구분', en: 'Category' },
+            th_it_item: { kr: '항목', en: 'Item' },
+            th_it_level: { kr: '운영 수준', en: 'Operation Level' },
+
+            it_erp: { kr: 'ERP', en: 'ERP' },
+            it_erp_type: { kr: '시스템 종류', en: 'System Type' },
+            it_erp_input: { kr: '데이터 입력', en: 'Data Input' },
+            it_pdm: { kr: 'PDM/PLM', en: 'PDM/PLM' },
+            it_pdm_level: { kr: '운영 수준', en: 'Operation Level' },
+            it_bom: { kr: '도면/BOM 관리', en: 'Drawing/BOM Management' },
+            it_pms: { kr: 'PMS', en: 'PMS' },
+            it_change: { kr: '변경관리', en: 'Change Management' },
+            it_eco: { kr: '설계 변경 연동', en: 'Design Change Integration' },
+
+            erp_oracle: { kr: 'Oracle', en: 'Oracle' },
+            erp_sap: { kr: 'SAP', en: 'SAP' },
+            erp_duzon: { kr: '더존/UniERP', en: 'Douzone/UniERP' },
+            erp_other: { kr: '기타', en: 'Other' },
+
+            if_1: { kr: '100% 수기입력', en: '100% manual input' },
+            if_2: { kr: '수기+복사', en: 'Manual + copy' },
+            if_3: { kr: '엑셀 업로드', en: 'Excel upload' },
+            if_4: { kr: '반자동 전송', en: 'Semi-auto transfer' },
+            if_5: { kr: '완전 자동 연동', en: 'Fully auto integration' },
+
+            pdm_1: { kr: '미사용', en: 'Not used' },
+            pdm_2: { kr: '공용서버(폴더공유)', en: 'Shared server (folder sharing)' },
+            pdm_3: { kr: '자체구축(간이시스템)', en: 'In-house (simple system)' },
+            pdm_4: { kr: '상용솔루션(부분도입)', en: 'Commercial (partial)' },
+            pdm_5: { kr: '전사통합(PLM연동)', en: 'Enterprise (PLM integrated)' },
+
+            bom_1: { kr: '개인 PC 저장', en: 'Personal PC storage' },
+            bom_2: { kr: '공용 폴더', en: 'Shared folder' },
+            bom_3: { kr: '폴더 체계화', en: 'Organized folders' },
+            bom_4: { kr: '문서관리시스템', en: 'Document management system' },
+            bom_5: { kr: 'PDM 통합 관리', en: 'PDM integrated management' },
+
+            pms_1: { kr: '미사용', en: 'Not used' },
+            pms_2: { kr: '엑셀/수기관리', en: 'Excel/Manual management' },
+            pms_3: { kr: '자체구축(간이시스템)', en: 'In-house (simple system)' },
+            pms_4: { kr: '상용솔루션(부분도입)', en: 'Commercial (partial)' },
+            pms_5: { kr: '전사통합(ERP연동)', en: 'Enterprise (ERP integrated)' },
+
+            eco_mgmt_1: { kr: '이중작업(각 시스템 별도 수정)', en: 'Dual work (separate system updates)' },
+            eco_mgmt_2: { kr: '수동통보(메일/전화로 알림)', en: 'Manual notification (email/phone)' },
+            eco_mgmt_3: { kr: '변경요청서(문서 결재)', en: 'Change request (document approval)' },
+            eco_mgmt_4: { kr: 'ECO프로세스(시스템 워크플로우)', en: 'ECO process (system workflow)' },
+            eco_mgmt_5: { kr: '자동연동(BOM/ERP 자동반영)', en: 'Auto integration (BOM/ERP auto update)' },
+
+            remarks_it: { kr: 'IT 시스템 관련 불편한 점이나 특이사항을 적어주세요.', en: 'Please describe any IT system issues or special notes.' },
+
+            // 섹션 6: 종합 의견
+            sec6_title: { kr: '6. 종합 의견 (General Comments)', en: '6. General Comments' },
+            sec6_placeholder: { kr: '시스템 운영하면서 힘들었던 점이나, 앞으로 이렇게 바뀌었으면 좋겠다 하는 점을 자유롭게 적어주세요.', en: 'Please freely describe any difficulties in system operation or suggestions for improvement.' },
+
+            // 페이지 번호
+            page_1: { kr: '1 / 5', en: '1 / 5' },
+            page_2: { kr: '2 / 5', en: '2 / 5' },
+            page_3: { kr: '3 / 5', en: '3 / 5' },
+            page_4: { kr: '4 / 5', en: '4 / 5' },
+            page_5: { kr: '5 / 5', en: '5 / 5' }
+        };
+
+        // 언어 전환 함수
+        function setLang(lang) {
+            currentLang = lang;
+            document.getElementById('btn-kr').classList.toggle('active', lang === 'kr');
+            document.getElementById('btn-en').classList.toggle('active', lang === 'en');
+            document.getElementById('html-root').setAttribute('lang', lang === 'kr' ? 'ko' : 'en');
+
+            // data-lang-key가 있는 모든 요소 업데이트
+            document.querySelectorAll('[data-lang-key]').forEach(function(el) {
+                const key = el.getAttribute('data-lang-key');
+                if (translations[key]) {
+                    if (el.tagName === 'INPUT' && el.type === 'text') {
+                        el.placeholder = translations[key][lang];
+                    } else if (el.tagName === 'TEXTAREA') {
+                        // textarea는 기본값 업데이트 + placeholder 업데이트
+                        if (el.classList.contains('team-name')) {
+                            // 팀명 textarea: 사용자가 수정하지 않았으면 기본값 변경
+                            const krVal = translations[key].kr;
+                            const enVal = translations[key].en;
+                            if (el.value === krVal || el.value === enVal || el.value === '') {
+                                el.value = translations[key][lang];
+                            }
+                        }
+                        if (el.hasAttribute('placeholder') || translations[key][lang]) {
+                            el.placeholder = translations[key][lang];
+                        }
+                    } else {
+                        el.innerHTML = translations[key][lang];
+                    }
+                }
+            });
+
+            // data-placeholder-kr/en 속성이 있는 요소 업데이트
+            document.querySelectorAll('[data-placeholder-kr]').forEach(function(el) {
+                const placeholder = el.getAttribute('data-placeholder-' + lang);
+                if (placeholder) {
+                    el.placeholder = placeholder;
+                }
+            });
+
+            // 언어 설정 저장
+            localStorage.setItem('surveyLang', lang);
+        }
+
         // ==================== 초기화 ====================
 
         document.addEventListener('DOMContentLoaded', function() {
+            // 저장된 언어 설정 불러오기
+            const savedLang = localStorage.getItem('surveyLang');
+            if (savedLang) {
+                setLang(savedLang);
+            }
+
             // 인앱 브라우저 감지 (카카오톡, 이메일 앱 등)
             function isInAppBrowser() {
                 const ua = navigator.userAgent || navigator.vendor || window.opera;
@@ -1097,10 +1590,16 @@ Chrome 인쇄 대화상자에서:
 
 <body>
 
-    <!-- 가이드 박스 -->
+    <!-- 가이드 박스 - 해외_직접작성 버전과 동일 구조 -->
     <div class="guide-box">
-        <button id="btnExport" type="button">💾 결과 저장</button>
-        <button id="btnPrint" type="button">🖨️ PDF 저장 / 인쇄</button>
+        <div class="lang-toggle">
+            <button id="btn-kr" class="active" onclick="setLang('kr')">한국어</button>
+            <button id="btn-en" onclick="setLang('en')">English</button>
+        </div>
+        <div class="action-buttons">
+            <button id="btnExport" type="button" style="background-color: #28a745;" data-lang-key="btn_export">결과 저장 (JSON)</button>
+            <button id="btnPrint" type="button" data-lang-key="btn_print">인쇄 / PDF 저장</button>
+        </div>
     </div>
 
     <!-- iPhone Safari 안내 (인앱 브라우저에서 열릴 경우) -->
@@ -1114,19 +1613,19 @@ Chrome 인쇄 대화상자에서:
 
         <div class="header">
             <div>
-                <h1>초고압 변압기 엔지니어링 시스템 운영 현황 조사</h1>
-                <div style="font-size: 12px; margin-top: 5px; color: #555;">Part 1. Engineering Organization</div>
+                <h1 data-lang-key="main_title">초고압 변압기 엔지니어링 시스템 운영 현황 조사</h1>
+                <div style="font-size: 12px; margin-top: 5px; color: #555;" data-lang-key="part1_sub">Part 1. Engineering Organization</div>
             </div>
             <div style="text-align: right; font-size: 11px;">
-                조사 일자: <input type="text" style="width: 80px; display:inline;" placeholder="2025.12.XX"><br>
-                응답 기업: <input type="text" style="width: 80px; display:inline;" placeholder="기업명">
+                <span data-lang-key="survey_date">조사 일자:</span> <input type="text" style="width: 80px; display:inline;" placeholder="2025.12.XX"><br>
+                <span data-lang-key="company_name">응답 기업:</span> <input type="text" style="width: 80px; display:inline;" placeholder="기업명" data-placeholder-kr="기업명" data-placeholder-en="Company Name">
             </div>
         </div>
 
         <!-- 1. 조직 구성 개요 -->
         <div class="section">
-            <div class="section-title">1. 엔지니어링 조직 구성 (Engineering Organization)<span class="edit-notice">※ 팀명은 귀사에 맞게 수정 가능합니다</span></div>
-            <div class="sub-guide">
+            <div class="section-title"><span data-lang-key="sec1_title">1. 엔지니어링 조직 구성 (Engineering Organization)</span><span class="edit-notice" data-lang-key="sec1_edit_notice">※ 팀명은 귀사에 맞게 수정 가능합니다</span></div>
+            <div class="sub-guide" data-lang-key="sec1_guide">
                 * <strong>자체:</strong> 우리 회사 직원(정규직 등), <strong>외주:</strong> 협력사, 파견직 등 외부 인원
             </div>
             <table>
@@ -1140,77 +1639,77 @@ Chrome 인쇄 대화상자에서:
                 </colgroup>
                 <thead>
                     <tr>
-                        <th>팀 구분</th>
-                        <th>자체 (명)</th>
-                        <th>외주 (명)</th>
-                        <th>팀 구분</th>
-                        <th>자체 (명)</th>
-                        <th>외주 (명)</th>
+                        <th data-lang-key="th_team">팀 구분</th>
+                        <th data-lang-key="th_internal">자체 (명)</th>
+                        <th data-lang-key="th_external">외주 (명)</th>
+                        <th data-lang-key="th_team">팀 구분</th>
+                        <th data-lang-key="th_internal">자체 (명)</th>
+                        <th data-lang-key="th_external">외주 (명)</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr>
-                        <td><textarea class="team-name" rows="1">기본 설계팀</textarea></td>
+                        <td><textarea class="team-name" rows="1" data-lang-key="team_basic">기본 설계팀</textarea></td>
                         <td><input type="number"></td>
                         <td><input type="number"></td>
-                        <td><textarea class="team-name" rows="1">전기 설계팀</textarea></td>
+                        <td><textarea class="team-name" rows="1" data-lang-key="team_elec">전기 설계팀</textarea></td>
                         <td><input type="number"></td>
                         <td><input type="number"></td>
                     </tr>
                     <tr>
-                        <td><textarea class="team-name" rows="2">전기 구조팀
+                        <td><textarea class="team-name" rows="2" data-lang-key="team_elec_struct">전기 구조팀
 (중신, 단철, 단자)</textarea></td>
                         <td><input type="number"></td>
                         <td><input type="number"></td>
-                        <td><textarea class="team-name" rows="2">기계 구조팀
+                        <td><textarea class="team-name" rows="2" data-lang-key="team_mech_struct">기계 구조팀
 (외함, 탱크)</textarea></td>
                         <td><input type="number"></td>
                         <td><input type="number"></td>
                     </tr>
                     <tr>
-                        <td><textarea class="team-name" rows="1">제어반/판넬팀</textarea></td>
+                        <td><textarea class="team-name" rows="1" data-lang-key="team_control">제어반/판넬팀</textarea></td>
                         <td><input type="number"></td>
                         <td><input type="number"></td>
-                        <td><textarea class="team-name" rows="1">견적팀</textarea></td>
-                        <td><input type="number"></td>
-                        <td><input type="number"></td>
-                    </tr>
-                    <tr>
-                        <td><textarea class="team-name" rows="1">PM팀</textarea></td>
-                        <td><input type="number"></td>
-                        <td><input type="number"></td>
-                        <td><textarea class="team-name" rows="1">개발팀</textarea></td>
+                        <td><textarea class="team-name" rows="1" data-lang-key="team_estimation">견적팀</textarea></td>
                         <td><input type="number"></td>
                         <td><input type="number"></td>
                     </tr>
                     <tr>
-                        <td><textarea class="team-name" rows="1">전산/시스템/자동화팀</textarea></td>
+                        <td><textarea class="team-name" rows="1" data-lang-key="team_pm">PM팀</textarea></td>
                         <td><input type="number"></td>
                         <td><input type="number"></td>
-                        <td><textarea class="team-name" rows="1" placeholder="기타 팀 1"></textarea></td>
+                        <td><textarea class="team-name" rows="1" data-lang-key="team_dev">개발팀</textarea></td>
                         <td><input type="number"></td>
                         <td><input type="number"></td>
                     </tr>
                     <tr>
-                        <td><textarea class="team-name" rows="1" placeholder="기타 팀 2"></textarea></td>
+                        <td><textarea class="team-name" rows="1" data-lang-key="team_it">전산/시스템/자동화팀</textarea></td>
                         <td><input type="number"></td>
                         <td><input type="number"></td>
-                        <td><textarea class="team-name" rows="1" placeholder="기타 팀 3"></textarea></td>
+                        <td><textarea class="team-name" rows="1" data-lang-key="team_other1" placeholder="기타 팀 1"></textarea></td>
+                        <td><input type="number"></td>
+                        <td><input type="number"></td>
+                    </tr>
+                    <tr>
+                        <td><textarea class="team-name" rows="1" data-lang-key="team_other2" placeholder="기타 팀 2"></textarea></td>
+                        <td><input type="number"></td>
+                        <td><input type="number"></td>
+                        <td><textarea class="team-name" rows="1" data-lang-key="team_other3" placeholder="기타 팀 3"></textarea></td>
                         <td><input type="number"></td>
                         <td><input type="number"></td>
                     </tr>
                 </tbody>
             </table>
             <div class="remarks-box">
-                <span>※ 비고 / 특이사항:</span>
-                <textarea placeholder="조직 운영상의 특이사항이나 향후 개편 계획 등이 있다면 기재해 주세요."></textarea>
+                <span data-lang-key="remarks_label">※ 비고 / 특이사항:</span>
+                <textarea data-lang-key="remarks_org" placeholder="조직 운영상의 특이사항이나 향후 개편 계획 등이 있다면 기재해 주세요."></textarea>
             </div>
         </div>
 
         <!-- 1-1. 외주 활용 상세 -->
         <div class="section">
-            <div class="section-title">1-1. 외주 설계 활용 현황 (Outsourcing)</div>
-            <div class="sub-guide">* 협력 업체가 어떤 일을 어떻게 도와주고 있는지 적어주세요.</div>
+            <div class="section-title" data-lang-key="sec1_1_title">1-1. 외주 설계 활용 현황 (Outsourcing)</div>
+            <div class="sub-guide" data-lang-key="sec1_1_guide">* 협력 업체가 어떤 일을 어떻게 도와주고 있는지 적어주세요.</div>
             <table>
                 <colgroup>
                     <col style="width: 20%;">
@@ -1220,18 +1719,18 @@ Chrome 인쇄 대화상자에서:
                 </colgroup>
                 <thead>
                     <tr>
-                        <th>협력 업체명</th>
-                        <th>맡기는 업무 (분야)</th>
-                        <th>업무 범위 (단순도면 / 상세설계)</th>
-                        <th>품질 검사 / 소통 방법</th>
+                        <th data-lang-key="th_partner">협력 업체명</th>
+                        <th data-lang-key="th_scope">맡기는 업무 (분야)</th>
+                        <th data-lang-key="th_range">업무 범위 (단순도면 / 상세설계)</th>
+                        <th data-lang-key="th_qc">품질 검사 / 소통 방법</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr>
-                        <td><input type="text" placeholder="업체 A"></td>
-                        <td><input type="text" placeholder="예: 구조물, 제어반 등"></td>
-                        <td><input type="text" placeholder="예: 상세설계, 도면작성"></td>
-                        <td><input type="text" placeholder="예: 주간 회의, 체크리스트"></td>
+                        <td><input type="text" data-lang-key="ph_company_a" placeholder="업체 A"></td>
+                        <td><input type="text" data-lang-key="ph_scope" placeholder="예: 구조물, 제어반 등"></td>
+                        <td><input type="text" data-lang-key="ph_range" placeholder="예: 상세설계, 도면작성"></td>
+                        <td><input type="text" data-lang-key="ph_qc" placeholder="예: 주간 회의, 체크리스트"></td>
                     </tr>
                     <tr>
                         <td><input type="text" placeholder="업체 B"></td>
@@ -1261,7 +1760,7 @@ Chrome 인쇄 대화상자에서:
             </table>
         </div>
 
-        <div class="page-num">1 / 5</div>
+        <div class="page-num" data-lang-key="page_1">1 / 5</div>
     </div>
 
     <!-- ==================== 2페이지: 설계 자동화 (전체) ==================== -->
@@ -1269,223 +1768,223 @@ Chrome 인쇄 대화상자에서:
 
         <div class="header">
             <div>
-                <h1>초고압 변압기 엔지니어링 시스템 운영 현황 조사</h1>
-                <div style="font-size: 12px; margin-top: 5px; color: #555;">Part 2. Design Automation</div>
+                <h1 data-lang-key="main_title">초고압 변압기 엔지니어링 시스템 운영 현황 조사</h1>
+                <div style="font-size: 12px; margin-top: 5px; color: #555;" data-lang-key="part2_sub">Part 2. Design Automation</div>
             </div>
         </div>
 
         <!-- 2. 설계 자동화 심층 분석 -->
         <div class="section">
-            <div class="section-title">2. 설계 자동화 시스템 현황 (Design Automation)</div>
-            <div class="sub-guide">* 설계할 때 컴퓨터가 자동으로 해주는 부분이 어디까지인지 체크해 주세요.</div>
+            <div class="section-title" data-lang-key="sec2_title">2. 설계 자동화 시스템 현황 (Design Automation)</div>
+            <div class="sub-guide" data-lang-key="sec2_guide">* 설계할 때 컴퓨터가 자동으로 해주는 부분이 어디까지인지 체크해 주세요.</div>
 
             <table style="margin-top: 5px; font-size: 9px;" class="automation-table">
                 <thead>
                     <tr>
-                        <th style="width: 9%;">팀/파트명</th>
-                        <th style="width: 36%;">자동화 수준</th>
-                        <th style="width: 28%;">자동 생성 결과물</th>
-                        <th style="width: 27%;">수작업 보정률</th>
+                        <th style="width: 9%;" data-lang-key="th_part">팀/파트명</th>
+                        <th style="width: 36%;" data-lang-key="th_auto_level">자동화 수준</th>
+                        <th style="width: 28%;" data-lang-key="th_auto_output">자동 생성 결과물</th>
+                        <th style="width: 27%;" data-lang-key="th_correction">수작업 보정률</th>
                     </tr>
                 </thead>
                 <tbody>
                     <!-- 전기설계 -->
                     <tr>
-                        <td><strong>전기설계</strong></td>
+                        <td><strong data-lang-key="part_elec">전기설계</strong></td>
                         <td class="left-align">
-                            <label><input type="radio" name="auto_elec" value="1"> 수계산(수동)</label>
-                            <label><input type="radio" name="auto_elec" value="2"> Excel(보조)</label>
-                            <label><input type="radio" name="auto_elec" value="3"> 전용S/W(입력)</label>
-                            <label><input type="radio" name="auto_elec" value="4"> 전용S/W(반자동)</label>
-                            <label><input type="radio" name="auto_elec" value="5"> 전용S/W(자동)</label>
+                            <label><input type="radio" name="auto_elec" value="1"> <span data-lang-key="auto_elec_1">수계산(수동)</span></label>
+                            <label><input type="radio" name="auto_elec" value="2"> <span data-lang-key="auto_elec_2">Excel(보조)</span></label>
+                            <label><input type="radio" name="auto_elec" value="3"> <span data-lang-key="auto_elec_3">전용S/W(입력)</span></label>
+                            <label><input type="radio" name="auto_elec" value="4"> <span data-lang-key="auto_elec_4">전용S/W(반자동)</span></label>
+                            <label><input type="radio" name="auto_elec" value="5"> <span data-lang-key="auto_elec_5">전용S/W(자동)</span></label>
                         </td>
                         <td class="left-align">
-                            <label><input type="checkbox"> 전기계산지</label>
-                            <label><input type="checkbox"> 절연설계검토서</label>
-                            <label><input type="checkbox"> 단락검토서</label>
+                            <label><input type="checkbox"> <span data-lang-key="output_calc">전기계산지</span></label>
+                            <label><input type="checkbox"> <span data-lang-key="output_insulation">절연설계검토서</span></label>
+                            <label><input type="checkbox"> <span data-lang-key="output_short">단락검토서</span></label>
                         </td>
                         <td class="left-align">
-                            <label><input type="radio" name="corr_elec" value="1"> 80~100%</label>
-                            <label><input type="radio" name="corr_elec" value="2"> 50~80%</label>
-                            <label><input type="radio" name="corr_elec" value="3"> 20~50%</label>
-                            <label><input type="radio" name="corr_elec" value="4"> 5~20%</label>
-                            <label><input type="radio" name="corr_elec" value="5"> 0~5%</label>
+                            <label><input type="radio" name="corr_elec" value="1"> <span data-lang-key="corr_1">80~100%</span></label>
+                            <label><input type="radio" name="corr_elec" value="2"> <span data-lang-key="corr_2">50~80%</span></label>
+                            <label><input type="radio" name="corr_elec" value="3"> <span data-lang-key="corr_3">20~50%</span></label>
+                            <label><input type="radio" name="corr_elec" value="4"> <span data-lang-key="corr_4">5~20%</span></label>
+                            <label><input type="radio" name="corr_elec" value="5"> <span data-lang-key="corr_5">0~5%</span></label>
                         </td>
                     </tr>
                     <!-- 전계해석 -->
                     <tr>
-                        <td><strong>전계해석</strong></td>
+                        <td><strong data-lang-key="part_fea">전계해석</strong></td>
                         <td class="left-align">
-                            <label><input type="radio" name="auto_fea" value="1"> 미수행</label>
-                            <label><input type="radio" name="auto_fea" value="2"> 필요시(수동)</label>
-                            <label><input type="radio" name="auto_fea" value="3"> 전건(수동)</label>
-                            <label><input type="radio" name="auto_fea" value="4"> 설계연동(반자동)</label>
-                            <label><input type="radio" name="auto_fea" value="5"> 설계연동(자동)</label>
+                            <label><input type="radio" name="auto_fea" value="1"> <span data-lang-key="auto_fea_1">미수행</span></label>
+                            <label><input type="radio" name="auto_fea" value="2"> <span data-lang-key="auto_fea_2">필요시(수동)</span></label>
+                            <label><input type="radio" name="auto_fea" value="3"> <span data-lang-key="auto_fea_3">전건(수동)</span></label>
+                            <label><input type="radio" name="auto_fea" value="4"> <span data-lang-key="auto_fea_4">설계연동(반자동)</span></label>
+                            <label><input type="radio" name="auto_fea" value="5"> <span data-lang-key="auto_fea_5">설계연동(자동)</span></label>
                         </td>
                         <td class="left-align">
-                            <label><input type="checkbox"> 전계분포도</label>
-                            <label><input type="checkbox"> 해석보고서</label>
+                            <label><input type="checkbox"> <span data-lang-key="output_efield">전계분포도</span></label>
+                            <label><input type="checkbox"> <span data-lang-key="output_report">해석보고서</span></label>
                         </td>
                         <td class="left-align">
-                            <label><input type="radio" name="corr_fea" value="1"> 80~100%</label>
-                            <label><input type="radio" name="corr_fea" value="2"> 50~80%</label>
-                            <label><input type="radio" name="corr_fea" value="3"> 20~50%</label>
-                            <label><input type="radio" name="corr_fea" value="4"> 5~20%</label>
-                            <label><input type="radio" name="corr_fea" value="5"> 0~5%</label>
+                            <label><input type="radio" name="corr_fea" value="1"> <span data-lang-key="corr_1">80~100%</span></label>
+                            <label><input type="radio" name="corr_fea" value="2"> <span data-lang-key="corr_2">50~80%</span></label>
+                            <label><input type="radio" name="corr_fea" value="3"> <span data-lang-key="corr_3">20~50%</span></label>
+                            <label><input type="radio" name="corr_fea" value="4"> <span data-lang-key="corr_4">5~20%</span></label>
+                            <label><input type="radio" name="corr_fea" value="5"> <span data-lang-key="corr_5">0~5%</span></label>
                         </td>
                     </tr>
                     <!-- 권선 -->
                     <tr>
-                        <td><strong>권선</strong></td>
+                        <td><strong data-lang-key="part_wind">권선</strong></td>
                         <td class="left-align">
-                            <label><input type="radio" name="auto_wind" value="1"> 수작업(수동)</label>
-                            <label><input type="radio" name="auto_wind" value="2"> 라이브러리(보조)</label>
-                            <label><input type="radio" name="auto_wind" value="3"> 치수입력(반수동)</label>
-                            <label><input type="radio" name="auto_wind" value="4"> 파라메트릭(반자동)</label>
-                            <label><input type="radio" name="auto_wind" value="5"> 완전자동</label>
+                            <label><input type="radio" name="auto_wind" value="1"> <span data-lang-key="auto_wind_1">수작업(수동)</span></label>
+                            <label><input type="radio" name="auto_wind" value="2"> <span data-lang-key="auto_wind_2">라이브러리(보조)</span></label>
+                            <label><input type="radio" name="auto_wind" value="3"> <span data-lang-key="auto_wind_3">치수입력(반수동)</span></label>
+                            <label><input type="radio" name="auto_wind" value="4"> <span data-lang-key="auto_wind_4">파라메트릭(반자동)</span></label>
+                            <label><input type="radio" name="auto_wind" value="5"> <span data-lang-key="auto_wind_5">완전자동</span></label>
                         </td>
                         <td class="left-align">
-                            <label><input type="checkbox"> 3D모델</label>
-                            <label><input type="checkbox"> 2D도면</label>
-                            <label><input type="checkbox"> 3D Draft</label>
-                            <label><input type="checkbox"> 자재표</label>
+                            <label><input type="checkbox"> <span data-lang-key="output_3d">3D모델</span></label>
+                            <label><input type="checkbox"> <span data-lang-key="output_2d">2D도면</span></label>
+                            <label><input type="checkbox"> <span data-lang-key="output_3d_draft">3D Draft</span></label>
+                            <label><input type="checkbox"> <span data-lang-key="output_material">자재표</span></label>
                         </td>
                         <td class="left-align">
-                            <label><input type="radio" name="corr_wind" value="1"> 80~100%</label>
-                            <label><input type="radio" name="corr_wind" value="2"> 50~80%</label>
-                            <label><input type="radio" name="corr_wind" value="3"> 20~50%</label>
-                            <label><input type="radio" name="corr_wind" value="4"> 5~20%</label>
-                            <label><input type="radio" name="corr_wind" value="5"> 0~5%</label>
+                            <label><input type="radio" name="corr_wind" value="1"> <span data-lang-key="corr_1">80~100%</span></label>
+                            <label><input type="radio" name="corr_wind" value="2"> <span data-lang-key="corr_2">50~80%</span></label>
+                            <label><input type="radio" name="corr_wind" value="3"> <span data-lang-key="corr_3">20~50%</span></label>
+                            <label><input type="radio" name="corr_wind" value="4"> <span data-lang-key="corr_4">5~20%</span></label>
+                            <label><input type="radio" name="corr_wind" value="5"> <span data-lang-key="corr_5">0~5%</span></label>
                         </td>
                     </tr>
                     <!-- 철심/클램프 -->
                     <tr>
-                        <td><strong>철심/클램프</strong></td>
+                        <td><strong data-lang-key="part_core">철심/클램프</strong></td>
                         <td class="left-align">
-                            <label><input type="radio" name="auto_core" value="1"> 수작업(수동)</label>
-                            <label><input type="radio" name="auto_core" value="2"> 라이브러리(보조)</label>
-                            <label><input type="radio" name="auto_core" value="3"> 라이브러리(반수동)</label>
-                            <label><input type="radio" name="auto_core" value="4"> 규칙기반(반자동)</label>
-                            <label><input type="radio" name="auto_core" value="5"> 완전자동</label>
+                            <label><input type="radio" name="auto_core" value="1"> <span data-lang-key="auto_core_1">수작업(수동)</span></label>
+                            <label><input type="radio" name="auto_core" value="2"> <span data-lang-key="auto_core_2">라이브러리(보조)</span></label>
+                            <label><input type="radio" name="auto_core" value="3"> <span data-lang-key="auto_core_3">라이브러리(반수동)</span></label>
+                            <label><input type="radio" name="auto_core" value="4"> <span data-lang-key="auto_core_4">규칙기반(반자동)</span></label>
+                            <label><input type="radio" name="auto_core" value="5"> <span data-lang-key="auto_core_5">완전자동</span></label>
                         </td>
                         <td class="left-align">
-                            <label><input type="checkbox"> 3D모델</label>
-                            <label><input type="checkbox"> 2D도면</label>
-                            <label><input type="checkbox"> 3D Draft</label>
-                            <label><input type="checkbox"> 자재BOM</label>
+                            <label><input type="checkbox"> <span data-lang-key="output_3d">3D모델</span></label>
+                            <label><input type="checkbox"> <span data-lang-key="output_2d">2D도면</span></label>
+                            <label><input type="checkbox"> <span data-lang-key="output_3d_draft">3D Draft</span></label>
+                            <label><input type="checkbox"> <span data-lang-key="output_bom">자재BOM</span></label>
                         </td>
                         <td class="left-align">
-                            <label><input type="radio" name="corr_core" value="1"> 80~100%</label>
-                            <label><input type="radio" name="corr_core" value="2"> 50~80%</label>
-                            <label><input type="radio" name="corr_core" value="3"> 20~50%</label>
-                            <label><input type="radio" name="corr_core" value="4"> 5~20%</label>
-                            <label><input type="radio" name="corr_core" value="5"> 0~5%</label>
+                            <label><input type="radio" name="corr_core" value="1"> <span data-lang-key="corr_1">80~100%</span></label>
+                            <label><input type="radio" name="corr_core" value="2"> <span data-lang-key="corr_2">50~80%</span></label>
+                            <label><input type="radio" name="corr_core" value="3"> <span data-lang-key="corr_3">20~50%</span></label>
+                            <label><input type="radio" name="corr_core" value="4"> <span data-lang-key="corr_4">5~20%</span></label>
+                            <label><input type="radio" name="corr_core" value="5"> <span data-lang-key="corr_5">0~5%</span></label>
                         </td>
                     </tr>
                     <!-- 중신/리드 -->
                     <tr>
-                        <td><strong>중신/리드</strong></td>
+                        <td><strong data-lang-key="part_ap">중신/리드</strong></td>
                         <td class="left-align">
-                            <label><input type="radio" name="auto_ap" value="1"> 수작업(수동)</label>
-                            <label><input type="radio" name="auto_ap" value="2"> 참조도면(보조)</label>
-                            <label><input type="radio" name="auto_ap" value="3"> 라이브러리(반수동)</label>
-                            <label><input type="radio" name="auto_ap" value="4"> 리드자동(반자동)</label>
-                            <label><input type="radio" name="auto_ap" value="5"> 완전자동</label>
+                            <label><input type="radio" name="auto_ap" value="1"> <span data-lang-key="auto_ap_1">수작업(수동)</span></label>
+                            <label><input type="radio" name="auto_ap" value="2"> <span data-lang-key="auto_ap_2">참조도면(보조)</span></label>
+                            <label><input type="radio" name="auto_ap" value="3"> <span data-lang-key="auto_ap_3">라이브러리(반수동)</span></label>
+                            <label><input type="radio" name="auto_ap" value="4"> <span data-lang-key="auto_ap_4">리드자동(반자동)</span></label>
+                            <label><input type="radio" name="auto_ap" value="5"> <span data-lang-key="auto_ap_5">완전자동</span></label>
                         </td>
                         <td class="left-align">
-                            <label><input type="checkbox"> 3D모델</label>
-                            <label><input type="checkbox"> 2D도면</label>
-                            <label><input type="checkbox"> 3D Draft</label>
-                            <label><input type="checkbox"> 치수표</label>
-                            <label><input type="checkbox"> 자재표</label>
+                            <label><input type="checkbox"> <span data-lang-key="output_3d">3D모델</span></label>
+                            <label><input type="checkbox"> <span data-lang-key="output_2d">2D도면</span></label>
+                            <label><input type="checkbox"> <span data-lang-key="output_3d_draft">3D Draft</span></label>
+                            <label><input type="checkbox"> <span data-lang-key="output_dimension">치수표</span></label>
+                            <label><input type="checkbox"> <span data-lang-key="output_material">자재표</span></label>
                         </td>
                         <td class="left-align">
-                            <label><input type="radio" name="corr_ap" value="1"> 80~100%</label>
-                            <label><input type="radio" name="corr_ap" value="2"> 50~80%</label>
-                            <label><input type="radio" name="corr_ap" value="3"> 20~50%</label>
-                            <label><input type="radio" name="corr_ap" value="4"> 5~20%</label>
-                            <label><input type="radio" name="corr_ap" value="5"> 0~5%</label>
+                            <label><input type="radio" name="corr_ap" value="1"> <span data-lang-key="corr_1">80~100%</span></label>
+                            <label><input type="radio" name="corr_ap" value="2"> <span data-lang-key="corr_2">50~80%</span></label>
+                            <label><input type="radio" name="corr_ap" value="3"> <span data-lang-key="corr_3">20~50%</span></label>
+                            <label><input type="radio" name="corr_ap" value="4"> <span data-lang-key="corr_4">5~20%</span></label>
+                            <label><input type="radio" name="corr_ap" value="5"> <span data-lang-key="corr_5">0~5%</span></label>
                         </td>
                     </tr>
                     <!-- 외함/탱크 -->
                     <tr>
-                        <td><strong>외함/탱크</strong></td>
+                        <td><strong data-lang-key="part_tank">외함/탱크</strong></td>
                         <td class="left-align">
-                            <label><input type="radio" name="auto_tank" value="1"> 수작업(수동)</label>
-                            <label><input type="radio" name="auto_tank" value="2"> 표준복사(보조)</label>
-                            <label><input type="radio" name="auto_tank" value="3"> 라이브러리(반수동)</label>
-                            <label><input type="radio" name="auto_tank" value="4"> 치수변동(반자동)</label>
-                            <label><input type="radio" name="auto_tank" value="5"> 완전자동</label>
+                            <label><input type="radio" name="auto_tank" value="1"> <span data-lang-key="auto_tank_1">수작업(수동)</span></label>
+                            <label><input type="radio" name="auto_tank" value="2"> <span data-lang-key="auto_tank_2">표준복사(보조)</span></label>
+                            <label><input type="radio" name="auto_tank" value="3"> <span data-lang-key="auto_tank_3">라이브러리(반수동)</span></label>
+                            <label><input type="radio" name="auto_tank" value="4"> <span data-lang-key="auto_tank_4">치수변동(반자동)</span></label>
+                            <label><input type="radio" name="auto_tank" value="5"> <span data-lang-key="auto_tank_5">완전자동</span></label>
                         </td>
                         <td class="left-align">
-                            <label><input type="checkbox"> 3D모델</label>
-                            <label><input type="checkbox"> 2D도면</label>
-                            <label><input type="checkbox"> 3D Draft</label>
-                            <label><input type="checkbox"> 용접BOM</label>
+                            <label><input type="checkbox"> <span data-lang-key="output_3d">3D모델</span></label>
+                            <label><input type="checkbox"> <span data-lang-key="output_2d">2D도면</span></label>
+                            <label><input type="checkbox"> <span data-lang-key="output_3d_draft">3D Draft</span></label>
+                            <label><input type="checkbox"> <span data-lang-key="output_weld_bom">용접BOM</span></label>
                         </td>
                         <td class="left-align">
-                            <label><input type="radio" name="corr_tank" value="1"> 80~100%</label>
-                            <label><input type="radio" name="corr_tank" value="2"> 50~80%</label>
-                            <label><input type="radio" name="corr_tank" value="3"> 20~50%</label>
-                            <label><input type="radio" name="corr_tank" value="4"> 5~20%</label>
-                            <label><input type="radio" name="corr_tank" value="5"> 0~5%</label>
+                            <label><input type="radio" name="corr_tank" value="1"> <span data-lang-key="corr_1">80~100%</span></label>
+                            <label><input type="radio" name="corr_tank" value="2"> <span data-lang-key="corr_2">50~80%</span></label>
+                            <label><input type="radio" name="corr_tank" value="3"> <span data-lang-key="corr_3">20~50%</span></label>
+                            <label><input type="radio" name="corr_tank" value="4"> <span data-lang-key="corr_4">5~20%</span></label>
+                            <label><input type="radio" name="corr_tank" value="5"> <span data-lang-key="corr_5">0~5%</span></label>
                         </td>
                     </tr>
                     <!-- 승인도면 -->
                     <tr>
-                        <td><strong>승인도면</strong></td>
+                        <td><strong data-lang-key="part_approval">승인도면</strong></td>
                         <td class="left-align">
-                            <label><input type="radio" name="auto_approval" value="1"> 수작업(수동)</label>
-                            <label><input type="radio" name="auto_approval" value="2"> 표준복사(보조)</label>
-                            <label><input type="radio" name="auto_approval" value="3"> 라이브러리(반수동)</label>
-                            <label><input type="radio" name="auto_approval" value="4"> 치수변동(반자동)</label>
-                            <label><input type="radio" name="auto_approval" value="5"> 완전자동</label>
+                            <label><input type="radio" name="auto_approval" value="1"> <span data-lang-key="auto_approval_1">수작업(수동)</span></label>
+                            <label><input type="radio" name="auto_approval" value="2"> <span data-lang-key="auto_approval_2">표준복사(보조)</span></label>
+                            <label><input type="radio" name="auto_approval" value="3"> <span data-lang-key="auto_approval_3">라이브러리(반수동)</span></label>
+                            <label><input type="radio" name="auto_approval" value="4"> <span data-lang-key="auto_approval_4">치수변동(반자동)</span></label>
+                            <label><input type="radio" name="auto_approval" value="5"> <span data-lang-key="auto_approval_5">완전자동</span></label>
                         </td>
                         <td class="left-align">
-                            <label><input type="checkbox"> 3D모델</label>
-                            <label><input type="checkbox"> 2D도면</label>
+                            <label><input type="checkbox"> <span data-lang-key="output_3d">3D모델</span></label>
+                            <label><input type="checkbox"> <span data-lang-key="output_2d">2D도면</span></label>
                         </td>
                         <td class="left-align">
-                            <label><input type="radio" name="corr_approval" value="1"> 80~100%</label>
-                            <label><input type="radio" name="corr_approval" value="2"> 50~80%</label>
-                            <label><input type="radio" name="corr_approval" value="3"> 20~50%</label>
-                            <label><input type="radio" name="corr_approval" value="4"> 5~20%</label>
-                            <label><input type="radio" name="corr_approval" value="5"> 0~5%</label>
+                            <label><input type="radio" name="corr_approval" value="1"> <span data-lang-key="corr_1">80~100%</span></label>
+                            <label><input type="radio" name="corr_approval" value="2"> <span data-lang-key="corr_2">50~80%</span></label>
+                            <label><input type="radio" name="corr_approval" value="3"> <span data-lang-key="corr_3">20~50%</span></label>
+                            <label><input type="radio" name="corr_approval" value="4"> <span data-lang-key="corr_4">5~20%</span></label>
+                            <label><input type="radio" name="corr_approval" value="5"> <span data-lang-key="corr_5">0~5%</span></label>
                         </td>
                     </tr>
                     <!-- 기계해석 -->
                     <tr>
-                        <td><strong>기계해석</strong></td>
+                        <td><strong data-lang-key="part_mech">기계해석</strong></td>
                         <td class="left-align">
-                            <label><input type="radio" name="auto_mech" value="1"> 미수행</label>
-                            <label><input type="radio" name="auto_mech" value="2"> 외부의뢰(보조)</label>
-                            <label><input type="radio" name="auto_mech" value="3"> 내부수행(수동)</label>
-                            <label><input type="radio" name="auto_mech" value="4"> 설계연동(반자동)</label>
-                            <label><input type="radio" name="auto_mech" value="5"> 설계연동(자동)</label>
+                            <label><input type="radio" name="auto_mech" value="1"> <span data-lang-key="auto_mech_1">미수행</span></label>
+                            <label><input type="radio" name="auto_mech" value="2"> <span data-lang-key="auto_mech_2">외부의뢰(보조)</span></label>
+                            <label><input type="radio" name="auto_mech" value="3"> <span data-lang-key="auto_mech_3">내부수행(수동)</span></label>
+                            <label><input type="radio" name="auto_mech" value="4"> <span data-lang-key="auto_mech_4">설계연동(반자동)</span></label>
+                            <label><input type="radio" name="auto_mech" value="5"> <span data-lang-key="auto_mech_5">설계연동(자동)</span></label>
                         </td>
                         <td class="left-align">
-                            <label><input type="checkbox"> 내진해석</label>
-                            <label><input type="checkbox"> 진동해석</label>
-                            <label><input type="checkbox"> 냉각해석</label>
-                            <label><input type="checkbox"> 구조해석</label>
+                            <label><input type="checkbox"> <span data-lang-key="output_seismic">내진해석</span></label>
+                            <label><input type="checkbox"> <span data-lang-key="output_vibration">진동해석</span></label>
+                            <label><input type="checkbox"> <span data-lang-key="output_cooling">냉각해석</span></label>
+                            <label><input type="checkbox"> <span data-lang-key="output_struct">구조해석</span></label>
                         </td>
                         <td class="left-align">
-                            <label><input type="radio" name="corr_mech" value="1"> 80~100%</label>
-                            <label><input type="radio" name="corr_mech" value="2"> 50~80%</label>
-                            <label><input type="radio" name="corr_mech" value="3"> 20~50%</label>
-                            <label><input type="radio" name="corr_mech" value="4"> 5~20%</label>
-                            <label><input type="radio" name="corr_mech" value="5"> 0~5%</label>
+                            <label><input type="radio" name="corr_mech" value="1"> <span data-lang-key="corr_1">80~100%</span></label>
+                            <label><input type="radio" name="corr_mech" value="2"> <span data-lang-key="corr_2">50~80%</span></label>
+                            <label><input type="radio" name="corr_mech" value="3"> <span data-lang-key="corr_3">20~50%</span></label>
+                            <label><input type="radio" name="corr_mech" value="4"> <span data-lang-key="corr_4">5~20%</span></label>
+                            <label><input type="radio" name="corr_mech" value="5"> <span data-lang-key="corr_5">0~5%</span></label>
                         </td>
                     </tr>
                 </tbody>
             </table>
             <div class="remarks-box" style="margin-top: 10px;">
-                <span>※ 비고:</span>
-                <textarea placeholder="설계 자동화 관련 애로사항이나 개선 희망 사항을 기재해 주세요."></textarea>
+                <span data-lang-key="remarks_label">※ 비고:</span>
+                <textarea data-lang-key="remarks_auto" placeholder="설계 자동화 관련 애로사항이나 개선 희망 사항을 기재해 주세요."></textarea>
             </div>
         </div>
 
-        <div class="page-num">2 / 5</div>
+        <div class="page-num" data-lang-key="page_2">2 / 5</div>
     </div>
 
     <!-- ==================== 3페이지: 설계 프로그램 ==================== -->
@@ -1493,15 +1992,15 @@ Chrome 인쇄 대화상자에서:
 
         <div class="header">
             <div>
-                <h1>초고압 변압기 엔지니어링 시스템 운영 현황 조사</h1>
-                <div style="font-size: 12px; margin-top: 5px; color: #555;">Part 3. Design Tools & Programs</div>
+                <h1 data-lang-key="main_title">초고압 변압기 엔지니어링 시스템 운영 현황 조사</h1>
+                <div style="font-size: 12px; margin-top: 5px; color: #555;" data-lang-key="part3_sub">Part 3. Design Tools & Programs</div>
             </div>
         </div>
 
         <!-- 2-1. 설계/해석 툴 상세 -->
         <div class="section">
-            <div class="section-title">2-1. 사용 중인 설계 프로그램 (Design Tools)</div>
-            <div class="sub-guide">* 현재 사용 중인 설계/해석 프로그램과 개발 방식을 기재해 주세요.</div>
+            <div class="section-title" data-lang-key="sec2_1_title">2-1. 사용 중인 설계 프로그램 (Design Tools)</div>
+            <div class="sub-guide" data-lang-key="sec2_1_guide">* 현재 사용 중인 설계/해석 프로그램과 개발 방식을 기재해 주세요.</div>
             <table>
                 <colgroup>
                     <col style="width: 15%;">
@@ -1511,76 +2010,76 @@ Chrome 인쇄 대화상자에서:
                 </colgroup>
                 <thead>
                     <tr>
-                        <th>대분류</th>
-                        <th>세부 구분</th>
-                        <th>사용 중인 프로그램 이름</th>
-                        <th>구분 (직접개발 / 돈주고삼)</th>
+                        <th data-lang-key="th_category">대분류</th>
+                        <th data-lang-key="th_subcategory">세부 구분</th>
+                        <th data-lang-key="th_program">사용 중인 프로그램 이름</th>
+                        <th data-lang-key="th_dev_type">구분 (직접개발 / 돈주고삼)</th>
                     </tr>
                 </thead>
                 <tbody>
                     <!-- 전기 -->
                     <tr>
-                        <td rowspan="3"><strong>전기 설계</strong></td>
-                        <td>기본 설계 (Basic)</td>
-                        <td><input type="text" placeholder="예: PRT / VIT"></td>
-                        <td><input type="text" placeholder="예: 사내개발 / 상용"></td>
+                        <td rowspan="3"><strong data-lang-key="cat_elec_design">전기 설계</strong></td>
+                        <td data-lang-key="sub_basic">기본 설계 (Basic)</td>
+                        <td><input type="text" placeholder="예: PRT / VIT" data-placeholder-kr="예: PRT / VIT" data-placeholder-en="e.g.: PRT / VIT"></td>
+                        <td><input type="text" placeholder="예: 사내개발 / 상용" data-placeholder-kr="예: 사내개발 / 상용" data-placeholder-en="e.g.: In-house / Commercial"></td>
                     </tr>
                     <tr>
-                        <td>상세 설계 (Detail)</td>
-                        <td><input type="text" placeholder="예: SAPRTON, TURNINS"></td>
-                        <td><input type="text" placeholder=""></td>
+                        <td data-lang-key="sub_detail">상세 설계 (Detail)</td>
+                        <td><input type="text" placeholder="예: SAPRTON, TURNINS" data-placeholder-kr="예: SAPRTON, TURNINS" data-placeholder-en="e.g.: SAPRTON, TURNINS"></td>
+                        <td><input type="text" placeholder="예: 사내개발 / 상용" data-placeholder-kr="예: 사내개발 / 상용" data-placeholder-en="e.g.: In-house / Commercial"></td>
                     </tr>
                     <tr>
-                        <td>전계 해석 (E-Field)</td>
-                        <td><input type="text" placeholder="예: ELAX 2D"></td>
-                        <td><input type="text" placeholder=""></td>
+                        <td data-lang-key="sub_efield">전계 해석 (E-Field)</td>
+                        <td><input type="text" placeholder="예: ELAX 2D" data-placeholder-kr="예: ELAX 2D" data-placeholder-en="e.g.: ELAX 2D"></td>
+                        <td><input type="text" placeholder="예: 사내개발 / 상용" data-placeholder-kr="예: 사내개발 / 상용" data-placeholder-en="e.g.: In-house / Commercial"></td>
                     </tr>
                     <!-- 구조 -->
                     <tr>
-                        <td rowspan="4"><strong>기계/구조</strong></td>
-                        <td>자계/구조 해석</td>
-                        <td><input type="text" placeholder="예: ANSYS MAXWELL"></td>
-                        <td><input type="text" placeholder=""></td>
+                        <td rowspan="4"><strong data-lang-key="cat_mech_struct">기계/구조</strong></td>
+                        <td data-lang-key="sub_magnetic">자계/구조 해석</td>
+                        <td><input type="text" placeholder="예: ANSYS MAXWELL" data-placeholder-kr="예: ANSYS MAXWELL" data-placeholder-en="e.g.: ANSYS MAXWELL"></td>
+                        <td><input type="text" placeholder="예: 사내개발 / 상용" data-placeholder-kr="예: 사내개발 / 상용" data-placeholder-en="e.g.: In-house / Commercial"></td>
                     </tr>
                     <tr>
-                        <td>냉각/중신 설계</td>
-                        <td><input type="text" placeholder="예: 사내개발툴"></td>
-                        <td><input type="text" placeholder=""></td>
+                        <td data-lang-key="sub_cooling">냉각/중신 설계</td>
+                        <td><input type="text" placeholder="예: 사내개발툴" data-placeholder-kr="예: 사내개발툴" data-placeholder-en="e.g.: In-house tool"></td>
+                        <td><input type="text" placeholder="예: 사내개발 / 상용" data-placeholder-kr="예: 사내개발 / 상용" data-placeholder-en="e.g.: In-house / Commercial"></td>
                     </tr>
                     <tr>
-                        <td>3D 설계 (CAD)</td>
-                        <td><input type="text" placeholder="예: Solid Edge, Creo"></td>
-                        <td><input type="text" placeholder=""></td>
+                        <td data-lang-key="sub_3d_cad">3D 설계 (CAD)</td>
+                        <td><input type="text" placeholder="예: Solid Edge, Creo" data-placeholder-kr="예: Solid Edge, Creo" data-placeholder-en="e.g.: Solid Edge, Creo"></td>
+                        <td><input type="text" placeholder="예: 사내개발 / 상용" data-placeholder-kr="예: 사내개발 / 상용" data-placeholder-en="e.g.: In-house / Commercial"></td>
                     </tr>
                     <tr>
-                        <td>2D 설계 (CAD)</td>
-                        <td><input type="text" placeholder="예: AutoCAD"></td>
-                        <td><input type="text" placeholder=""></td>
+                        <td data-lang-key="sub_2d_cad">2D 설계 (CAD)</td>
+                        <td><input type="text" placeholder="예: AutoCAD" data-placeholder-kr="예: AutoCAD" data-placeholder-en="e.g.: AutoCAD"></td>
+                        <td><input type="text" placeholder="예: 사내개발 / 상용" data-placeholder-kr="예: 사내개발 / 상용" data-placeholder-en="e.g.: In-house / Commercial"></td>
                     </tr>
                 </tbody>
             </table>
 
             <table style="margin-top: 10px;">
                 <tr>
-                    <th style="width: 20%;">개발 언어 및 도구<br>(Dev Tools)</th>
+                    <th style="width: 20%;" data-lang-key="th_dev_tools">개발 언어 및 도구<br>(Dev Tools)</th>
                     <td class="left-align">
                         <div class="checkbox-group">
-                            <label><input type="checkbox"> <strong>엑셀 매크로</strong> (VBA)</label>
-                            <label><input type="checkbox"> <strong>CAD 자체 기능</strong> (LISP 등)</label>
-                            <label><input type="checkbox"> <strong>자체 개발</strong> (C#, Python 등)</label>
-                            <label><input type="checkbox"> <strong>외주 개발</strong> (SI업체)</label>
-                            <label><input type="checkbox"> <strong>상용 솔루션</strong> (Tacton, DriveWorks 등)</label>
+                            <label><input type="checkbox"> <span data-lang-key="dev_vba"><strong>엑셀 매크로</strong> (VBA)</span></label>
+                            <label><input type="checkbox"> <span data-lang-key="dev_cad"><strong>CAD 자체 기능</strong> (LISP 등)</span></label>
+                            <label><input type="checkbox"> <span data-lang-key="dev_inhouse"><strong>자체 개발</strong> (C#, Python 등)</span></label>
+                            <label><input type="checkbox"> <span data-lang-key="dev_outsource"><strong>외주 개발</strong> (SI업체)</span></label>
+                            <label><input type="checkbox"> <span data-lang-key="dev_commercial"><strong>상용 솔루션</strong> (Tacton, DriveWorks 등)</span></label>
                         </div>
                     </td>
                 </tr>
             </table>
             <div class="remarks-box">
-                <span>※ 비고 / 특이사항:</span>
-                <textarea placeholder="도입된 툴이나 기술적 이슈 사항이 있다면 기재해 주세요."></textarea>
+                <span data-lang-key="remarks_label">※ 비고 / 특이사항:</span>
+                <textarea data-lang-key="remarks_tools" placeholder="도입된 툴이나 기술적 이슈 사항이 있다면 기재해 주세요."></textarea>
             </div>
         </div>
 
-        <div class="page-num">3 / 5</div>
+        <div class="page-num" data-lang-key="page_3">3 / 5</div>
     </div>
 
     <!-- ==================== 4페이지: 설계 표준화 ==================== -->
@@ -1588,185 +2087,185 @@ Chrome 인쇄 대화상자에서:
 
         <div class="header">
             <div>
-                <h1>초고압 변압기 엔지니어링 시스템 운영 현황 조사</h1>
-                <div style="font-size: 12px; margin-top: 5px; color: #555;">Part 4. Design Standardization</div>
+                <h1 data-lang-key="main_title">초고압 변압기 엔지니어링 시스템 운영 현황 조사</h1>
+                <div style="font-size: 12px; margin-top: 5px; color: #555;" data-lang-key="part4_sub">Part 4. Design Standardization</div>
             </div>
         </div>
 
         <!-- 3. 설계 표준화 시스템 현황 -->
         <div class="section">
-            <div class="section-title">3. 설계 표준화 시스템 현황 (Design Standardization)</div>
-            <div class="sub-guide">* 각 팀/파트별로 설계 기준서, DR 체크리스트, 표준 라이브러리, ECO 프로세스 수준을 선택해 주세요.</div>
+            <div class="section-title" data-lang-key="sec3_title">3. 설계 표준화 시스템 현황 (Design Standardization)</div>
+            <div class="sub-guide" data-lang-key="sec3_guide">* 각 팀/파트별로 설계 기준서, DR 체크리스트, 표준 라이브러리, ECO 프로세스 수준을 선택해 주세요.</div>
 
             <table style="margin-top: 5px; font-size: 10px;" class="standardization-table">
                 <thead>
                     <tr>
-                        <th style="width: 12%;">팀/파트명</th>
-                        <th style="width: 22%;">설계 기준서</th>
-                        <th style="width: 22%;">DR 체크리스트</th>
-                        <th style="width: 22%;">표준 라이브러리<br><span style="font-weight:normal;font-size:8px;">(재사용 부품, 3D 부품, 템플릿)</span></th>
-                        <th style="width: 22%;">ECO 프로세스</th>
+                        <th style="width: 12%;" data-lang-key="th_part">팀/파트명</th>
+                        <th style="width: 22%;" data-lang-key="th_manual">설계 기준서</th>
+                        <th style="width: 22%;" data-lang-key="th_checklist">DR 체크리스트</th>
+                        <th style="width: 22%;"><span data-lang-key="th_library">표준 라이브러리</span><br><span style="font-weight:normal;font-size:8px;" data-lang-key="th_library_sub">(재사용 부품, 3D 부품, 템플릿)</span></th>
+                        <th style="width: 22%;" data-lang-key="th_eco">ECO 프로세스</th>
                     </tr>
                 </thead>
                 <tbody>
                     <!-- 전기설계 -->
                     <tr>
-                        <td><strong>전기설계</strong></td>
+                        <td><strong data-lang-key="part_elec">전기설계</strong></td>
                         <td class="left-align">
-                            <label><input type="checkbox" name="na_manual_elec" class="na-checkbox" data-target="manual_elec"> <strong>해당없음</strong></label><br>
-                            <label><input type="radio" name="manual_elec" value="2"> 비공식 메모</label><br>
-                            <label><input type="radio" name="manual_elec" value="3"> 문서화 (Word/PDF)</label><br>
-                            <label><input type="radio" name="manual_elec" value="4"> 항목별 체계화</label><br>
-                            <label><input type="radio" name="manual_elec" value="5"> 시스템 내재화</label>
+                            <label><input type="checkbox" name="na_manual_elec" class="na-checkbox" data-target="manual_elec"> <span data-lang-key="na"><strong>해당없음</strong></span></label><br>
+                            <label><input type="radio" name="manual_elec" value="2"> <span data-lang-key="manual_2">비공식 메모</span></label><br>
+                            <label><input type="radio" name="manual_elec" value="3"> <span data-lang-key="manual_3">문서화 (Word/PDF)</span></label><br>
+                            <label><input type="radio" name="manual_elec" value="4"> <span data-lang-key="manual_4">항목별 체계화</span></label><br>
+                            <label><input type="radio" name="manual_elec" value="5"> <span data-lang-key="manual_5">시스템 내재화</span></label>
                         </td>
                         <td class="left-align">
-                            <label><input type="checkbox" name="na_check_elec" class="na-checkbox" data-target="check_elec"> <strong>해당없음</strong></label><br>
-                            <label><input type="radio" name="check_elec" value="2"> 개인별 상이</label><br>
-                            <label><input type="radio" name="check_elec" value="3"> 표준양식 (Excel)</label><br>
-                            <label><input type="radio" name="check_elec" value="4"> 단계별 구분(1/2/최종)</label><br>
-                            <label><input type="radio" name="check_elec" value="5"> 자동검증 (시스템)</label>
+                            <label><input type="checkbox" name="na_check_elec" class="na-checkbox" data-target="check_elec"> <span data-lang-key="na"><strong>해당없음</strong></span></label><br>
+                            <label><input type="radio" name="check_elec" value="2"> <span data-lang-key="check_2">개인별 상이</span></label><br>
+                            <label><input type="radio" name="check_elec" value="3"> <span data-lang-key="check_3">표준양식 (Excel)</span></label><br>
+                            <label><input type="radio" name="check_elec" value="4"> <span data-lang-key="check_4">단계별 구분(1/2/최종)</span></label><br>
+                            <label><input type="radio" name="check_elec" value="5"> <span data-lang-key="check_5">자동검증 (시스템)</span></label>
                         </td>
                         <td class="left-align">
-                            <label><input type="checkbox" name="na_lib_elec" class="na-checkbox" data-target="lib_elec"> <strong>해당없음</strong></label><br>
-                            <label><input type="radio" name="lib_elec" value="2"> 개인별 보유</label><br>
-                            <label><input type="radio" name="lib_elec" value="3"> 일부 있음</label><br>
-                            <label><input type="radio" name="lib_elec" value="4"> 체계적 구축</label><br>
-                            <label><input type="radio" name="lib_elec" value="5"> PDM/PLM 연동</label>
+                            <label><input type="checkbox" name="na_lib_elec" class="na-checkbox" data-target="lib_elec"> <span data-lang-key="na"><strong>해당없음</strong></span></label><br>
+                            <label><input type="radio" name="lib_elec" value="2"> <span data-lang-key="lib_2">개인별 보유</span></label><br>
+                            <label><input type="radio" name="lib_elec" value="3"> <span data-lang-key="lib_3">일부 있음</span></label><br>
+                            <label><input type="radio" name="lib_elec" value="4"> <span data-lang-key="lib_4">체계적 구축</span></label><br>
+                            <label><input type="radio" name="lib_elec" value="5"> <span data-lang-key="lib_5">PDM/PLM 연동</span></label>
                         </td>
                         <td class="left-align">
-                            <label><input type="checkbox" name="na_eco_elec" class="na-checkbox" data-target="eco_elec"> <strong>해당없음</strong></label><br>
-                            <label><input type="radio" name="eco_elec" value="2"> 구두 통보</label><br>
-                            <label><input type="radio" name="eco_elec" value="3"> ECO 문서 (메일)</label><br>
-                            <label><input type="radio" name="eco_elec" value="4"> 전자결재</label><br>
-                            <label><input type="radio" name="eco_elec" value="5"> 자동반영 (BOM연동)</label>
+                            <label><input type="checkbox" name="na_eco_elec" class="na-checkbox" data-target="eco_elec"> <span data-lang-key="na"><strong>해당없음</strong></span></label><br>
+                            <label><input type="radio" name="eco_elec" value="2"> <span data-lang-key="eco_2">구두 통보</span></label><br>
+                            <label><input type="radio" name="eco_elec" value="3"> <span data-lang-key="eco_3">ECO 문서 (메일)</span></label><br>
+                            <label><input type="radio" name="eco_elec" value="4"> <span data-lang-key="eco_4">전자결재</span></label><br>
+                            <label><input type="radio" name="eco_elec" value="5"> <span data-lang-key="eco_5">자동반영 (BOM연동)</span></label>
                         </td>
                     </tr>
                     <!-- 권선 -->
                     <tr>
-                        <td><strong>권선</strong></td>
+                        <td><strong data-lang-key="part_wind">권선</strong></td>
                         <td class="left-align">
-                            <label><input type="checkbox" name="na_manual_wind" class="na-checkbox" data-target="manual_wind"> <strong>해당없음</strong></label><br>
-                            <label><input type="radio" name="manual_wind" value="2"> 비공식 메모</label><br>
-                            <label><input type="radio" name="manual_wind" value="3"> 문서화 (Word/PDF)</label><br>
-                            <label><input type="radio" name="manual_wind" value="4"> 항목별 체계화</label><br>
-                            <label><input type="radio" name="manual_wind" value="5"> 시스템 내재화</label>
+                            <label><input type="checkbox" name="na_manual_wind" class="na-checkbox" data-target="manual_wind"> <span data-lang-key="na"><strong>해당없음</strong></span></label><br>
+                            <label><input type="radio" name="manual_wind" value="2"> <span data-lang-key="manual_2">비공식 메모</span></label><br>
+                            <label><input type="radio" name="manual_wind" value="3"> <span data-lang-key="manual_3">문서화 (Word/PDF)</span></label><br>
+                            <label><input type="radio" name="manual_wind" value="4"> <span data-lang-key="manual_4">항목별 체계화</span></label><br>
+                            <label><input type="radio" name="manual_wind" value="5"> <span data-lang-key="manual_5">시스템 내재화</span></label>
                         </td>
                         <td class="left-align">
-                            <label><input type="checkbox" name="na_check_wind" class="na-checkbox" data-target="check_wind"> <strong>해당없음</strong></label><br>
-                            <label><input type="radio" name="check_wind" value="2"> 개인별 상이</label><br>
-                            <label><input type="radio" name="check_wind" value="3"> 표준양식 (Excel)</label><br>
-                            <label><input type="radio" name="check_wind" value="4"> 단계별 구분(1/2/최종)</label><br>
-                            <label><input type="radio" name="check_wind" value="5"> 자동검증 (시스템)</label>
+                            <label><input type="checkbox" name="na_check_wind" class="na-checkbox" data-target="check_wind"> <span data-lang-key="na"><strong>해당없음</strong></span></label><br>
+                            <label><input type="radio" name="check_wind" value="2"> <span data-lang-key="check_2">개인별 상이</span></label><br>
+                            <label><input type="radio" name="check_wind" value="3"> <span data-lang-key="check_3">표준양식 (Excel)</span></label><br>
+                            <label><input type="radio" name="check_wind" value="4"> <span data-lang-key="check_4">단계별 구분(1/2/최종)</span></label><br>
+                            <label><input type="radio" name="check_wind" value="5"> <span data-lang-key="check_5">자동검증 (시스템)</span></label>
                         </td>
                         <td class="left-align">
-                            <label><input type="checkbox" name="na_lib_wind" class="na-checkbox" data-target="lib_wind"> <strong>해당없음</strong></label><br>
-                            <label><input type="radio" name="lib_wind" value="2"> 개인별 보유</label><br>
-                            <label><input type="radio" name="lib_wind" value="3"> 일부 있음</label><br>
-                            <label><input type="radio" name="lib_wind" value="4"> 체계적 구축</label><br>
-                            <label><input type="radio" name="lib_wind" value="5"> PDM/PLM 연동</label>
+                            <label><input type="checkbox" name="na_lib_wind" class="na-checkbox" data-target="lib_wind"> <span data-lang-key="na"><strong>해당없음</strong></span></label><br>
+                            <label><input type="radio" name="lib_wind" value="2"> <span data-lang-key="lib_2">개인별 보유</span></label><br>
+                            <label><input type="radio" name="lib_wind" value="3"> <span data-lang-key="lib_3">일부 있음</span></label><br>
+                            <label><input type="radio" name="lib_wind" value="4"> <span data-lang-key="lib_4">체계적 구축</span></label><br>
+                            <label><input type="radio" name="lib_wind" value="5"> <span data-lang-key="lib_5">PDM/PLM 연동</span></label>
                         </td>
                         <td class="left-align">
-                            <label><input type="checkbox" name="na_eco_wind" class="na-checkbox" data-target="eco_wind"> <strong>해당없음</strong></label><br>
-                            <label><input type="radio" name="eco_wind" value="2"> 구두 통보</label><br>
-                            <label><input type="radio" name="eco_wind" value="3"> ECO 문서 (메일)</label><br>
-                            <label><input type="radio" name="eco_wind" value="4"> 전자결재</label><br>
-                            <label><input type="radio" name="eco_wind" value="5"> 자동반영 (BOM연동)</label>
+                            <label><input type="checkbox" name="na_eco_wind" class="na-checkbox" data-target="eco_wind"> <span data-lang-key="na"><strong>해당없음</strong></span></label><br>
+                            <label><input type="radio" name="eco_wind" value="2"> <span data-lang-key="eco_2">구두 통보</span></label><br>
+                            <label><input type="radio" name="eco_wind" value="3"> <span data-lang-key="eco_3">ECO 문서 (메일)</span></label><br>
+                            <label><input type="radio" name="eco_wind" value="4"> <span data-lang-key="eco_4">전자결재</span></label><br>
+                            <label><input type="radio" name="eco_wind" value="5"> <span data-lang-key="eco_5">자동반영 (BOM연동)</span></label>
                         </td>
                     </tr>
                     <!-- 철심/클램프 -->
                     <tr>
-                        <td><strong>철심/클램프</strong></td>
+                        <td><strong data-lang-key="part_core">철심/클램프</strong></td>
                         <td class="left-align">
-                            <label><input type="checkbox" name="na_manual_core" class="na-checkbox" data-target="manual_core"> <strong>해당없음</strong></label><br>
-                            <label><input type="radio" name="manual_core" value="2"> 비공식 메모</label><br>
-                            <label><input type="radio" name="manual_core" value="3"> 문서화 (Word/PDF)</label><br>
-                            <label><input type="radio" name="manual_core" value="4"> 항목별 체계화</label><br>
-                            <label><input type="radio" name="manual_core" value="5"> 시스템 내재화</label>
+                            <label><input type="checkbox" name="na_manual_core" class="na-checkbox" data-target="manual_core"> <span data-lang-key="na"><strong>해당없음</strong></span></label><br>
+                            <label><input type="radio" name="manual_core" value="2"> <span data-lang-key="manual_2">비공식 메모</span></label><br>
+                            <label><input type="radio" name="manual_core" value="3"> <span data-lang-key="manual_3">문서화 (Word/PDF)</span></label><br>
+                            <label><input type="radio" name="manual_core" value="4"> <span data-lang-key="manual_4">항목별 체계화</span></label><br>
+                            <label><input type="radio" name="manual_core" value="5"> <span data-lang-key="manual_5">시스템 내재화</span></label>
                         </td>
                         <td class="left-align">
-                            <label><input type="checkbox" name="na_check_core" class="na-checkbox" data-target="check_core"> <strong>해당없음</strong></label><br>
-                            <label><input type="radio" name="check_core" value="2"> 개인별 상이</label><br>
-                            <label><input type="radio" name="check_core" value="3"> 표준양식 (Excel)</label><br>
-                            <label><input type="radio" name="check_core" value="4"> 단계별 구분(1/2/최종)</label><br>
-                            <label><input type="radio" name="check_core" value="5"> 자동검증 (시스템)</label>
+                            <label><input type="checkbox" name="na_check_core" class="na-checkbox" data-target="check_core"> <span data-lang-key="na"><strong>해당없음</strong></span></label><br>
+                            <label><input type="radio" name="check_core" value="2"> <span data-lang-key="check_2">개인별 상이</span></label><br>
+                            <label><input type="radio" name="check_core" value="3"> <span data-lang-key="check_3">표준양식 (Excel)</span></label><br>
+                            <label><input type="radio" name="check_core" value="4"> <span data-lang-key="check_4">단계별 구분(1/2/최종)</span></label><br>
+                            <label><input type="radio" name="check_core" value="5"> <span data-lang-key="check_5">자동검증 (시스템)</span></label>
                         </td>
                         <td class="left-align">
-                            <label><input type="checkbox" name="na_lib_core" class="na-checkbox" data-target="lib_core"> <strong>해당없음</strong></label><br>
-                            <label><input type="radio" name="lib_core" value="2"> 개인별 보유</label><br>
-                            <label><input type="radio" name="lib_core" value="3"> 일부 있음</label><br>
-                            <label><input type="radio" name="lib_core" value="4"> 체계적 구축</label><br>
-                            <label><input type="radio" name="lib_core" value="5"> PDM/PLM 연동</label>
+                            <label><input type="checkbox" name="na_lib_core" class="na-checkbox" data-target="lib_core"> <span data-lang-key="na"><strong>해당없음</strong></span></label><br>
+                            <label><input type="radio" name="lib_core" value="2"> <span data-lang-key="lib_2">개인별 보유</span></label><br>
+                            <label><input type="radio" name="lib_core" value="3"> <span data-lang-key="lib_3">일부 있음</span></label><br>
+                            <label><input type="radio" name="lib_core" value="4"> <span data-lang-key="lib_4">체계적 구축</span></label><br>
+                            <label><input type="radio" name="lib_core" value="5"> <span data-lang-key="lib_5">PDM/PLM 연동</span></label>
                         </td>
                         <td class="left-align">
-                            <label><input type="checkbox" name="na_eco_core" class="na-checkbox" data-target="eco_core"> <strong>해당없음</strong></label><br>
-                            <label><input type="radio" name="eco_core" value="2"> 구두 통보</label><br>
-                            <label><input type="radio" name="eco_core" value="3"> ECO 문서 (메일)</label><br>
-                            <label><input type="radio" name="eco_core" value="4"> 전자결재</label><br>
-                            <label><input type="radio" name="eco_core" value="5"> 자동반영 (BOM연동)</label>
+                            <label><input type="checkbox" name="na_eco_core" class="na-checkbox" data-target="eco_core"> <span data-lang-key="na"><strong>해당없음</strong></span></label><br>
+                            <label><input type="radio" name="eco_core" value="2"> <span data-lang-key="eco_2">구두 통보</span></label><br>
+                            <label><input type="radio" name="eco_core" value="3"> <span data-lang-key="eco_3">ECO 문서 (메일)</span></label><br>
+                            <label><input type="radio" name="eco_core" value="4"> <span data-lang-key="eco_4">전자결재</span></label><br>
+                            <label><input type="radio" name="eco_core" value="5"> <span data-lang-key="eco_5">자동반영 (BOM연동)</span></label>
                         </td>
                     </tr>
                     <!-- 중신/리드 -->
                     <tr>
-                        <td><strong>중신/리드</strong></td>
+                        <td><strong data-lang-key="part_ap">중신/리드</strong></td>
                         <td class="left-align">
-                            <label><input type="checkbox" name="na_manual_ap" class="na-checkbox" data-target="manual_ap"> <strong>해당없음</strong></label><br>
-                            <label><input type="radio" name="manual_ap" value="2"> 비공식 메모</label><br>
-                            <label><input type="radio" name="manual_ap" value="3"> 문서화 (Word/PDF)</label><br>
-                            <label><input type="radio" name="manual_ap" value="4"> 항목별 체계화</label><br>
-                            <label><input type="radio" name="manual_ap" value="5"> 시스템 내재화</label>
+                            <label><input type="checkbox" name="na_manual_ap" class="na-checkbox" data-target="manual_ap"> <span data-lang-key="na"><strong>해당없음</strong></span></label><br>
+                            <label><input type="radio" name="manual_ap" value="2"> <span data-lang-key="manual_2">비공식 메모</span></label><br>
+                            <label><input type="radio" name="manual_ap" value="3"> <span data-lang-key="manual_3">문서화 (Word/PDF)</span></label><br>
+                            <label><input type="radio" name="manual_ap" value="4"> <span data-lang-key="manual_4">항목별 체계화</span></label><br>
+                            <label><input type="radio" name="manual_ap" value="5"> <span data-lang-key="manual_5">시스템 내재화</span></label>
                         </td>
                         <td class="left-align">
-                            <label><input type="checkbox" name="na_check_ap" class="na-checkbox" data-target="check_ap"> <strong>해당없음</strong></label><br>
-                            <label><input type="radio" name="check_ap" value="2"> 개인별 상이</label><br>
-                            <label><input type="radio" name="check_ap" value="3"> 표준양식 (Excel)</label><br>
-                            <label><input type="radio" name="check_ap" value="4"> 단계별 구분(1/2/최종)</label><br>
-                            <label><input type="radio" name="check_ap" value="5"> 자동검증 (시스템)</label>
+                            <label><input type="checkbox" name="na_check_ap" class="na-checkbox" data-target="check_ap"> <span data-lang-key="na"><strong>해당없음</strong></span></label><br>
+                            <label><input type="radio" name="check_ap" value="2"> <span data-lang-key="check_2">개인별 상이</span></label><br>
+                            <label><input type="radio" name="check_ap" value="3"> <span data-lang-key="check_3">표준양식 (Excel)</span></label><br>
+                            <label><input type="radio" name="check_ap" value="4"> <span data-lang-key="check_4">단계별 구분(1/2/최종)</span></label><br>
+                            <label><input type="radio" name="check_ap" value="5"> <span data-lang-key="check_5">자동검증 (시스템)</span></label>
                         </td>
                         <td class="left-align">
-                            <label><input type="checkbox" name="na_lib_ap" class="na-checkbox" data-target="lib_ap"> <strong>해당없음</strong></label><br>
-                            <label><input type="radio" name="lib_ap" value="2"> 개인별 보유</label><br>
-                            <label><input type="radio" name="lib_ap" value="3"> 일부 있음</label><br>
-                            <label><input type="radio" name="lib_ap" value="4"> 체계적 구축</label><br>
-                            <label><input type="radio" name="lib_ap" value="5"> PDM/PLM 연동</label>
+                            <label><input type="checkbox" name="na_lib_ap" class="na-checkbox" data-target="lib_ap"> <span data-lang-key="na"><strong>해당없음</strong></span></label><br>
+                            <label><input type="radio" name="lib_ap" value="2"> <span data-lang-key="lib_2">개인별 보유</span></label><br>
+                            <label><input type="radio" name="lib_ap" value="3"> <span data-lang-key="lib_3">일부 있음</span></label><br>
+                            <label><input type="radio" name="lib_ap" value="4"> <span data-lang-key="lib_4">체계적 구축</span></label><br>
+                            <label><input type="radio" name="lib_ap" value="5"> <span data-lang-key="lib_5">PDM/PLM 연동</span></label>
                         </td>
                         <td class="left-align">
-                            <label><input type="checkbox" name="na_eco_ap" class="na-checkbox" data-target="eco_ap"> <strong>해당없음</strong></label><br>
-                            <label><input type="radio" name="eco_ap" value="2"> 구두 통보</label><br>
-                            <label><input type="radio" name="eco_ap" value="3"> ECO 문서 (메일)</label><br>
-                            <label><input type="radio" name="eco_ap" value="4"> 전자결재</label><br>
-                            <label><input type="radio" name="eco_ap" value="5"> 자동반영 (BOM연동)</label>
+                            <label><input type="checkbox" name="na_eco_ap" class="na-checkbox" data-target="eco_ap"> <span data-lang-key="na"><strong>해당없음</strong></span></label><br>
+                            <label><input type="radio" name="eco_ap" value="2"> <span data-lang-key="eco_2">구두 통보</span></label><br>
+                            <label><input type="radio" name="eco_ap" value="3"> <span data-lang-key="eco_3">ECO 문서 (메일)</span></label><br>
+                            <label><input type="radio" name="eco_ap" value="4"> <span data-lang-key="eco_4">전자결재</span></label><br>
+                            <label><input type="radio" name="eco_ap" value="5"> <span data-lang-key="eco_5">자동반영 (BOM연동)</span></label>
                         </td>
                     </tr>
                     <!-- 외함/탱크 -->
                     <tr>
-                        <td><strong>외함/탱크</strong></td>
+                        <td><strong data-lang-key="part_tank">외함/탱크</strong></td>
                         <td class="left-align">
-                            <label><input type="checkbox" name="na_manual_tank" class="na-checkbox" data-target="manual_tank"> <strong>해당없음</strong></label><br>
-                            <label><input type="radio" name="manual_tank" value="2"> 비공식 메모</label><br>
-                            <label><input type="radio" name="manual_tank" value="3"> 문서화 (Word/PDF)</label><br>
-                            <label><input type="radio" name="manual_tank" value="4"> 항목별 체계화</label><br>
-                            <label><input type="radio" name="manual_tank" value="5"> 시스템 내재화</label>
+                            <label><input type="checkbox" name="na_manual_tank" class="na-checkbox" data-target="manual_tank"> <span data-lang-key="na"><strong>해당없음</strong></span></label><br>
+                            <label><input type="radio" name="manual_tank" value="2"> <span data-lang-key="manual_2">비공식 메모</span></label><br>
+                            <label><input type="radio" name="manual_tank" value="3"> <span data-lang-key="manual_3">문서화 (Word/PDF)</span></label><br>
+                            <label><input type="radio" name="manual_tank" value="4"> <span data-lang-key="manual_4">항목별 체계화</span></label><br>
+                            <label><input type="radio" name="manual_tank" value="5"> <span data-lang-key="manual_5">시스템 내재화</span></label>
                         </td>
                         <td class="left-align">
-                            <label><input type="checkbox" name="na_check_tank" class="na-checkbox" data-target="check_tank"> <strong>해당없음</strong></label><br>
-                            <label><input type="radio" name="check_tank" value="2"> 개인별 상이</label><br>
-                            <label><input type="radio" name="check_tank" value="3"> 표준양식 (Excel)</label><br>
-                            <label><input type="radio" name="check_tank" value="4"> 단계별 구분(1/2/최종)</label><br>
-                            <label><input type="radio" name="check_tank" value="5"> 자동검증 (시스템)</label>
+                            <label><input type="checkbox" name="na_check_tank" class="na-checkbox" data-target="check_tank"> <span data-lang-key="na"><strong>해당없음</strong></span></label><br>
+                            <label><input type="radio" name="check_tank" value="2"> <span data-lang-key="check_2">개인별 상이</span></label><br>
+                            <label><input type="radio" name="check_tank" value="3"> <span data-lang-key="check_3">표준양식 (Excel)</span></label><br>
+                            <label><input type="radio" name="check_tank" value="4"> <span data-lang-key="check_4">단계별 구분(1/2/최종)</span></label><br>
+                            <label><input type="radio" name="check_tank" value="5"> <span data-lang-key="check_5">자동검증 (시스템)</span></label>
                         </td>
                         <td class="left-align">
-                            <label><input type="checkbox" name="na_lib_tank" class="na-checkbox" data-target="lib_tank"> <strong>해당없음</strong></label><br>
-                            <label><input type="radio" name="lib_tank" value="2"> 개인별 보유</label><br>
-                            <label><input type="radio" name="lib_tank" value="3"> 일부 있음</label><br>
-                            <label><input type="radio" name="lib_tank" value="4"> 체계적 구축</label><br>
-                            <label><input type="radio" name="lib_tank" value="5"> PDM/PLM 연동</label>
+                            <label><input type="checkbox" name="na_lib_tank" class="na-checkbox" data-target="lib_tank"> <span data-lang-key="na"><strong>해당없음</strong></span></label><br>
+                            <label><input type="radio" name="lib_tank" value="2"> <span data-lang-key="lib_2">개인별 보유</span></label><br>
+                            <label><input type="radio" name="lib_tank" value="3"> <span data-lang-key="lib_3">일부 있음</span></label><br>
+                            <label><input type="radio" name="lib_tank" value="4"> <span data-lang-key="lib_4">체계적 구축</span></label><br>
+                            <label><input type="radio" name="lib_tank" value="5"> <span data-lang-key="lib_5">PDM/PLM 연동</span></label>
                         </td>
                         <td class="left-align">
-                            <label><input type="checkbox" name="na_eco_tank" class="na-checkbox" data-target="eco_tank"> <strong>해당없음</strong></label><br>
-                            <label><input type="radio" name="eco_tank" value="2"> 구두 통보</label><br>
-                            <label><input type="radio" name="eco_tank" value="3"> ECO 문서 (메일)</label><br>
-                            <label><input type="radio" name="eco_tank" value="4"> 전자결재</label><br>
-                            <label><input type="radio" name="eco_tank" value="5"> 자동반영 (BOM연동)</label>
+                            <label><input type="checkbox" name="na_eco_tank" class="na-checkbox" data-target="eco_tank"> <span data-lang-key="na"><strong>해당없음</strong></span></label><br>
+                            <label><input type="radio" name="eco_tank" value="2"> <span data-lang-key="eco_2">구두 통보</span></label><br>
+                            <label><input type="radio" name="eco_tank" value="3"> <span data-lang-key="eco_3">ECO 문서 (메일)</span></label><br>
+                            <label><input type="radio" name="eco_tank" value="4"> <span data-lang-key="eco_4">전자결재</span></label><br>
+                            <label><input type="radio" name="eco_tank" value="5"> <span data-lang-key="eco_5">자동반영 (BOM연동)</span></label>
                         </td>
                     </tr>
                 </tbody>
@@ -1775,43 +2274,43 @@ Chrome 인쇄 대화상자에서:
             <!-- 설계 표준화 상세 -->
             <table style="margin-top: 10px;">
                 <tr>
-                    <th style="width: 25%;">설계 기준 관리 방식</th>
+                    <th style="width: 25%;" data-lang-key="th_std_mgmt">설계 기준 관리 방식</th>
                     <td class="left-align" style="font-size:10px;">
-                        <label><input type="radio" name="std_mgmt" value="1"> 관리안함(개인PC)</label>
-                        <label><input type="radio" name="std_mgmt" value="2"> 개인별보관</label>
-                        <label><input type="radio" name="std_mgmt" value="3"> 공용폴더/서버</label>
-                        <label><input type="radio" name="std_mgmt" value="4"> 문서관리시스템</label>
-                        <label><input type="radio" name="std_mgmt" value="5"> 전사PDM/KMS</label>
+                        <label><input type="radio" name="std_mgmt" value="1"> <span data-lang-key="std_1">관리안함(개인PC)</span></label>
+                        <label><input type="radio" name="std_mgmt" value="2"> <span data-lang-key="std_2">개인별보관</span></label>
+                        <label><input type="radio" name="std_mgmt" value="3"> <span data-lang-key="std_3">공용폴더/서버</span></label>
+                        <label><input type="radio" name="std_mgmt" value="4"> <span data-lang-key="std_4">문서관리시스템</span></label>
+                        <label><input type="radio" name="std_mgmt" value="5"> <span data-lang-key="std_5">전사PDM/KMS</span></label>
                     </td>
                 </tr>
                 <tr>
-                    <th>설계 Review 프로세스</th>
+                    <th data-lang-key="th_review">설계 Review 프로세스</th>
                     <td class="left-align" style="font-size:10px;">
-                        <label><input type="radio" name="review" value="1"> 검토없음 (담당자재량)</label>
-                        <label><input type="radio" name="review" value="2"> 비공식검토 (구두확인)</label>
-                        <label><input type="radio" name="review" value="3"> 팀장승인 (서명기반)</label>
-                        <label><input type="radio" name="review" value="4"> 공식DR회의 (정기운영)</label>
-                        <label><input type="radio" name="review" value="5"> Gate Review (시스템기반)</label>
+                        <label><input type="radio" name="review" value="1"> <span data-lang-key="review_1">검토없음 (담당자재량)</span></label>
+                        <label><input type="radio" name="review" value="2"> <span data-lang-key="review_2">비공식검토 (구두확인)</span></label>
+                        <label><input type="radio" name="review" value="3"> <span data-lang-key="review_3">팀장승인 (서명기반)</span></label>
+                        <label><input type="radio" name="review" value="4"> <span data-lang-key="review_4">공식DR회의 (정기운영)</span></label>
+                        <label><input type="radio" name="review" value="5"> <span data-lang-key="review_5">Gate Review (시스템기반)</span></label>
                     </td>
                 </tr>
                 <tr>
-                    <th>설계 변경 이력 관리<br>(변경 기록이 남나요?)</th>
+                    <th><span data-lang-key="th_history">설계 변경 이력 관리</span><br><span data-lang-key="th_history_sub">(변경 기록이 남나요?)</span></th>
                     <td class="left-align" style="font-size:10px;">
-                        <label><input type="radio" name="history" value="1"> 관리안함</label>
-                        <label><input type="radio" name="history" value="2"> 파일명버전</label>
-                        <label><input type="radio" name="history" value="3"> 폴더구분</label>
-                        <label><input type="radio" name="history" value="4"> 문서대장</label>
-                        <label><input type="radio" name="history" value="5"> PDM자동관리</label>
+                        <label><input type="radio" name="history" value="1"> <span data-lang-key="history_1">관리안함</span></label>
+                        <label><input type="radio" name="history" value="2"> <span data-lang-key="history_2">파일명버전</span></label>
+                        <label><input type="radio" name="history" value="3"> <span data-lang-key="history_3">폴더구분</span></label>
+                        <label><input type="radio" name="history" value="4"> <span data-lang-key="history_4">문서대장</span></label>
+                        <label><input type="radio" name="history" value="5"> <span data-lang-key="history_5">PDM자동관리</span></label>
                     </td>
                 </tr>
             </table>
             <div class="remarks-box">
-                <span>※ 비고 / 특이사항:</span>
-                <textarea placeholder="설계 표준화 관련 애로사항이나 개선 희망 사항을 기재해 주세요."></textarea>
+                <span data-lang-key="remarks_label">※ 비고 / 특이사항:</span>
+                <textarea data-lang-key="remarks_std" placeholder="설계 표준화 관련 애로사항이나 개선 희망 사항을 기재해 주세요."></textarea>
             </div>
         </div>
 
-        <div class="page-num">4 / 5</div>
+        <div class="page-num" data-lang-key="page_4">4 / 5</div>
     </div>
 
     <!-- ==================== 5페이지: 리드타임 + IT시스템 + 종합의견 ==================== -->
@@ -1819,89 +2318,89 @@ Chrome 인쇄 대화상자에서:
 
         <div class="header">
             <div>
-                <h1>초고압 변압기 엔지니어링 시스템 운영 현황 조사</h1>
-                <div style="font-size: 12px; margin-top: 5px; color: #555;">Part 5. Engineering Lead Time & IT Systems</div>
+                <h1 data-lang-key="main_title">초고압 변압기 엔지니어링 시스템 운영 현황 조사</h1>
+                <div style="font-size: 12px; margin-top: 5px; color: #555;" data-lang-key="part5_sub">Part 5. Engineering Lead Time & IT Systems</div>
             </div>
         </div>
 
         <!-- 4. 설계 리드타임 -->
         <div class="section">
-            <div class="section-title">4. 설계 리드타임 분석 (Engineering Lead Time)</div>
-            <div class="sub-guide">* 표준 기종(100MVA 이하/154KV급/OLTC) 기준으로 평균 소요 시간을 선택해 주세요.<br>
-            * <strong>순수 설계 작업일 (Man-days)</strong> 기준으로 응답해 주세요. (대기/검토/승인 시간 제외)</div>
+            <div class="section-title" data-lang-key="sec4_title">4. 설계 리드타임 분석 (Engineering Lead Time)</div>
+            <div class="sub-guide"><span data-lang-key="sec4_guide">* 표준 기종(100MVA 이하/154KV급/OLTC) 기준으로 평균 소요 시간을 선택해 주세요.</span><br>
+            <span data-lang-key="sec4_guide2">* <strong>순수 설계 작업일 (Man-days)</strong> 기준으로 응답해 주세요. (대기/검토/승인 시간 제외)</span></div>
 
             <table>
                 <tr>
-                    <th style="width: 22%;">전기설계 L/T<br><span style="font-weight:normal;font-size:9px;">(기본설계/전기설계팀)</span></th>
+                    <th style="width: 22%;"><span data-lang-key="th_lt_elec">전기설계 L/T</span><br><span style="font-weight:normal;font-size:9px;" data-lang-key="th_lt_elec_sub">(기본설계/전기설계팀)</span></th>
                     <td class="left-align" style="font-size:10px;">
-                        <label><input type="radio" name="lt_elec" value="1"> 40일 이상</label>
-                        <label><input type="radio" name="lt_elec" value="2"> 30~40일</label>
-                        <label><input type="radio" name="lt_elec" value="3"> 20~30일</label>
-                        <label><input type="radio" name="lt_elec" value="4"> 10~20일</label>
-                        <label><input type="radio" name="lt_elec" value="5"> 10일 이내</label>
+                        <label><input type="radio" name="lt_elec" value="1"> <span data-lang-key="lt_elec_1">40일 이상</span></label>
+                        <label><input type="radio" name="lt_elec" value="2"> <span data-lang-key="lt_elec_2">30~40일</span></label>
+                        <label><input type="radio" name="lt_elec" value="3"> <span data-lang-key="lt_elec_3">20~30일</span></label>
+                        <label><input type="radio" name="lt_elec" value="4"> <span data-lang-key="lt_elec_4">10~20일</span></label>
+                        <label><input type="radio" name="lt_elec" value="5"> <span data-lang-key="lt_elec_5">10일 이내</span></label>
                     </td>
                 </tr>
                 <tr>
-                    <th>권선 L/T<br><span style="font-weight:normal;font-size:9px;">(권선조립 포함)</span></th>
+                    <th><span data-lang-key="th_lt_wind">권선 L/T</span><br><span style="font-weight:normal;font-size:9px;" data-lang-key="th_lt_wind_sub">(권선조립 포함)</span></th>
                     <td class="left-align" style="font-size:10px;">
-                        <label><input type="radio" name="lt_winding" value="1"> 20일 이상</label>
-                        <label><input type="radio" name="lt_winding" value="2"> 15~20일</label>
-                        <label><input type="radio" name="lt_winding" value="3"> 10~15일</label>
-                        <label><input type="radio" name="lt_winding" value="4"> 7~10일</label>
-                        <label><input type="radio" name="lt_winding" value="5"> 7일 이내</label>
+                        <label><input type="radio" name="lt_winding" value="1"> <span data-lang-key="lt_wind_1">20일 이상</span></label>
+                        <label><input type="radio" name="lt_winding" value="2"> <span data-lang-key="lt_wind_2">15~20일</span></label>
+                        <label><input type="radio" name="lt_winding" value="3"> <span data-lang-key="lt_wind_3">10~15일</span></label>
+                        <label><input type="radio" name="lt_winding" value="4"> <span data-lang-key="lt_wind_4">7~10일</span></label>
+                        <label><input type="radio" name="lt_winding" value="5"> <span data-lang-key="lt_wind_5">7일 이내</span></label>
                     </td>
                 </tr>
                 <tr>
-                    <th>철심/클램프 L/T<br><span style="font-weight:normal;font-size:9px;">(Core & Clamp)</span></th>
+                    <th><span data-lang-key="th_lt_core">철심/클램프 L/T</span><br><span style="font-weight:normal;font-size:9px;" data-lang-key="th_lt_core_sub">(Core & Clamp)</span></th>
                     <td class="left-align" style="font-size:10px;">
-                        <label><input type="radio" name="lt_core" value="1"> 10일 이상</label>
-                        <label><input type="radio" name="lt_core" value="2"> 8~10일</label>
-                        <label><input type="radio" name="lt_core" value="3"> 6~8일</label>
-                        <label><input type="radio" name="lt_core" value="4"> 4~6일</label>
-                        <label><input type="radio" name="lt_core" value="5"> 4일 이내</label>
+                        <label><input type="radio" name="lt_core" value="1"> <span data-lang-key="lt_core_1">10일 이상</span></label>
+                        <label><input type="radio" name="lt_core" value="2"> <span data-lang-key="lt_core_2">8~10일</span></label>
+                        <label><input type="radio" name="lt_core" value="3"> <span data-lang-key="lt_core_3">6~8일</span></label>
+                        <label><input type="radio" name="lt_core" value="4"> <span data-lang-key="lt_core_4">4~6일</span></label>
+                        <label><input type="radio" name="lt_core" value="5"> <span data-lang-key="lt_core_5">4일 이내</span></label>
                     </td>
                 </tr>
                 <tr>
-                    <th>중신/리드 L/T<br><span style="font-weight:normal;font-size:9px;">(Active Part/Lead)</span></th>
+                    <th><span data-lang-key="th_lt_ap">중신/리드 L/T</span><br><span style="font-weight:normal;font-size:9px;" data-lang-key="th_lt_ap_sub">(Active Part/Lead)</span></th>
                     <td class="left-align" style="font-size:10px;">
-                        <label><input type="radio" name="lt_activepart" value="1"> 20일 이상</label>
-                        <label><input type="radio" name="lt_activepart" value="2"> 15~20일</label>
-                        <label><input type="radio" name="lt_activepart" value="3"> 10~15일</label>
-                        <label><input type="radio" name="lt_activepart" value="4"> 7~10일</label>
-                        <label><input type="radio" name="lt_activepart" value="5"> 7일 이내</label>
+                        <label><input type="radio" name="lt_activepart" value="1"> <span data-lang-key="lt_ap_1">20일 이상</span></label>
+                        <label><input type="radio" name="lt_activepart" value="2"> <span data-lang-key="lt_ap_2">15~20일</span></label>
+                        <label><input type="radio" name="lt_activepart" value="3"> <span data-lang-key="lt_ap_3">10~15일</span></label>
+                        <label><input type="radio" name="lt_activepart" value="4"> <span data-lang-key="lt_ap_4">7~10일</span></label>
+                        <label><input type="radio" name="lt_activepart" value="5"> <span data-lang-key="lt_ap_5">7일 이내</span></label>
                     </td>
                 </tr>
                 <tr>
-                    <th>외함/탱크 L/T<br><span style="font-weight:normal;font-size:9px;">(Tank & Cover)</span></th>
+                    <th><span data-lang-key="th_lt_tank">외함/탱크 L/T</span><br><span style="font-weight:normal;font-size:9px;" data-lang-key="th_lt_tank_sub">(Tank & Cover)</span></th>
                     <td class="left-align" style="font-size:10px;">
-                        <label><input type="radio" name="lt_tank" value="1"> 50일 이상</label>
-                        <label><input type="radio" name="lt_tank" value="2"> 40~50일</label>
-                        <label><input type="radio" name="lt_tank" value="3"> 30~40일</label>
-                        <label><input type="radio" name="lt_tank" value="4"> 20~30일</label>
-                        <label><input type="radio" name="lt_tank" value="5"> 20일 이내</label>
+                        <label><input type="radio" name="lt_tank" value="1"> <span data-lang-key="lt_tank_1">50일 이상</span></label>
+                        <label><input type="radio" name="lt_tank" value="2"> <span data-lang-key="lt_tank_2">40~50일</span></label>
+                        <label><input type="radio" name="lt_tank" value="3"> <span data-lang-key="lt_tank_3">30~40일</span></label>
+                        <label><input type="radio" name="lt_tank" value="4"> <span data-lang-key="lt_tank_4">20~30일</span></label>
+                        <label><input type="radio" name="lt_tank" value="5"> <span data-lang-key="lt_tank_5">20일 이내</span></label>
                     </td>
                 </tr>
             </table>
             <div class="remarks-box">
-                <span>※ 비고:</span>
-                <textarea placeholder="리드타임 관련 애로사항이나 지연 원인을 기재해 주세요."></textarea>
+                <span data-lang-key="remarks_label">※ 비고:</span>
+                <textarea data-lang-key="remarks_lt" placeholder="리드타임 관련 애로사항이나 지연 원인을 기재해 주세요."></textarea>
             </div>
         </div>
 
         <!-- 5. IT 시스템 및 데이터 연동 -->
         <div class="section">
-            <div class="section-title">5. IT 시스템 및 데이터 연동 (IT Systems & Interface)</div>
-            <div class="sub-guide">* ERP, PDM, PMS 등 주요 시스템 운영 현황과 연동 방식을 체크해 주세요.</div>
+            <div class="section-title" data-lang-key="sec5_title">5. IT 시스템 및 데이터 연동 (IT Systems & Interface)</div>
+            <div class="sub-guide" data-lang-key="sec5_guide">* ERP, PDM, PMS 등 주요 시스템 운영 현황과 연동 방식을 체크해 주세요.</div>
 
             <!-- 용어 설명 박스 -->
             <div style="background: #f0f4f8; border: 1px solid #ccc; border-radius: 5px; padding: 8px 12px; margin: 8px 0; font-size: 9px; line-height: 1.6;">
-                <strong>📖 용어 설명</strong><br>
-                • <strong>ERP</strong>: 전사자원관리 - 구매/생산/재고/회계 통합 시스템 (예: SAP, Oracle)
-                • <strong>PDM</strong>: 제품데이터관리 - 도면/BOM/문서 버전 관리<br>
-                • <strong>PLM</strong>: 제품수명주기관리 - 설계~폐기까지 전체 이력 관리
-                • <strong>PMS</strong>: 프로젝트관리시스템 - 일정/자원/진척 관리<br>
-                • <strong>ECO</strong>: 설계변경오더 - 공식적인 설계 변경 승인 프로세스
-                • <strong>KMS</strong>: 지식관리시스템 - 노하우/기술문서 공유 시스템
+                <span data-lang-key="terms_title"><strong>📖 용어 설명</strong></span><br>
+                <span data-lang-key="terms_erp">• <strong>ERP</strong>: 전사자원관리 - 구매/생산/재고/회계 통합 시스템 (예: SAP, Oracle)</span>
+                <span data-lang-key="terms_pdm">• <strong>PDM</strong>: 제품데이터관리 - 도면/BOM/문서 버전 관리</span><br>
+                <span data-lang-key="terms_plm">• <strong>PLM</strong>: 제품수명주기관리 - 설계~폐기까지 전체 이력 관리</span>
+                <span data-lang-key="terms_pms">• <strong>PMS</strong>: 프로젝트관리시스템 - 일정/자원/진척 관리</span><br>
+                <span data-lang-key="terms_eco">• <strong>ECO</strong>: 설계변경오더 - 공식적인 설계 변경 승인 프로세스</span>
+                <span data-lang-key="terms_kms">• <strong>KMS</strong>: 지식관리시스템 - 노하우/기술문서 공유 시스템</span>
             </div>
 
             <!-- IT 시스템 통합 테이블 -->
@@ -1913,100 +2412,101 @@ Chrome 인쇄 대화상자에서:
                 </colgroup>
                 <thead>
                     <tr>
-                        <th>구분</th>
-                        <th>항목</th>
-                        <th>운영 수준</th>
+                        <th data-lang-key="th_it_category">구분</th>
+                        <th data-lang-key="th_it_item">항목</th>
+                        <th data-lang-key="th_it_level">운영 수준</th>
                     </tr>
                 </thead>
                 <tbody>
                     <!-- ERP -->
                     <tr>
-                        <td rowspan="2"><strong>ERP</strong></td>
-                        <td>시스템 종류</td>
+                        <td rowspan="2"><strong data-lang-key="it_erp">ERP</strong></td>
+                        <td data-lang-key="it_erp_type">시스템 종류</td>
                         <td class="left-align">
                             <div class="checkbox-group">
-                                <label><input type="checkbox"> Oracle</label>
-                                <label><input type="checkbox"> SAP</label>
-                                <label><input type="checkbox"> 더존/UniERP</label>
-                                <label><input type="checkbox"> 기타 <input type="text" placeholder="시스템명" style="width: 120px;"></label>
+                                <label><input type="checkbox"> <span data-lang-key="erp_oracle">Oracle</span></label>
+                                <label><input type="checkbox"> <span data-lang-key="erp_sap">SAP</span></label>
+                                <label><input type="checkbox"> <span data-lang-key="erp_duzon">더존/UniERP</span></label>
+                                <label><input type="checkbox"> <span data-lang-key="erp_other">기타</span> <input type="text" placeholder="시스템명" style="width: 120px;"></label>
                             </div>
                         </td>
                     </tr>
                     <tr>
-                        <td>데이터 입력</td>
+                        <td data-lang-key="it_erp_input">데이터 입력</td>
                         <td class="left-align" style="font-size:10px;">
-                            <label><input type="radio" name="if_method" value="1"> 100% 수기입력</label>
-                            <label><input type="radio" name="if_method" value="2"> 수기+복사</label>
-                            <label><input type="radio" name="if_method" value="3"> 엑셀 업로드</label>
-                            <label><input type="radio" name="if_method" value="4"> 반자동 전송</label>
-                            <label><input type="radio" name="if_method" value="5"> 완전 자동 연동</label>
+                            <label><input type="radio" name="if_method" value="1"> <span data-lang-key="if_1">100% 수기입력</span></label>
+                            <label><input type="radio" name="if_method" value="2"> <span data-lang-key="if_2">수기+복사</span></label>
+                            <label><input type="radio" name="if_method" value="3"> <span data-lang-key="if_3">엑셀 업로드</span></label>
+                            <label><input type="radio" name="if_method" value="4"> <span data-lang-key="if_4">반자동 전송</span></label>
+                            <label><input type="radio" name="if_method" value="5"> <span data-lang-key="if_5">완전 자동 연동</span></label>
                         </td>
                     </tr>
                     <!-- PDM/PLM -->
                     <tr>
-                        <td rowspan="2"><strong>PDM/PLM</strong></td>
-                        <td>운영 수준</td>
+                        <td rowspan="2"><strong data-lang-key="it_pdm">PDM/PLM</strong></td>
+                        <td data-lang-key="it_pdm_level">운영 수준</td>
                         <td class="left-align" style="font-size:10px;">
-                            <label><input type="radio" name="pdm" value="1"> 미사용</label>
-                            <label><input type="radio" name="pdm" value="2"> 공용서버(폴더공유)</label>
-                            <label><input type="radio" name="pdm" value="3"> 자체구축(간이시스템)</label>
-                            <label><input type="radio" name="pdm" value="4"> 상용솔루션(부분도입)</label>
-                            <label><input type="radio" name="pdm" value="5"> 전사통합(PLM연동)</label>
+                            <label><input type="radio" name="pdm" value="1"> <span data-lang-key="pdm_1">미사용</span></label>
+                            <label><input type="radio" name="pdm" value="2"> <span data-lang-key="pdm_2">공용서버(폴더공유)</span></label>
+                            <label><input type="radio" name="pdm" value="3"> <span data-lang-key="pdm_3">자체구축(간이시스템)</span></label>
+                            <label><input type="radio" name="pdm" value="4"> <span data-lang-key="pdm_4">상용솔루션(부분도입)</span></label>
+                            <label><input type="radio" name="pdm" value="5"> <span data-lang-key="pdm_5">전사통합(PLM연동)</span></label>
                         </td>
                     </tr>
                     <tr>
-                        <td>도면/BOM 관리</td>
+                        <td data-lang-key="it_bom">도면/BOM 관리</td>
                         <td class="left-align" style="font-size:10px;">
-                            <label><input type="radio" name="bom_mgmt" value="1"> 개인 PC 저장</label>
-                            <label><input type="radio" name="bom_mgmt" value="2"> 공용 폴더</label>
-                            <label><input type="radio" name="bom_mgmt" value="3"> 폴더 체계화</label>
-                            <label><input type="radio" name="bom_mgmt" value="4"> 문서관리시스템</label>
-                            <label><input type="radio" name="bom_mgmt" value="5"> PDM 통합 관리</label>
+                            <label><input type="radio" name="bom_mgmt" value="1"> <span data-lang-key="bom_1">개인 PC 저장</span></label>
+                            <label><input type="radio" name="bom_mgmt" value="2"> <span data-lang-key="bom_2">공용 폴더</span></label>
+                            <label><input type="radio" name="bom_mgmt" value="3"> <span data-lang-key="bom_3">폴더 체계화</span></label>
+                            <label><input type="radio" name="bom_mgmt" value="4"> <span data-lang-key="bom_4">문서관리시스템</span></label>
+                            <label><input type="radio" name="bom_mgmt" value="5"> <span data-lang-key="bom_5">PDM 통합 관리</span></label>
                         </td>
                     </tr>
                     <!-- PMS -->
                     <tr>
-                        <td><strong>PMS</strong></td>
-                        <td>운영 수준</td>
+                        <td><strong data-lang-key="it_pms">PMS</strong></td>
+                        <td data-lang-key="it_pdm_level">운영 수준</td>
                         <td class="left-align" style="font-size:10px;">
-                            <label><input type="radio" name="pms" value="1"> 미사용</label>
-                            <label><input type="radio" name="pms" value="2"> 엑셀/수기관리</label>
-                            <label><input type="radio" name="pms" value="3"> 자체구축(간이시스템)</label>
-                            <label><input type="radio" name="pms" value="4"> 상용솔루션(부분도입)</label>
-                            <label><input type="radio" name="pms" value="5"> 전사통합(ERP연동)</label>
+                            <label><input type="radio" name="pms" value="1"> <span data-lang-key="pms_1">미사용</span></label>
+                            <label><input type="radio" name="pms" value="2"> <span data-lang-key="pms_2">엑셀/수기관리</span></label>
+                            <label><input type="radio" name="pms" value="3"> <span data-lang-key="pms_3">자체구축(간이시스템)</span></label>
+                            <label><input type="radio" name="pms" value="4"> <span data-lang-key="pms_4">상용솔루션(부분도입)</span></label>
+                            <label><input type="radio" name="pms" value="5"> <span data-lang-key="pms_5">전사통합(ERP연동)</span></label>
                         </td>
                     </tr>
                     <!-- 변경관리 -->
                     <tr>
-                        <td><strong>변경관리</strong></td>
-                        <td>설계 변경 연동</td>
+                        <td><strong data-lang-key="it_change">변경관리</strong></td>
+                        <td data-lang-key="it_eco">설계 변경 연동</td>
                         <td class="left-align" style="font-size:9px;">
-                            <label><input type="radio" name="eco" value="1"> 이중작업(각 시스템 별도 수정)</label>
-                            <label><input type="radio" name="eco" value="2"> 수동통보(메일/전화로 알림)</label>
-                            <label><input type="radio" name="eco" value="3"> 변경요청서(문서 결재)</label>
-                            <label><input type="radio" name="eco" value="4"> ECO프로세스(시스템 워크플로우)</label>
-                            <label><input type="radio" name="eco" value="5"> 자동연동(BOM/ERP 자동반영)</label>
+                            <label><input type="radio" name="eco" value="1"> <span data-lang-key="eco_mgmt_1">이중작업(각 시스템 별도 수정)</span></label>
+                            <label><input type="radio" name="eco" value="2"> <span data-lang-key="eco_mgmt_2">수동통보(메일/전화로 알림)</span></label>
+                            <label><input type="radio" name="eco" value="3"> <span data-lang-key="eco_mgmt_3">변경요청서(문서 결재)</span></label>
+                            <label><input type="radio" name="eco" value="4"> <span data-lang-key="eco_mgmt_4">ECO프로세스(시스템 워크플로우)</span></label>
+                            <label><input type="radio" name="eco" value="5"> <span data-lang-key="eco_mgmt_5">자동연동(BOM/ERP 자동반영)</span></label>
                         </td>
                     </tr>
                 </tbody>
             </table>
             <div class="remarks-box">
-                <span>※ 비고:</span>
-                <textarea placeholder="IT 시스템 관련 불편한 점이나 특이사항을 적어주세요."></textarea>
+                <span data-lang-key="remarks_label">※ 비고:</span>
+                <textarea data-lang-key="remarks_it" placeholder="IT 시스템 관련 불편한 점이나 특이사항을 적어주세요."></textarea>
             </div>
         </div>
 
         <!-- 6. 종합 의견 -->
         <div class="section">
-            <div class="section-title">6. 종합 의견 (General Comments)</div>
+            <div class="section-title" data-lang-key="sec6_title">6. 종합 의견 (General Comments)</div>
             <div style="border: 1px solid #ccc; height: 60px; padding: 8px;">
                 <textarea
                     style="width: 100%; height: 100%; border: none; resize: none; font-family: inherit; font-size: 11px;"
+                    data-lang-key="sec6_placeholder"
                     placeholder="시스템 운영하면서 힘들었던 점이나, 앞으로 이렇게 바뀌었으면 좋겠다 하는 점을 자유롭게 적어주세요."></textarea>
             </div>
         </div>
 
-        <div class="page-num">5 / 5</div>
+        <div class="page-num" data-lang-key="page_5">5 / 5</div>
     </div>
 
 </body>

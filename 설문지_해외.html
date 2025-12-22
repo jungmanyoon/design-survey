@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>글로벌 변압기 제조사 벤치마킹 설문지</title>
+    <title>변압기 엔지니어링 시스템 현황 조사</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap');
 
@@ -20,12 +20,33 @@
         .guide-box {
             width: 210mm;
             margin: 0 auto 10px auto;
-            padding: 0;
-            text-align: right;
-            box-sizing: border-box;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
 
-        .guide-box button {
+        .lang-toggle {
+            display: flex;
+            gap: 5px;
+        }
+
+        .lang-toggle button {
+            padding: 8px 16px;
+            border: 2px solid #003366;
+            background: white;
+            color: #003366;
+            font-weight: bold;
+            cursor: pointer;
+            border-radius: 4px;
+            font-size: 12px;
+        }
+
+        .lang-toggle button.active {
+            background: #003366;
+            color: white;
+        }
+
+        .action-buttons button {
             background-color: #003366;
             color: white;
             border: none;
@@ -35,501 +56,725 @@
             font-weight: bold;
             font-size: 13px;
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            margin-left: 10px;
         }
 
         .page {
             width: 210mm;
-            min-height: 297mm;
-            padding: 20mm;
+            height: 297mm;
+            padding: 10mm 15mm;
             margin: 0 auto 20px auto;
             background: white;
             box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
             box-sizing: border-box;
             position: relative;
+            overflow: hidden;
         }
 
         @media print {
-            @page {
-                size: A4;
-                margin: 0;
-            }
-
-            body {
-                background: none;
-                padding: 0;
-                margin: 0;
-                -webkit-print-color-adjust: exact;
-            }
-
-            .guide-box {
-                display: none;
-            }
-
-            .page {
-                width: 100%;
-                min-height: auto;
-                margin: 0;
-                padding: 15mm 20mm;
-                box-shadow: none;
-                page-break-after: always;
-            }
-
-            .page:last-child {
-                page-break-after: auto;
-            }
+            @page { size: A4; margin: 0; }
+            body { background: none; padding: 0; margin: 0; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+            .guide-box { display: none; }
+            .page { width: 100%; height: 297mm; margin: 0; padding: 10mm 12mm; box-shadow: none; page-break-after: always; page-break-inside: avoid; overflow: hidden; }
+            .page:last-child { page-break-after: auto; }
+            .question-box { page-break-inside: avoid; }
+            .section { page-break-inside: avoid; }
         }
 
         .header {
             border-bottom: 2px solid #003366;
-            padding-bottom: 10px;
-            margin-bottom: 15px;
+            padding-bottom: 6px;
+            margin-bottom: 8px;
             display: flex;
             justify-content: space-between;
             align-items: flex-end;
         }
 
-        .header h1 {
-            font-size: 18px;
-            color: #003366;
-            margin: 0;
-            font-weight: 700;
-        }
+        .header h1 { font-size: 14px; color: #003366; margin: 0; font-weight: 700; }
+        .header-sub { font-size: 9px; margin-top: 2px; color: #555; }
+        .header-info { text-align: right; font-size: 9px; }
+        .header-info input { width: 100px; border: none; border-bottom: 1px solid #ccc; text-align: center; font-size: 9px; }
+        .header-info .label { display: inline-block; min-width: 45px; text-align: right; }
 
-        .header-info {
-            text-align: right;
-            font-size: 11px;
-        }
-
-        .header-info input {
-            width: 120px;
-            border: none;
-            border-bottom: 1px solid #ccc;
-            text-align: center;
-            font-size: 11px;
-        }
-
-        .section {
-            margin-bottom: 15px;
-        }
-
+        .section { margin-bottom: 8px; }
         .section-title {
-            font-size: 13px;
+            font-size: 11px;
             font-weight: 700;
             color: #fff;
             background-color: #003366;
-            padding: 6px 12px;
-            margin-bottom: 10px;
+            padding: 4px 10px;
+            margin-bottom: 6px;
             border-radius: 3px;
-            display: flex;
-            justify-content: space-between;
-        }
-
-
-        .sub-guide {
-            font-size: 10px;
-            color: #666;
-            margin-bottom: 10px;
-            padding-left: 5px;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 10px;
-            font-size: 11px;
-        }
-
-        th, td {
-            border: 1px solid #ccc;
-            padding: 8px;
-            vertical-align: middle;
-        }
-
-        th {
-            background-color: #f0f4f8;
-            font-weight: 600;
-            text-align: center;
-        }
-
-        td {
-            text-align: center;
-        }
-
-        td.left-align {
-            text-align: left;
-        }
-
-        .question-row th {
-            width: 30%;
-            text-align: left;
-            font-weight: 500;
-        }
-
-        .question-row td {
-            font-size: 10px;
-        }
-
-        .question-row td label {
-            display: inline-block;
-            margin-right: 5px;
-            cursor: pointer;
-        }
-
-        input[type="radio"] {
-            margin-right: 3px;
-            accent-color: #003366;
-        }
-
-        .remarks-box {
-            background-color: #fafafa;
-            border: 1px solid #eee;
-            padding: 8px;
-            font-size: 10px;
-            margin-top: 5px;
-        }
-
-        .remarks-box textarea {
-            width: 100%;
-            height: 40px;
-            border: 1px solid #ddd;
-            padding: 5px;
-            font-size: 10px;
-            resize: none;
-            margin-top: 3px;
-        }
-
-        .page-num {
-            position: absolute;
-            bottom: 10mm;
-            right: 20mm;
-            font-size: 10px;
-            color: #666;
         }
 
         .intro-box {
             background-color: #f8f9fa;
             border: 1px solid #dee2e6;
-            border-radius: 5px;
-            padding: 12px;
-            margin-bottom: 15px;
-            font-size: 11px;
-        }
-
-        .intro-box h3 {
-            margin: 0 0 8px 0;
-            font-size: 12px;
-            color: #003366;
-        }
-
-        .intro-box ul {
-            margin: 0;
-            padding-left: 20px;
-        }
-
-        .intro-box li {
-            margin-bottom: 3px;
-        }
-
-        .scale-header th {
+            border-radius: 4px;
+            padding: 8px;
+            margin-bottom: 8px;
             font-size: 9px;
-            padding: 5px;
-            width: 14%;
+        }
+        .intro-box h3 { margin: 0 0 4px 0; font-size: 10px; color: #003366; }
+        .intro-box ul { margin: 0; padding-left: 16px; }
+        .intro-box li { margin-bottom: 1px; }
+
+        .question-box {
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            margin-bottom: 6px;
+            overflow: hidden;
         }
 
-        .scale-header th:first-child {
-            width: 30%;
+        .question-title {
+            background-color: #f0f4f8;
+            padding: 5px 10px;
+            font-weight: 600;
+            font-size: 10px;
+            border-bottom: 1px solid #ddd;
         }
+
+        .question-title span {
+            font-weight: normal;
+            color: #666;
+            font-size: 9px;
+        }
+
+        .options-container {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .option-item {
+            padding: 4px 10px;
+            border-bottom: 1px solid #eee;
+            font-size: 9px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .option-item:last-child { border-bottom: none; }
+        .option-item:hover { background-color: #f8f9fa; }
+        .option-item input[type="radio"] { margin-right: 6px; accent-color: #003366; }
+
+        .option-item label {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+        }
+
+        .option-item .score {
+            display: flex;
+            align-items: center;
+        }
+
+        .option-item .desc {
+            color: #555;
+            line-height: 1.3;
+            flex: 1;
+        }
+
+        .staff-table { width: 100%; border-collapse: collapse; font-size: 9px; }
+        .staff-table th, .staff-table td { border: 1px solid #ccc; padding: 4px; }
+        .staff-table th { background-color: #f0f4f8; font-weight: 600; text-align: center; }
+        .staff-table td { text-align: center; }
+        .staff-table td:first-child { text-align: left; }
+        .staff-table input[type="number"] { width: 50px; border: 1px solid #ccc; border-radius: 3px; font-size: 8px; padding: 2px; text-align: center; }
+        .staff-table input[type="text"] { width: 100%; border: none; border-bottom: 1px dashed #ccc; font-size: 8px; padding: 2px; }
+
+        .page-num { position: absolute; bottom: 5mm; right: 12mm; font-size: 8px; color: #666; }
     </style>
-    <script>
-        function printPage() { window.print(); }
-    </script>
 </head>
 
 <body>
-
     <div class="guide-box">
-        <button onclick="printPage()">인쇄 / PDF 저장</button>
+        <div class="lang-toggle">
+            <button id="btn-kr" class="active" onclick="setLang('kr')">한국어</button>
+            <button id="btn-en" onclick="setLang('en')">English</button>
+        </div>
+        <div class="action-buttons">
+            <button onclick="exportResults()" style="background-color: #28a745;" data-lang-key="btn_save">결과 저장 (JSON)</button>
+            <button onclick="printPage()" data-lang-key="btn_print">인쇄 / PDF 저장</button>
+        </div>
     </div>
 
-    <!-- 1페이지 -->
+    <!-- Page 1 -->
     <div class="page">
         <div class="header">
             <div>
-                <h1>글로벌 변압기 제조사 벤치마킹 설문</h1>
-                <div style="font-size: 11px; margin-top: 5px; color: #555;">엔지니어링 시스템 현황 조사 (외부 관찰 기반)</div>
+                <h1 data-lang-key="title">변압기 엔지니어링 시스템 현황 조사</h1>
+                <div class="header-sub" data-lang-key="subtitle">초고압 변압기 설계 역량 평가 (해외업체 직접 작성용)</div>
             </div>
             <div class="header-info">
-                조사 대상: <input type="text" placeholder="예: 거래처명"><br>
-                작성자: <input type="text" placeholder="이름/소속"><br>
-                작성일: <input type="text" placeholder="YYYY-MM-DD">
+                <span class="label" data-lang-key="lbl_company">회사명:</span> <input type="text" id="input_company"><br>
+                <span class="label" data-lang-key="lbl_respondent">작성자:</span> <input type="text" id="input_respondent"><br>
+                <span class="label" data-lang-key="lbl_date">작성일:</span> <input type="text" placeholder="YYYY-MM-DD" id="input_date">
             </div>
         </div>
 
-        <!-- 안내 -->
         <div class="intro-box">
-            <h3>설문 작성 안내</h3>
+            <h3 data-lang-key="intro_title">설문 작성 안내</h3>
             <ul>
-                <li>해당 제조사와 거래하면서 <strong>경험하거나 관찰한 내용</strong>을 기준으로 답변해 주세요</li>
-                <li>설계 전문가가 아니어도 됩니다 - 보시고 느낀 대로 답변하시면 됩니다</li>
-                <li>잘 모르는 항목은 "모름/관찰 안됨"을 선택하거나 비워두셔도 됩니다</li>
-                <li>각 질문은 1점(낮음)부터 5점(높음)까지 5단계로 구성되어 있습니다</li>
+                <li data-lang-key="intro_1">귀사의 <strong>현재 엔지니어링 시스템 현황</strong>을 기준으로 답변해 주세요</li>
+                <li data-lang-key="intro_2">가장 적합한 항목을 선택해 주세요</li>
+                <li data-lang-key="intro_3">잘 모르는 항목은 비슷한 항목을 선택하거나 비워두셔도 됩니다</li>
+                <li data-lang-key="intro_4">예상 소요 시간: 10~15분</li>
             </ul>
         </div>
 
-        <!-- 섹션 1: 설계 자동화 (40%) -->
+        <!-- Section 1 -->
         <div class="section">
-            <div class="section-title">1. 설계 자동화 수준</div>
-            <div class="sub-guide">* 받아본 도면이나 문서를 기준으로, 설계 시스템이 얼마나 자동화되어 있는지 판단해 주세요.</div>
+            <div class="section-title" data-lang-key="sec1_title">1. 설계 자동화 수준</div>
 
-            <table>
-                <thead>
-                    <tr class="scale-header">
-                        <th>질문</th>
-                        <th>1점 (낮음)</th>
-                        <th>2점</th>
-                        <th>3점</th>
-                        <th>4점</th>
-                        <th>5점 (높음)</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr class="question-row">
-                        <th>Q1. 견적 시 도면 상세도<br><span style="font-weight:normal;font-size:9px;color:#666;">견적 단계에서 받는 도면이 얼마나 상세한가요?</span></th>
-                        <td><label><input type="radio" name="q1" value="1"> 가격만</label></td>
-                        <td><label><input type="radio" name="q1" value="2"> 기본 사양</label></td>
-                        <td><label><input type="radio" name="q1" value="3"> 참조 도면</label></td>
-                        <td><label><input type="radio" name="q1" value="4"> 상세 GA</label></td>
-                        <td><label><input type="radio" name="q1" value="5"> 풀 패키지</label></td>
-                    </tr>
-                    <tr class="question-row">
-                        <th>Q2. 3D 모델 활용 수준<br><span style="font-weight:normal;font-size:9px;color:#666;">미팅이나 검토 시 보여주는 3D 모델 수준은?</span></th>
-                        <td><label><input type="radio" name="q2" value="1"> 2D만</label></td>
-                        <td><label><input type="radio" name="q2" value="2"> 단순 3D</label></td>
-                        <td><label><input type="radio" name="q2" value="3"> 외형 3D</label></td>
-                        <td><label><input type="radio" name="q2" value="4"> 상세 3D</label></td>
-                        <td><label><input type="radio" name="q2" value="5"> 내부까지 3D</label></td>
-                    </tr>
-                    <tr class="question-row">
-                        <th>Q3. 자동 생성 문서<br><span style="font-weight:normal;font-size:9px;color:#666;">받는 문서가 시스템에서 자동 생성된 것 같나요?</span></th>
-                        <td><label><input type="radio" name="q3" value="1"> 수기 작성</label></td>
-                        <td><label><input type="radio" name="q3" value="2"> 수동 Word</label></td>
-                        <td><label><input type="radio" name="q3" value="3"> 템플릿 기반</label></td>
-                        <td><label><input type="radio" name="q3" value="4"> 부분 자동</label></td>
-                        <td><label><input type="radio" name="q3" value="5"> 완전 자동</label></td>
-                    </tr>
-                </tbody>
-            </table>
+            <div class="question-box">
+                <div class="question-title"><span data-lang-key="q1_1_title">전기설계 자동화</span> <span data-lang-key="q1_1_sub">- 전기 계산은 어떻게 수행합니까?</span></div>
+                <div class="options-container">
+                    <div class="option-item"><label><div class="score"><input type="radio" name="auto_elec" value="1"></div><div class="desc" data-lang-key="q1_1_o1">수작업 계산 (손계산, 기본 Excel)</div></label></div>
+                    <div class="option-item"><label><div class="score"><input type="radio" name="auto_elec" value="2"></div><div class="desc" data-lang-key="q1_1_o2">Excel 매크로 활용 (보조 도구)</div></label></div>
+                    <div class="option-item"><label><div class="score"><input type="radio" name="auto_elec" value="3"></div><div class="desc" data-lang-key="q1_1_o3">전용 계산 소프트웨어 (반자동)</div></label></div>
+                    <div class="option-item"><label><div class="score"><input type="radio" name="auto_elec" value="4"></div><div class="desc" data-lang-key="q1_1_o4">통합 설계 시스템 (최적화 기능 포함)</div></label></div>
+                    <div class="option-item"><label><div class="score"><input type="radio" name="auto_elec" value="5"></div><div class="desc" data-lang-key="q1_1_o5">완전 자동화 (AI/ML 최적화)</div></label></div>
+                </div>
+            </div>
+
+            <div class="question-box">
+                <div class="question-title"><span data-lang-key="q1_2_title">권선설계 자동화</span> <span data-lang-key="q1_2_sub">- 권선 도면은 어떻게 작성합니까?</span></div>
+                <div class="options-container">
+                    <div class="option-item"><label><div class="score"><input type="radio" name="auto_wind" value="1"></div><div class="desc" data-lang-key="q1_2_o1">CAD 수동 작도 (처음부터 작성)</div></label></div>
+                    <div class="option-item"><label><div class="score"><input type="radio" name="auto_wind" value="2"></div><div class="desc" data-lang-key="q1_2_o2">기존 도면 복사/수정</div></label></div>
+                    <div class="option-item"><label><div class="score"><input type="radio" name="auto_wind" value="3"></div><div class="desc" data-lang-key="q1_2_o3">파라미터 입력으로 기본 도면 생성</div></label></div>
+                    <div class="option-item"><label><div class="score"><input type="radio" name="auto_wind" value="4"></div><div class="desc" data-lang-key="q1_2_o4">자동 생성 후 수동 미세 조정</div></label></div>
+                    <div class="option-item"><label><div class="score"><input type="radio" name="auto_wind" value="5"></div><div class="desc" data-lang-key="q1_2_o5">완전 자동 도면 생성</div></label></div>
+                </div>
+            </div>
+
+            <div class="question-box">
+                <div class="question-title"><span data-lang-key="q1_3_title">철심설계 자동화</span> <span data-lang-key="q1_3_sub">- 철심 설계는 어떻게 수행합니까?</span></div>
+                <div class="options-container">
+                    <div class="option-item"><label><div class="score"><input type="radio" name="auto_core" value="1"></div><div class="desc" data-lang-key="q1_3_o1">수동 계산 및 CAD 작도</div></label></div>
+                    <div class="option-item"><label><div class="score"><input type="radio" name="auto_core" value="2"></div><div class="desc" data-lang-key="q1_3_o2">스프레드시트 기반 + 수동 CAD</div></label></div>
+                    <div class="option-item"><label><div class="score"><input type="radio" name="auto_core" value="3"></div><div class="desc" data-lang-key="q1_3_o3">파라미터 입력 기반 반자동</div></label></div>
+                    <div class="option-item"><label><div class="score"><input type="radio" name="auto_core" value="4"></div><div class="desc" data-lang-key="q1_3_o4">자동 생성 + 약간의 수정</div></label></div>
+                    <div class="option-item"><label><div class="score"><input type="radio" name="auto_core" value="5"></div><div class="desc" data-lang-key="q1_3_o5">BOM 포함 완전 자동화</div></label></div>
+                </div>
+            </div>
+
+            <div class="question-box">
+                <div class="question-title"><span data-lang-key="q1_4_title">중신/리드 설계</span> <span data-lang-key="q1_4_sub">- 리드 어셈블리는 어떻게 설계합니까?</span></div>
+                <div class="options-container">
+                    <div class="option-item"><label><div class="score"><input type="radio" name="auto_ap" value="1"></div><div class="desc" data-lang-key="q1_4_o1">2D/3D 완전 수동 모델링</div></label></div>
+                    <div class="option-item"><label><div class="score"><input type="radio" name="auto_ap" value="2"></div><div class="desc" data-lang-key="q1_4_o2">라이브러리 기반 + 수동 조립</div></label></div>
+                    <div class="option-item"><label><div class="score"><input type="radio" name="auto_ap" value="3"></div><div class="desc" data-lang-key="q1_4_o3">부품 라이브러리 활용 반자동</div></label></div>
+                    <div class="option-item"><label><div class="score"><input type="radio" name="auto_ap" value="4"></div><div class="desc" data-lang-key="q1_4_o4">자동 라우팅 + 수동 검증</div></label></div>
+                    <div class="option-item"><label><div class="score"><input type="radio" name="auto_ap" value="5"></div><div class="desc" data-lang-key="q1_4_o5">리드 완전 자동 생성</div></label></div>
+                </div>
+            </div>
+
+            <div class="question-box">
+                <div class="question-title"><span data-lang-key="q1_5_title">탱크설계 자동화</span> <span data-lang-key="q1_5_sub">- 탱크/커버 설계는 어떻게 수행합니까?</span></div>
+                <div class="options-container">
+                    <div class="option-item"><label><div class="score"><input type="radio" name="auto_tank" value="1"></div><div class="desc" data-lang-key="q1_5_o1">2D/3D CAD 처음부터 수동 작성</div></label></div>
+                    <div class="option-item"><label><div class="score"><input type="radio" name="auto_tank" value="2"></div><div class="desc" data-lang-key="q1_5_o2">유사 설계 복사/수정</div></label></div>
+                    <div class="option-item"><label><div class="score"><input type="radio" name="auto_tank" value="3"></div><div class="desc" data-lang-key="q1_5_o3">라이브러리 기반 + 파라미터 조정</div></label></div>
+                    <div class="option-item"><label><div class="score"><input type="radio" name="auto_tank" value="4"></div><div class="desc" data-lang-key="q1_5_o4">설정기 기반 자동 생성</div></label></div>
+                    <div class="option-item"><label><div class="score"><input type="radio" name="auto_tank" value="5"></div><div class="desc" data-lang-key="q1_5_o5">부속품 포함 완전 자동화</div></label></div>
+                </div>
+            </div>
         </div>
 
-        <!-- 섹션 2: 설계 표준화 (25%) -->
-        <div class="section">
-            <div class="section-title">2. 설계 표준화 및 품질</div>
-            <div class="sub-guide">* 설계 품질이 얼마나 일관되고 표준화되어 있는지 판단해 주세요.</div>
-
-            <table>
-                <thead>
-                    <tr class="scale-header">
-                        <th>질문</th>
-                        <th>1점 (낮음)</th>
-                        <th>2점</th>
-                        <th>3점</th>
-                        <th>4점</th>
-                        <th>5점 (높음)</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr class="question-row">
-                        <th>Q4. 품질 일관성<br><span style="font-weight:normal;font-size:9px;color:#666;">프로젝트마다 품질이 일관적인가요?</span></th>
-                        <td><label><input type="radio" name="q4" value="1"> 매우 불일치</label></td>
-                        <td><label><input type="radio" name="q4" value="2"> 자주 변동</label></td>
-                        <td><label><input type="radio" name="q4" value="3"> 대체로 일관</label></td>
-                        <td><label><input type="radio" name="q4" value="4"> 보통 일관</label></td>
-                        <td><label><input type="radio" name="q4" value="5"> 항상 일관</label></td>
-                    </tr>
-                    <tr class="question-row">
-                        <th>Q5. 담당자별 편차<br><span style="font-weight:normal;font-size:9px;color:#666;">담당자가 바뀌면 품질이 달라지나요?</span></th>
-                        <td><label><input type="radio" name="q5" value="1"> 완전 의존</label></td>
-                        <td><label><input type="radio" name="q5" value="2"> 자주 의존</label></td>
-                        <td><label><input type="radio" name="q5" value="3"> 가끔 의존</label></td>
-                        <td><label><input type="radio" name="q5" value="4"> 거의 무관</label></td>
-                        <td><label><input type="radio" name="q5" value="5"> 전혀 무관</label></td>
-                    </tr>
-                    <tr class="question-row">
-                        <th>Q6. 문서 양식 체계<br><span style="font-weight:normal;font-size:9px;color:#666;">문서가 잘 정리되어 있나요?</span></th>
-                        <td><label><input type="radio" name="q6" value="1"> 표준 없음</label></td>
-                        <td><label><input type="radio" name="q6" value="2"> 기본 양식</label></td>
-                        <td><label><input type="radio" name="q6" value="3"> 표준 템플릿</label></td>
-                        <td><label><input type="radio" name="q6" value="4"> 잘 정리됨</label></td>
-                        <td><label><input type="radio" name="q6" value="5"> 체계적 양식</label></td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-
-        <!-- 섹션 3: IT 시스템 (20%) -->
-        <div class="section">
-            <div class="section-title">3. IT 시스템 및 데이터 관리</div>
-            <div class="sub-guide">* 문서/데이터 교환을 위한 IT 인프라가 얼마나 발달되어 있는지 판단해 주세요.</div>
-
-            <table>
-                <thead>
-                    <tr class="scale-header">
-                        <th>질문</th>
-                        <th>1점 (낮음)</th>
-                        <th>2점</th>
-                        <th>3점</th>
-                        <th>4점</th>
-                        <th>5점 (높음)</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr class="question-row">
-                        <th>Q7. 문서 수신 방식<br><span style="font-weight:normal;font-size:9px;color:#666;">발주서나 도면을 어떻게 받으시나요?</span></th>
-                        <td><label><input type="radio" name="q7" value="1"> 개인 메일</label></td>
-                        <td><label><input type="radio" name="q7" value="2"> 회사 메일</label></td>
-                        <td><label><input type="radio" name="q7" value="3"> 시스템 메일</label></td>
-                        <td><label><input type="radio" name="q7" value="4"> 웹 포털</label></td>
-                        <td><label><input type="radio" name="q7" value="5"> 통합 포털</label></td>
-                    </tr>
-                    <tr class="question-row">
-                        <th>Q8. 변경 이력 추적<br><span style="font-weight:normal;font-size:9px;color:#666;">문서 변경 이력을 확인할 수 있나요?</span></th>
-                        <td><label><input type="radio" name="q8" value="1"> 추적 안됨</label></td>
-                        <td><label><input type="radio" name="q8" value="2"> 파일명만</label></td>
-                        <td><label><input type="radio" name="q8" value="3"> 수동 로그</label></td>
-                        <td><label><input type="radio" name="q8" value="4"> 이력 관리</label></td>
-                        <td><label><input type="radio" name="q8" value="5"> 완전 추적</label></td>
-                    </tr>
-                    <tr class="question-row">
-                        <th>Q9. 시스템 알림<br><span style="font-weight:normal;font-size:9px;color:#666;">자동 업데이트 알림을 받으시나요?</span></th>
-                        <td><label><input type="radio" name="q9" value="1"> 알림 없음</label></td>
-                        <td><label><input type="radio" name="q9" value="2"> 수동 연락</label></td>
-                        <td><label><input type="radio" name="q9" value="3"> 이메일 알림</label></td>
-                        <td><label><input type="radio" name="q9" value="4"> 자동 알림</label></td>
-                        <td><label><input type="radio" name="q9" value="5"> 실시간 대시보드</label></td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-
-        <div class="page-num">1 / 2</div>
+        <div class="page-num">1 / 4</div>
     </div>
 
-    <!-- 2페이지 -->
+    <!-- Page 2 -->
     <div class="page">
         <div class="header">
-            <div>
-                <h1>글로벌 변압기 제조사 벤치마킹 설문</h1>
-                <div style="font-size: 11px; margin-top: 5px; color: #555;">엔지니어링 시스템 현황 조사 (외부 관찰 기반)</div>
+            <div><h1 data-lang-key="title">변압기 엔지니어링 시스템 현황 조사</h1></div>
+        </div>
+
+        <!-- Section 2 -->
+        <div class="section">
+            <div class="section-title" data-lang-key="sec2_title">2. 설계 표준화 수준</div>
+
+            <div class="question-box">
+                <div class="question-title"><span data-lang-key="q2_1_title">설계 매뉴얼</span> <span data-lang-key="q2_1_sub">- 문서화된 설계 지침이 있습니까?</span></div>
+                <div class="options-container">
+                    <div class="option-item"><label><div class="score"><input type="radio" name="std_manual" value="1"></div><div class="desc" data-lang-key="q2_1_o1">공식 문서 없음 (구전 지식)</div></label></div>
+                    <div class="option-item"><label><div class="score"><input type="radio" name="std_manual" value="2"></div><div class="desc" data-lang-key="q2_1_o2">비공식 메모 및 개인 노트</div></label></div>
+                    <div class="option-item"><label><div class="score"><input type="radio" name="std_manual" value="3"></div><div class="desc" data-lang-key="q2_1_o3">Word/PDF 형식으로 문서화</div></label></div>
+                    <div class="option-item"><label><div class="score"><input type="radio" name="std_manual" value="4"></div><div class="desc" data-lang-key="q2_1_o4">버전 관리되는 체계적 매뉴얼</div></label></div>
+                    <div class="option-item"><label><div class="score"><input type="radio" name="std_manual" value="5"></div><div class="desc" data-lang-key="q2_1_o5">설계 시스템에 통합 + 자동 검증</div></label></div>
+                </div>
+            </div>
+
+            <div class="question-box">
+                <div class="question-title"><span data-lang-key="q2_2_title">설계 체크리스트</span> <span data-lang-key="q2_2_sub">- 설계 검토는 어떻게 수행합니까?</span></div>
+                <div class="options-container">
+                    <div class="option-item"><label><div class="score"><input type="radio" name="std_checklist" value="1"></div><div class="desc" data-lang-key="q2_2_o1">공식 체크리스트 없음 (구두 검토만)</div></label></div>
+                    <div class="option-item"><label><div class="score"><input type="radio" name="std_checklist" value="2"></div><div class="desc" data-lang-key="q2_2_o2">비공식 체크리스트 (표준화 안됨)</div></label></div>
+                    <div class="option-item"><label><div class="score"><input type="radio" name="std_checklist" value="3"></div><div class="desc" data-lang-key="q2_2_o3">표준 Excel 체크리스트</div></label></div>
+                    <div class="option-item"><label><div class="score"><input type="radio" name="std_checklist" value="4"></div><div class="desc" data-lang-key="q2_2_o4">단계별 검토 (1차/2차/최종)</div></label></div>
+                    <div class="option-item"><label><div class="score"><input type="radio" name="std_checklist" value="5"></div><div class="desc" data-lang-key="q2_2_o5">설계 시스템 내 자동 검증</div></label></div>
+                </div>
+            </div>
+
+            <div class="question-box">
+                <div class="question-title"><span data-lang-key="q2_3_title">부품 라이브러리</span> <span data-lang-key="q2_3_sub">- 표준 부품 라이브러리가 있습니까?</span></div>
+                <div class="options-container">
+                    <div class="option-item"><label><div class="score"><input type="radio" name="std_library" value="1"></div><div class="desc" data-lang-key="q2_3_o1">라이브러리 없음 (매번 처음부터 작성)</div></label></div>
+                    <div class="option-item"><label><div class="score"><input type="radio" name="std_library" value="2"></div><div class="desc" data-lang-key="q2_3_o2">개인 라이브러리 (공유 안됨)</div></label></div>
+                    <div class="option-item"><label><div class="score"><input type="radio" name="std_library" value="3"></div><div class="desc" data-lang-key="q2_3_o3">일부 공유 라이브러리</div></label></div>
+                    <div class="option-item"><label><div class="score"><input type="radio" name="std_library" value="4"></div><div class="desc" data-lang-key="q2_3_o4">체계적으로 관리되는 종합 라이브러리</div></label></div>
+                    <div class="option-item"><label><div class="score"><input type="radio" name="std_library" value="5"></div><div class="desc" data-lang-key="q2_3_o5">자동 선택 기능 통합 라이브러리</div></label></div>
+                </div>
+            </div>
+
+            <div class="question-box">
+                <div class="question-title"><span data-lang-key="q2_4_title">ECO 프로세스</span> <span data-lang-key="q2_4_sub">- 설계 변경은 어떻게 관리합니까?</span></div>
+                <div class="options-container">
+                    <div class="option-item"><label><div class="score"><input type="radio" name="std_eco" value="1"></div><div class="desc" data-lang-key="q2_4_o1">공식 절차 없음 (구두 통보)</div></label></div>
+                    <div class="option-item"><label><div class="score"><input type="radio" name="std_eco" value="2"></div><div class="desc" data-lang-key="q2_4_o2">이메일 기반 통보</div></label></div>
+                    <div class="option-item"><label><div class="score"><input type="radio" name="std_eco" value="3"></div><div class="desc" data-lang-key="q2_4_o3">ECO 문서 + 수동 회람</div></label></div>
+                    <div class="option-item"><label><div class="score"><input type="radio" name="std_eco" value="4"></div><div class="desc" data-lang-key="q2_4_o4">전자결재 워크플로우</div></label></div>
+                    <div class="option-item"><label><div class="score"><input type="radio" name="std_eco" value="5"></div><div class="desc" data-lang-key="q2_4_o5">PLM 통합 + 자동 전파</div></label></div>
+                </div>
             </div>
         </div>
 
-        <!-- 섹션 4: 리드타임 (15%) -->
-        <div class="section">
-            <div class="section-title">4. 대응 속도 및 리드타임</div>
-            <div class="sub-guide">* 요청에 대한 응답 속도가 얼마나 빠른지 판단해 주세요.</div>
-
-            <table>
-                <thead>
-                    <tr class="scale-header">
-                        <th>질문</th>
-                        <th>1점 (느림)</th>
-                        <th>2점</th>
-                        <th>3점</th>
-                        <th>4점</th>
-                        <th>5점 (빠름)</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr class="question-row">
-                        <th>Q10. 견적 제출 속도<br><span style="font-weight:normal;font-size:9px;color:#666;">견적 요청 후 얼마나 빨리 받으시나요?</span></th>
-                        <td><label><input type="radio" name="q10" value="1"> 4주 이상</label></td>
-                        <td><label><input type="radio" name="q10" value="2"> 3~4주</label></td>
-                        <td><label><input type="radio" name="q10" value="3"> 2~3주</label></td>
-                        <td><label><input type="radio" name="q10" value="4"> 1~2주</label></td>
-                        <td><label><input type="radio" name="q10" value="5"> 1주 이내</label></td>
-                    </tr>
-                    <tr class="question-row">
-                        <th>Q11. 도면 수정 속도<br><span style="font-weight:normal;font-size:9px;color:#666;">수정 요청하면 얼마나 빨리 반영되나요?</span></th>
-                        <td><label><input type="radio" name="q11" value="1"> 2주 이상</label></td>
-                        <td><label><input type="radio" name="q11" value="2"> 1~2주</label></td>
-                        <td><label><input type="radio" name="q11" value="3"> 4~7일</label></td>
-                        <td><label><input type="radio" name="q11" value="4"> 2~3일</label></td>
-                        <td><label><input type="radio" name="q11" value="5"> 1일 이내</label></td>
-                    </tr>
-                    <tr class="question-row">
-                        <th>Q12. 긴급 변경 대응<br><span style="font-weight:normal;font-size:9px;color:#666;">긴급 설계 변경 요청 시 대응이 빠른가요?</span></th>
-                        <td><label><input type="radio" name="q12" value="1"> 매우 느림</label></td>
-                        <td><label><input type="radio" name="q12" value="2"> 느린 편</label></td>
-                        <td><label><input type="radio" name="q12" value="3"> 보통</label></td>
-                        <td><label><input type="radio" name="q12" value="4"> 빠른 편</label></td>
-                        <td><label><input type="radio" name="q12" value="5"> 즉시 대응</label></td>
-                    </tr>
-                </tbody>
-            </table>
-            <div class="remarks-box">
-                <span>대응 속도 관련 특이사항:</span>
-                <textarea placeholder="응답 시간에 대한 특이 사항이 있으면 적어주세요..."></textarea>
-            </div>
-        </div>
-
-        <!-- 섹션 5: 추가 관찰 -->
-        <div class="section">
-            <div class="section-title">5. 추가 관찰 사항 (선택)</div>
-            <div class="sub-guide">* 엔지니어링 역량을 추가로 판단할 수 있는 관찰 사항</div>
-
-            <table>
-                <thead>
-                    <tr class="scale-header">
-                        <th>질문</th>
-                        <th>1점 (낮음)</th>
-                        <th>2점</th>
-                        <th>3점</th>
-                        <th>4점</th>
-                        <th>5점 (높음)</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr class="question-row">
-                        <th>Q13. 현장 설치 정확도<br><span style="font-weight:normal;font-size:9px;color:#666;">현장에서 부품이 정확하게 맞나요?</span></th>
-                        <td><label><input type="radio" name="q13" value="1"> 문제 많음</label></td>
-                        <td><label><input type="radio" name="q13" value="2"> 종종 문제</label></td>
-                        <td><label><input type="radio" name="q13" value="3"> 사소한 문제</label></td>
-                        <td><label><input type="radio" name="q13" value="4"> 거의 없음</label></td>
-                        <td><label><input type="radio" name="q13" value="5"> 완벽히 맞음</label></td>
-                    </tr>
-                    <tr class="question-row">
-                        <th>Q14. 기술 소통<br><span style="font-weight:normal;font-size:9px;color:#666;">기술적인 논의가 원활하게 되나요?</span></th>
-                        <td><label><input type="radio" name="q14" value="1"> 매우 어려움</label></td>
-                        <td><label><input type="radio" name="q14" value="2"> 자주 지연</label></td>
-                        <td><label><input type="radio" name="q14" value="3"> 보통</label></td>
-                        <td><label><input type="radio" name="q14" value="4"> 대체로 원활</label></td>
-                        <td><label><input type="radio" name="q14" value="5"> 매우 원활</label></td>
-                    </tr>
-                    <tr class="question-row">
-                        <th>Q15. 종합 인상<br><span style="font-weight:normal;font-size:9px;color:#666;">엔지니어링 역량에 대한 전반적인 인상은?</span></th>
-                        <td><label><input type="radio" name="q15" value="1"> 미흡</label></td>
-                        <td><label><input type="radio" name="q15" value="2"> 평균 이하</label></td>
-                        <td><label><input type="radio" name="q15" value="3"> 평균</label></td>
-                        <td><label><input type="radio" name="q15" value="4"> 우수</label></td>
-                        <td><label><input type="radio" name="q15" value="5"> 최우수</label></td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-
-        <!-- 섹션 6: 종합 의견 -->
-        <div class="section">
-            <div class="section-title">6. 종합 의견</div>
-            <div style="border: 1px solid #ccc; padding: 10px;">
-                <textarea style="width: 100%; height: 80px; border: none; resize: none; font-size: 11px;"
-                    placeholder="해당 제조사의 엔지니어링 역량에 대해 느끼신 점, 강점, 약점, 특이 사항 등을 자유롭게 적어주세요..."></textarea>
-            </div>
-        </div>
-
-
-        <div class="page-num">2 / 2</div>
+        <div class="page-num">2 / 4</div>
     </div>
 
+    <!-- Page 3 -->
+    <div class="page">
+        <div class="header">
+            <div><h1 data-lang-key="title">변압기 엔지니어링 시스템 현황 조사</h1></div>
+        </div>
+
+        <!-- Section 3 -->
+        <div class="section">
+            <div class="section-title" data-lang-key="sec3_title">3. IT 시스템 및 데이터 관리</div>
+
+            <div class="question-box">
+                <div class="question-title"><span data-lang-key="q3_1_title">데이터 인터페이스</span> <span data-lang-key="q3_1_sub">- 시스템 간 데이터 전송 방식은?</span></div>
+                <div class="options-container">
+                    <div class="option-item"><label><div class="score"><input type="radio" name="it_interface" value="1"></div><div class="desc" data-lang-key="q3_1_o1">수기 재입력 (손으로 복사)</div></label></div>
+                    <div class="option-item"><label><div class="score"><input type="radio" name="it_interface" value="2"></div><div class="desc" data-lang-key="q3_1_o2">프로그램 간 복사/붙여넣기</div></label></div>
+                    <div class="option-item"><label><div class="score"><input type="radio" name="it_interface" value="3"></div><div class="desc" data-lang-key="q3_1_o3">파일 가져오기/내보내기 (Excel, CSV)</div></label></div>
+                    <div class="option-item"><label><div class="score"><input type="radio" name="it_interface" value="4"></div><div class="desc" data-lang-key="q3_1_o4">API 기반 연동</div></label></div>
+                    <div class="option-item"><label><div class="score"><input type="radio" name="it_interface" value="5"></div><div class="desc" data-lang-key="q3_1_o5">단일 데이터베이스 완전 통합</div></label></div>
+                </div>
+            </div>
+
+            <div class="question-box">
+                <div class="question-title"><span data-lang-key="q3_2_title">PDM/PLM 시스템</span> <span data-lang-key="q3_2_sub">- 설계 문서는 어떻게 관리합니까?</span></div>
+                <div class="options-container">
+                    <div class="option-item"><label><div class="score"><input type="radio" name="it_pdm" value="1"></div><div class="desc" data-lang-key="q3_2_o1">로컬 저장 (개인 폴더)</div></label></div>
+                    <div class="option-item"><label><div class="score"><input type="radio" name="it_pdm" value="2"></div><div class="desc" data-lang-key="q3_2_o2">공유 네트워크 폴더</div></label></div>
+                    <div class="option-item"><label><div class="score"><input type="radio" name="it_pdm" value="3"></div><div class="desc" data-lang-key="q3_2_o3">기본 문서 관리 시스템</div></label></div>
+                    <div class="option-item"><label><div class="score"><input type="radio" name="it_pdm" value="4"></div><div class="desc" data-lang-key="q3_2_o4">버전 관리 기능 PDM</div></label></div>
+                    <div class="option-item"><label><div class="score"><input type="radio" name="it_pdm" value="5"></div><div class="desc" data-lang-key="q3_2_o5">ERP 연동 완전 PLM</div></label></div>
+                </div>
+            </div>
+
+            <div class="question-box">
+                <div class="question-title"><span data-lang-key="q3_3_title">BOM 관리</span> <span data-lang-key="q3_3_sub">- 자재명세서(BOM)는 어떻게 관리합니까?</span></div>
+                <div class="options-container">
+                    <div class="option-item"><label><div class="score"><input type="radio" name="it_bom" value="1"></div><div class="desc" data-lang-key="q3_3_o1">수동 Excel 시트</div></label></div>
+                    <div class="option-item"><label><div class="score"><input type="radio" name="it_bom" value="2"></div><div class="desc" data-lang-key="q3_3_o2">버전 추적하는 공유 Excel</div></label></div>
+                    <div class="option-item"><label><div class="score"><input type="radio" name="it_bom" value="3"></div><div class="desc" data-lang-key="q3_3_o3">데이터베이스 기반 BOM 시스템</div></label></div>
+                    <div class="option-item"><label><div class="score"><input type="radio" name="it_bom" value="4"></div><div class="desc" data-lang-key="q3_3_o4">CAD 연동 BOM 자동 생성</div></label></div>
+                    <div class="option-item"><label><div class="score"><input type="radio" name="it_bom" value="5"></div><div class="desc" data-lang-key="q3_3_o5">ERP 동기화 완전 자동 BOM</div></label></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="page-num">3 / 4</div>
+    </div>
+
+    <!-- Page 4 -->
+    <div class="page">
+        <div class="header">
+            <div><h1 data-lang-key="title">변압기 엔지니어링 시스템 현황 조사</h1></div>
+        </div>
+
+        <!-- Section 4 -->
+        <div class="section">
+            <div class="section-title" data-lang-key="sec4_title">4. 설계 리드타임</div>
+
+            <div class="question-box">
+                <div class="question-title"><span data-lang-key="q4_1_title">전기설계 리드타임</span> <span data-lang-key="q4_1_sub">- 계약 ~ 전기설계 완료까지</span></div>
+                <div class="options-container">
+                    <div class="option-item"><label><div class="score"><input type="radio" name="lt_elec" value="1"></div><div class="desc" data-lang-key="q4_1_o1">40일 이상</div></label></div>
+                    <div class="option-item"><label><div class="score"><input type="radio" name="lt_elec" value="2"></div><div class="desc" data-lang-key="q4_1_o2">30~40일</div></label></div>
+                    <div class="option-item"><label><div class="score"><input type="radio" name="lt_elec" value="3"></div><div class="desc" data-lang-key="q4_1_o3">20~30일</div></label></div>
+                    <div class="option-item"><label><div class="score"><input type="radio" name="lt_elec" value="4"></div><div class="desc" data-lang-key="q4_1_o4">10~20일</div></label></div>
+                    <div class="option-item"><label><div class="score"><input type="radio" name="lt_elec" value="5"></div><div class="desc" data-lang-key="q4_1_o5">10일 미만</div></label></div>
+                </div>
+            </div>
+
+            <div class="question-box">
+                <div class="question-title"><span data-lang-key="q4_2_title">기구설계 리드타임</span> <span data-lang-key="q4_2_sub">- 중신 ~ 최종도면 완료까지</span></div>
+                <div class="options-container">
+                    <div class="option-item"><label><div class="score"><input type="radio" name="lt_mech" value="1"></div><div class="desc" data-lang-key="q4_2_o1">50일 이상</div></label></div>
+                    <div class="option-item"><label><div class="score"><input type="radio" name="lt_mech" value="2"></div><div class="desc" data-lang-key="q4_2_o2">40~50일</div></label></div>
+                    <div class="option-item"><label><div class="score"><input type="radio" name="lt_mech" value="3"></div><div class="desc" data-lang-key="q4_2_o3">30~40일</div></label></div>
+                    <div class="option-item"><label><div class="score"><input type="radio" name="lt_mech" value="4"></div><div class="desc" data-lang-key="q4_2_o4">20~30일</div></label></div>
+                    <div class="option-item"><label><div class="score"><input type="radio" name="lt_mech" value="5"></div><div class="desc" data-lang-key="q4_2_o5">20일 미만</div></label></div>
+                </div>
+            </div>
+
+            <div class="question-box">
+                <div class="question-title"><span data-lang-key="q4_3_title">설계 변경 속도</span> <span data-lang-key="q4_3_sub">- 설계 변경 요청 ~ 완료까지</span></div>
+                <div class="options-container">
+                    <div class="option-item"><label><div class="score"><input type="radio" name="lt_revision" value="1"></div><div class="desc" data-lang-key="q4_3_o1">2주 이상</div></label></div>
+                    <div class="option-item"><label><div class="score"><input type="radio" name="lt_revision" value="2"></div><div class="desc" data-lang-key="q4_3_o2">1~2주</div></label></div>
+                    <div class="option-item"><label><div class="score"><input type="radio" name="lt_revision" value="3"></div><div class="desc" data-lang-key="q4_3_o3">4~7일</div></label></div>
+                    <div class="option-item"><label><div class="score"><input type="radio" name="lt_revision" value="4"></div><div class="desc" data-lang-key="q4_3_o4">2~3일</div></label></div>
+                    <div class="option-item"><label><div class="score"><input type="radio" name="lt_revision" value="5"></div><div class="desc" data-lang-key="q4_3_o5">1일 이내</div></label></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section 5 -->
+        <div class="section">
+            <div class="section-title" data-lang-key="sec5_title">5. 엔지니어링 인원 현황</div>
+            <p style="font-size: 9px; color: #666; margin: 0 0 8px 0;" data-lang-key="sec5_note">* 귀사의 엔지니어링 조직 인원을 대략적으로 기입해 주세요</p>
+
+            <table class="staff-table">
+                <thead>
+                    <tr>
+                        <th style="width: 40%;" data-lang-key="th_dept">부서/팀</th>
+                        <th style="width: 20%;" data-lang-key="th_internal">정규직</th>
+                        <th style="width: 20%;" data-lang-key="th_external">외주/파견</th>
+                        <th style="width: 20%;" data-lang-key="th_remark">비고</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td data-lang-key="dept_elec">전기설계팀</td>
+                        <td><input type="number" min="0" placeholder="0"></td>
+                        <td><input type="number" min="0" placeholder="0"></td>
+                        <td><input type="text" placeholder=""></td>
+                    </tr>
+                    <tr>
+                        <td data-lang-key="dept_mech">기계/구조설계팀</td>
+                        <td><input type="number" min="0" placeholder="0"></td>
+                        <td><input type="number" min="0" placeholder="0"></td>
+                        <td><input type="text" placeholder=""></td>
+                    </tr>
+                    <tr>
+                        <td data-lang-key="dept_cad">CAD/도면팀</td>
+                        <td><input type="number" min="0" placeholder="0"></td>
+                        <td><input type="number" min="0" placeholder="0"></td>
+                        <td><input type="text" placeholder=""></td>
+                    </tr>
+                    <tr>
+                        <td data-lang-key="dept_pm">프로젝트 엔지니어링</td>
+                        <td><input type="number" min="0" placeholder="0"></td>
+                        <td><input type="number" min="0" placeholder="0"></td>
+                        <td><input type="text" placeholder=""></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Section 6 -->
+        <div class="section">
+            <div class="section-title" data-lang-key="sec6_title">6. 종합 의견</div>
+            <div style="border: 1px solid #ccc; padding: 10px; border-radius: 5px;">
+                <textarea id="textarea_comments" style="width: 100%; height: 80px; border: none; resize: none; font-size: 10px;"
+                    data-placeholder-kr="귀사의 엔지니어링 역량, 최근 개선 사항, 향후 계획 등에 대해 자유롭게 기술해 주세요..."
+                    data-placeholder-en="Please share any additional information about your engineering capabilities, recent improvements, or future plans..."
+                    placeholder="귀사의 엔지니어링 역량, 최근 개선 사항, 향후 계획 등에 대해 자유롭게 기술해 주세요..."></textarea>
+            </div>
+        </div>
+
+        <div class="page-num">4 / 4</div>
+    </div>
+
+    <script>
+        // 현재 언어
+        let currentLang = 'kr';
+
+        // 번역 데이터
+        const translations = {
+            // 버튼
+            btn_save: { kr: '결과 저장 (JSON)', en: 'Save Results (JSON)' },
+            btn_print: { kr: '인쇄 / PDF 저장', en: 'Print / Save as PDF' },
+
+            // 타이틀
+            title: { kr: '변압기 엔지니어링 시스템 현황 조사', en: 'Transformer Engineering System Survey' },
+            subtitle: { kr: '초고압 변압기 설계 역량 평가 (해외업체 직접 작성용)', en: 'Design Capability Assessment for HV/EHV Transformers' },
+
+            // 헤더 라벨
+            lbl_company: { kr: '회사명:', en: 'Company:' },
+            lbl_respondent: { kr: '작성자:', en: 'Respondent:' },
+            lbl_date: { kr: '작성일:', en: 'Date:' },
+
+            // 안내문
+            intro_title: { kr: '설문 작성 안내', en: 'Survey Instructions' },
+            intro_1: { kr: '귀사의 <strong>현재 엔지니어링 시스템 현황</strong>을 기준으로 답변해 주세요', en: 'Please answer based on your company\'s <strong>current engineering practices</strong>' },
+            intro_2: { kr: '가장 적합한 항목을 선택해 주세요', en: 'Select the option that best describes your situation' },
+            intro_3: { kr: '잘 모르는 항목은 비슷한 항목을 선택하거나 비워두셔도 됩니다', en: 'If unsure, select the closest match or leave blank' },
+            intro_4: { kr: '예상 소요 시간: 10~15분', en: 'Estimated time: 10-15 minutes' },
+
+            // 점수
+            pt: { kr: '', en: '' },
+
+            // 섹션 타이틀
+            sec1_title: { kr: '1. 설계 자동화 수준', en: '1. Design Automation Level' },
+            sec2_title: { kr: '2. 설계 표준화 수준', en: '2. Design Standardization' },
+            sec3_title: { kr: '3. IT 시스템 및 데이터 관리', en: '3. IT System & Data Management' },
+            sec4_title: { kr: '4. 설계 리드타임', en: '4. Design Lead Time' },
+            sec5_title: { kr: '5. 엔지니어링 인원 현황', en: '5. Engineering Staff' },
+            sec6_title: { kr: '6. 종합 의견', en: '6. Additional Comments' },
+
+            // Q1.1 전기설계
+            q1_1_title: { kr: '전기설계 자동화', en: 'Electrical Design Automation' },
+            q1_1_sub: { kr: '- 전기 계산은 어떻게 수행합니까?', en: '- How are electrical calculations performed?' },
+            q1_1_o1: { kr: '수작업 계산 (손계산, 기본 Excel)', en: 'Manual calculation (hand calculation, basic Excel)' },
+            q1_1_o2: { kr: 'Excel 매크로 활용 (보조 도구)', en: 'Excel with macros for assistance' },
+            q1_1_o3: { kr: '전용 계산 소프트웨어 (반자동)', en: 'Dedicated calculation software (semi-automatic)' },
+            q1_1_o4: { kr: '통합 설계 시스템 (최적화 기능 포함)', en: 'Integrated design system with optimization' },
+            q1_1_o5: { kr: '완전 자동화 (AI/ML 최적화)', en: 'Fully automated with AI/ML optimization' },
+
+            // Q1.2 권선
+            q1_2_title: { kr: '권선설계 자동화', en: 'Winding Design Automation' },
+            q1_2_sub: { kr: '- 권선 도면은 어떻게 작성합니까?', en: '- How are winding drawings created?' },
+            q1_2_o1: { kr: 'CAD 수동 작도 (처음부터 작성)', en: 'Manual CAD drawing from scratch' },
+            q1_2_o2: { kr: '기존 도면 복사/수정', en: 'Copy/modify from previous designs' },
+            q1_2_o3: { kr: '파라미터 입력으로 기본 도면 생성', en: 'Parametric input generates basic drawing' },
+            q1_2_o4: { kr: '자동 생성 후 수동 미세 조정', en: 'Auto-generation with manual fine-tuning' },
+            q1_2_o5: { kr: '완전 자동 도면 생성', en: 'Fully automatic drawing generation' },
+
+            // Q1.3 철심
+            q1_3_title: { kr: '철심설계 자동화', en: 'Core Design Automation' },
+            q1_3_sub: { kr: '- 철심 설계는 어떻게 수행합니까?', en: '- How are core designs created?' },
+            q1_3_o1: { kr: '수동 계산 및 CAD 작도', en: 'Manual calculation and CAD drawing' },
+            q1_3_o2: { kr: '스프레드시트 기반 + 수동 CAD', en: 'Spreadsheet-based with manual CAD' },
+            q1_3_o3: { kr: '파라미터 입력 기반 반자동', en: 'Semi-automatic with parameter input' },
+            q1_3_o4: { kr: '자동 생성 + 약간의 수정', en: 'Automatic generation with minor edits' },
+            q1_3_o5: { kr: 'BOM 포함 완전 자동화', en: 'Fully automatic including BOM' },
+
+            // Q1.4 중신/리드
+            q1_4_title: { kr: '중신/리드 설계', en: 'Active Part / Lead Design' },
+            q1_4_sub: { kr: '- 리드 어셈블리는 어떻게 설계합니까?', en: '- How are lead assemblies designed?' },
+            q1_4_o1: { kr: '2D/3D 완전 수동 모델링', en: 'Fully manual 2D/3D modeling' },
+            q1_4_o2: { kr: '라이브러리 기반 + 수동 조립', en: 'Library-based with manual assembly' },
+            q1_4_o3: { kr: '부품 라이브러리 활용 반자동', en: 'Semi-automatic with component library' },
+            q1_4_o4: { kr: '자동 라우팅 + 수동 검증', en: 'Auto-routing with manual verification' },
+            q1_4_o5: { kr: '리드 완전 자동 생성', en: 'Fully automatic lead generation' },
+
+            // Q1.5 탱크
+            q1_5_title: { kr: '탱크설계 자동화', en: 'Tank Design Automation' },
+            q1_5_sub: { kr: '- 탱크/커버 설계는 어떻게 수행합니까?', en: '- How are tank/cover designs created?' },
+            q1_5_o1: { kr: '2D/3D CAD 처음부터 수동 작성', en: 'Manual 2D/3D CAD from scratch' },
+            q1_5_o2: { kr: '유사 설계 복사/수정', en: 'Copy/modify from similar designs' },
+            q1_5_o3: { kr: '라이브러리 기반 + 파라미터 조정', en: 'Library-based with parameter adjustment' },
+            q1_5_o4: { kr: '설정기 기반 자동 생성', en: 'Configurator with automatic generation' },
+            q1_5_o5: { kr: '부속품 포함 완전 자동화', en: 'Fully automatic including accessories' },
+
+            // Q2.1 매뉴얼
+            q2_1_title: { kr: '설계 매뉴얼', en: 'Design Manual' },
+            q2_1_sub: { kr: '- 문서화된 설계 지침이 있습니까?', en: '- Do you have documented design guidelines?' },
+            q2_1_o1: { kr: '공식 문서 없음 (구전 지식)', en: 'No formal documentation (tribal knowledge)' },
+            q2_1_o2: { kr: '비공식 메모 및 개인 노트', en: 'Informal notes and personal memos' },
+            q2_1_o3: { kr: 'Word/PDF 형식으로 문서화', en: 'Documented in Word/PDF format' },
+            q2_1_o4: { kr: '버전 관리되는 체계적 매뉴얼', en: 'Structured manual with version control' },
+            q2_1_o5: { kr: '설계 시스템에 통합 + 자동 검증', en: 'Integrated in design system with auto-check' },
+
+            // Q2.2 체크리스트
+            q2_2_title: { kr: '설계 체크리스트', en: 'Design Checklist' },
+            q2_2_sub: { kr: '- 설계 검토는 어떻게 수행합니까?', en: '- How are design reviews conducted?' },
+            q2_2_o1: { kr: '공식 체크리스트 없음 (구두 검토만)', en: 'No formal checklist (verbal review only)' },
+            q2_2_o2: { kr: '비공식 체크리스트 (표준화 안됨)', en: 'Informal checklist (not standardized)' },
+            q2_2_o3: { kr: '표준 Excel 체크리스트', en: 'Standard Excel checklist' },
+            q2_2_o4: { kr: '단계별 검토 (1차/2차/최종)', en: 'Stage-gate review (preliminary/final)' },
+            q2_2_o5: { kr: '설계 시스템 내 자동 검증', en: 'Automated validation in design system' },
+
+            // Q2.3 라이브러리
+            q2_3_title: { kr: '부품 라이브러리', en: 'Component Library' },
+            q2_3_sub: { kr: '- 표준 부품 라이브러리가 있습니까?', en: '- Do you have a standard parts library?' },
+            q2_3_o1: { kr: '라이브러리 없음 (매번 처음부터 작성)', en: 'No library (create from scratch each time)' },
+            q2_3_o2: { kr: '개인 라이브러리 (공유 안됨)', en: 'Personal libraries (not shared)' },
+            q2_3_o3: { kr: '일부 공유 라이브러리', en: 'Partial shared library' },
+            q2_3_o4: { kr: '체계적으로 관리되는 종합 라이브러리', en: 'Comprehensive managed library' },
+            q2_3_o5: { kr: '자동 선택 기능 통합 라이브러리', en: 'Integrated library with auto-selection' },
+
+            // Q2.4 ECO
+            q2_4_title: { kr: 'ECO 프로세스', en: 'ECO Process' },
+            q2_4_sub: { kr: '- 설계 변경은 어떻게 관리합니까?', en: '- How are design changes managed?' },
+            q2_4_o1: { kr: '공식 절차 없음 (구두 통보)', en: 'No formal process (verbal notification)' },
+            q2_4_o2: { kr: '이메일 기반 통보', en: 'Email-based notification' },
+            q2_4_o3: { kr: 'ECO 문서 + 수동 회람', en: 'ECO document with manual routing' },
+            q2_4_o4: { kr: '전자결재 워크플로우', en: 'Electronic approval workflow' },
+            q2_4_o5: { kr: 'PLM 통합 + 자동 전파', en: 'PLM-integrated with automatic propagation' },
+
+            // Q3.1 인터페이스
+            q3_1_title: { kr: '데이터 인터페이스', en: 'Data Interface' },
+            q3_1_sub: { kr: '- 시스템 간 데이터 전송 방식은?', en: '- How is data transferred between systems?' },
+            q3_1_o1: { kr: '수기 재입력 (손으로 복사)', en: 'Manual re-entry (copy by hand)' },
+            q3_1_o2: { kr: '프로그램 간 복사/붙여넣기', en: 'Copy-paste between applications' },
+            q3_1_o3: { kr: '파일 가져오기/내보내기 (Excel, CSV)', en: 'File import/export (Excel, CSV)' },
+            q3_1_o4: { kr: 'API 기반 연동', en: 'API-based integration' },
+            q3_1_o5: { kr: '단일 데이터베이스 완전 통합', en: 'Fully integrated single database' },
+
+            // Q3.2 PDM
+            q3_2_title: { kr: 'PDM/PLM 시스템', en: 'PDM/PLM System' },
+            q3_2_sub: { kr: '- 설계 문서는 어떻게 관리합니까?', en: '- How are design documents managed?' },
+            q3_2_o1: { kr: '로컬 저장 (개인 폴더)', en: 'Local storage (personal folders)' },
+            q3_2_o2: { kr: '공유 네트워크 폴더', en: 'Shared network folders' },
+            q3_2_o3: { kr: '기본 문서 관리 시스템', en: 'Basic document management system' },
+            q3_2_o4: { kr: '버전 관리 기능 PDM', en: 'PDM with version control' },
+            q3_2_o5: { kr: 'ERP 연동 완전 PLM', en: 'Full PLM integration with ERP' },
+
+            // Q3.3 BOM
+            q3_3_title: { kr: 'BOM 관리', en: 'BOM Management' },
+            q3_3_sub: { kr: '- 자재명세서(BOM)는 어떻게 관리합니까?', en: '- How is Bill of Materials managed?' },
+            q3_3_o1: { kr: '수동 Excel 시트', en: 'Manual Excel sheets' },
+            q3_3_o2: { kr: '버전 추적하는 공유 Excel', en: 'Shared Excel with version tracking' },
+            q3_3_o3: { kr: '데이터베이스 기반 BOM 시스템', en: 'Database-driven BOM system' },
+            q3_3_o4: { kr: 'CAD 연동 BOM 자동 생성', en: 'CAD-integrated BOM generation' },
+            q3_3_o5: { kr: 'ERP 동기화 완전 자동 BOM', en: 'Automatic BOM with ERP sync' },
+
+            // Q4.1 전기 리드타임
+            q4_1_title: { kr: '전기설계 리드타임', en: 'Electrical Design Lead Time' },
+            q4_1_sub: { kr: '- 계약 ~ 전기설계 완료까지', en: '- Contract to electrical design completion' },
+            q4_1_o1: { kr: '40일 이상', en: 'More than 40 days' },
+            q4_1_o2: { kr: '30~40일', en: '30-40 days' },
+            q4_1_o3: { kr: '20~30일', en: '20-30 days' },
+            q4_1_o4: { kr: '10~20일', en: '10-20 days' },
+            q4_1_o5: { kr: '10일 미만', en: 'Less than 10 days' },
+
+            // Q4.2 기구 리드타임
+            q4_2_title: { kr: '기구설계 리드타임', en: 'Mechanical Design Lead Time' },
+            q4_2_sub: { kr: '- 중신 ~ 최종도면 완료까지', en: '- Active part to final drawing' },
+            q4_2_o1: { kr: '50일 이상', en: 'More than 50 days' },
+            q4_2_o2: { kr: '40~50일', en: '40-50 days' },
+            q4_2_o3: { kr: '30~40일', en: '30-40 days' },
+            q4_2_o4: { kr: '20~30일', en: '20-30 days' },
+            q4_2_o5: { kr: '20일 미만', en: 'Less than 20 days' },
+
+            // Q4.3 변경 속도
+            q4_3_title: { kr: '설계 변경 속도', en: 'Design Revision Speed' },
+            q4_3_sub: { kr: '- 설계 변경 요청 ~ 완료까지', en: '- Time to complete design changes' },
+            q4_3_o1: { kr: '2주 이상', en: 'More than 2 weeks' },
+            q4_3_o2: { kr: '1~2주', en: '1-2 weeks' },
+            q4_3_o3: { kr: '4~7일', en: '4-7 days' },
+            q4_3_o4: { kr: '2~3일', en: '2-3 days' },
+            q4_3_o5: { kr: '1일 이내', en: 'Within 1 day' },
+
+            // 인원 현황
+            sec5_note: { kr: '* 귀사의 엔지니어링 조직 인원을 대략적으로 기입해 주세요', en: '* Please provide approximate headcount for your engineering organization' },
+            th_dept: { kr: '부서/팀', en: 'Department' },
+            th_internal: { kr: '정규직', en: 'Internal' },
+            th_external: { kr: '외주/파견', en: 'External/Contract' },
+            th_remark: { kr: '비고', en: 'Remarks' },
+            dept_elec: { kr: '전기설계팀', en: 'Electrical Design' },
+            dept_mech: { kr: '기계/구조설계팀', en: 'Mechanical/Structural Design' },
+            dept_cad: { kr: 'CAD/도면팀', en: 'Drafting/CAD' },
+            dept_pm: { kr: '프로젝트 엔지니어링', en: 'Project Engineering' }
+        };
+
+        // 언어 변경 함수
+        function setLang(lang) {
+            currentLang = lang;
+
+            // 버튼 활성화 상태 변경
+            document.getElementById('btn-kr').classList.toggle('active', lang === 'kr');
+            document.getElementById('btn-en').classList.toggle('active', lang === 'en');
+
+            // 모든 번역 요소 업데이트
+            document.querySelectorAll('[data-lang-key]').forEach(function(el) {
+                const key = el.getAttribute('data-lang-key');
+                if (translations[key]) {
+                    el.innerHTML = translations[key][lang];
+                }
+            });
+
+            // textarea placeholder 업데이트
+            const textarea = document.getElementById('textarea_comments');
+            if (textarea) {
+                textarea.placeholder = textarea.getAttribute('data-placeholder-' + lang);
+            }
+
+            // 문서 제목 업데이트
+            document.title = translations.title[lang];
+
+            // localStorage에 언어 설정 저장
+            localStorage.setItem('surveyLang', lang);
+        }
+
+        // 페이지 로드 시 저장된 언어 설정 복원
+        document.addEventListener('DOMContentLoaded', function() {
+            const savedLang = localStorage.getItem('surveyLang');
+            if (savedLang) {
+                setLang(savedLang);
+            }
+        });
+
+        function printPage() { window.print(); }
+
+        function exportResults() {
+            const result = {
+                meta: {
+                    surveyType: 'overseas_direct',
+                    surveyTitle: translations.title[currentLang],
+                    language: currentLang,
+                    exportDate: new Date().toISOString(),
+                    exportDateKR: new Date().toLocaleString('ko-KR')
+                },
+                companyInfo: {
+                    companyName: document.getElementById('input_company')?.value || '',
+                    respondent: document.getElementById('input_respondent')?.value || '',
+                    surveyDate: document.getElementById('input_date')?.value || ''
+                },
+                responses: {},
+                staffCounts: {},
+                remarks: []
+            };
+
+            document.querySelectorAll('input[type="radio"]:checked').forEach(function(radio) {
+                const descEl = radio.closest('.option-item').querySelector('.desc');
+                const key = descEl ? descEl.getAttribute('data-lang-key') : '';
+                result.responses[radio.name] = {
+                    value: parseInt(radio.value),
+                    label_kr: key ? translations[key]?.kr : '',
+                    label_en: key ? translations[key]?.en : ''
+                };
+            });
+
+            document.querySelectorAll('.staff-table tbody tr').forEach(function(row) {
+                const cells = row.querySelectorAll('td');
+                if (cells.length >= 3) {
+                    const deptKey = cells[0].getAttribute('data-lang-key');
+                    const deptName = deptKey ? translations[deptKey]?.kr : cells[0].textContent.trim();
+                    const internal = cells[1].querySelector('input[type="number"]')?.value || '';
+                    const external = cells[2].querySelector('input[type="number"]')?.value || '';
+                    if (internal || external) {
+                        result.staffCounts[deptName] = { internal: parseInt(internal) || 0, external: parseInt(external) || 0 };
+                    }
+                }
+            });
+
+            document.querySelectorAll('textarea').forEach(function(ta) {
+                if (ta.value.trim()) result.remarks.push(ta.value.trim());
+            });
+
+            const companyName = result.companyInfo.companyName || (currentLang === 'kr' ? '미입력' : 'Unknown');
+            const prefix = currentLang === 'kr' ? '설문결과_' : 'Survey_';
+            const filename = prefix + companyName + '_' + new Date().toISOString().slice(0, 10) + '.json';
+            const blob = new Blob([JSON.stringify(result, null, 2)], { type: 'application/json' });
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = filename;
+            a.click();
+
+            const msg = currentLang === 'kr'
+                ? '설문 결과가 저장되었습니다.\n파일명: ' + filename
+                : 'Survey results saved.\nFilename: ' + filename;
+            alert(msg);
+        }
+    </script>
 </body>
 
 </html>
