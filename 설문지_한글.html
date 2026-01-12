@@ -1507,11 +1507,8 @@ Chrome 인쇄 대화상자에서:
         // ==================== 초기화 ====================
 
         document.addEventListener('DOMContentLoaded', function() {
-            // 저장된 언어 설정 불러오기
-            const savedLang = localStorage.getItem('surveyLang');
-            if (savedLang) {
-                setLang(savedLang);
-            }
+            // 한글 버전: 항상 한글로 시작
+            setLang('kr');
 
             // 인앱 브라우저 감지 (카카오톡, 이메일 앱 등)
             function isInAppBrowser() {
