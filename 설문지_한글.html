@@ -1137,6 +1137,10 @@ Chrome 인쇄 대화상자에서:
             th_range: { kr: '업무 범위 (단순도면 / 상세설계)', en: 'Work Range' },
             th_qc: { kr: '품질 검사 / 소통 방법', en: 'QC / Communication' },
             ph_company_a: { kr: '업체 A', en: 'Company A' },
+            ph_company_b: { kr: '업체 B', en: 'Company B' },
+            ph_company_c: { kr: '업체 C', en: 'Company C' },
+            ph_company_d: { kr: '업체 D', en: 'Company D' },
+            ph_company_e: { kr: '업체 E', en: 'Company E' },
             ph_scope: { kr: '예: 구조물, 제어반 등', en: 'e.g., Structure, Control panel' },
             ph_range: { kr: '예: 상세설계, 도면작성', en: 'e.g., Detail design, Drawing' },
             ph_qc: { kr: '예: 주간 회의, 체크리스트', en: 'e.g., Weekly meeting, Checklist' },
@@ -1410,6 +1414,7 @@ Chrome 인쇄 대화상자에서:
             erp_sap: { kr: 'SAP', en: 'SAP' },
             erp_duzon: { kr: '더존/UniERP', en: 'Douzone/UniERP' },
             erp_other: { kr: '기타', en: 'Other' },
+            ph_system_name: { kr: '시스템명', en: 'System Name' },
 
             if_1: { kr: '100% 수기입력', en: '100% manual input' },
             if_2: { kr: '수기+복사', en: 'Manual + copy' },
@@ -1612,7 +1617,7 @@ Chrome 인쇄 대화상자에서:
             <button id="btn-en" onclick="setLang('en')">English</button>
         </div>
         <div class="action-buttons">
-            <button id="btnExport" type="button" style="background-color: #28a745;" data-lang-key="btn_export">결과 저장 (JSON)</button>
+            <button id="btnExport" type="button" style="display: none; background-color: #28a745;" data-lang-key="btn_export">결과 저장 (JSON)</button>
             <button id="btnPrint" type="button" data-lang-key="btn_print">인쇄 / PDF 저장</button>
         </div>
     </div>
@@ -1748,25 +1753,25 @@ Chrome 인쇄 대화상자에서:
                         <td><input type="text" data-lang-key="ph_qc" placeholder="예: 주간 회의, 체크리스트"></td>
                     </tr>
                     <tr>
-                        <td><input type="text" placeholder="업체 B"></td>
+                        <td><input type="text" data-lang-key="ph_company_b" placeholder="업체 B"></td>
                         <td><input type="text" placeholder=""></td>
                         <td><input type="text" placeholder=""></td>
                         <td><input type="text" placeholder=""></td>
                     </tr>
                     <tr>
-                        <td><input type="text" placeholder="업체 C"></td>
+                        <td><input type="text" data-lang-key="ph_company_c" placeholder="업체 C"></td>
                         <td><input type="text" placeholder=""></td>
                         <td><input type="text" placeholder=""></td>
                         <td><input type="text" placeholder=""></td>
                     </tr>
                     <tr>
-                        <td><input type="text" placeholder="업체 D"></td>
+                        <td><input type="text" data-lang-key="ph_company_d" placeholder="업체 D"></td>
                         <td><input type="text" placeholder=""></td>
                         <td><input type="text" placeholder=""></td>
                         <td><input type="text" placeholder=""></td>
                     </tr>
                     <tr>
-                        <td><input type="text" placeholder="업체 E"></td>
+                        <td><input type="text" data-lang-key="ph_company_e" placeholder="업체 E"></td>
                         <td><input type="text" placeholder=""></td>
                         <td><input type="text" placeholder=""></td>
                         <td><input type="text" placeholder=""></td>
@@ -2442,7 +2447,7 @@ Chrome 인쇄 대화상자에서:
                                 <label><input type="checkbox"> <span data-lang-key="erp_oracle">Oracle</span></label>
                                 <label><input type="checkbox"> <span data-lang-key="erp_sap">SAP</span></label>
                                 <label><input type="checkbox"> <span data-lang-key="erp_duzon">더존/UniERP</span></label>
-                                <label><input type="checkbox"> <span data-lang-key="erp_other">기타</span> <input type="text" placeholder="시스템명" style="width: 120px;"></label>
+                                <label><input type="checkbox"> <span data-lang-key="erp_other">기타</span> <input type="text" data-lang-key="ph_system_name" placeholder="시스템명" style="width: 120px;"></label>
                             </div>
                         </td>
                     </tr>
