@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ko" id="html-root">
+<html lang="en" id="html-root">
 
 <head>
     <meta charset="UTF-8">
@@ -1507,8 +1507,8 @@ Chrome 인쇄 대화상자에서:
         // ==================== 초기화 ====================
 
         document.addEventListener('DOMContentLoaded', function() {
-            // 한글 버전: 항상 한글로 시작
-            setLang('kr');
+            // 영문 버전: 항상 영어로 시작
+            setLang('en');
 
             // 인앱 브라우저 감지 (카카오톡, 이메일 앱 등)
             function isInAppBrowser() {
@@ -1610,11 +1610,11 @@ Chrome 인쇄 대화상자에서:
     <!-- 가이드 박스 - 해외_직접작성 버전과 동일 구조 -->
     <div class="guide-box">
         <div class="lang-toggle">
-            <button id="btn-kr" class="active" onclick="setLang('kr')">한국어</button>
-            <button id="btn-en" onclick="setLang('en')">English</button>
+            <button id="btn-kr" onclick="setLang('kr')">한국어</button>
+            <button id="btn-en" class="active" onclick="setLang('en')">English</button>
         </div>
         <div class="action-buttons">
-            <button id="btnExport" type="button" style="display: none; background-color: #28a745;" data-lang-key="btn_export">결과 저장 (JSON)</button>
+            <button id="btnExport" type="button" style="background-color: #28a745;" data-lang-key="btn_export">결과 저장 (JSON)</button>
             <button id="btnPrint" type="button" data-lang-key="btn_print">인쇄 / PDF 저장</button>
         </div>
     </div>
